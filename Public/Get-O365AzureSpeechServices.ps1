@@ -6,5 +6,8 @@
 
     $Uri = "https://admin.microsoft.com/admin/api/services/apps/azurespeechservices"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers.Headers
-    $Output
+
+    [PSCustomobject] @{
+        AllowTheOrganizationWideLanguageModel = $Output.IsTenantEnabled
+    }
 }
