@@ -8,7 +8,7 @@
         [string] $ContentType = "application/json; charset=UTF-8",
         [System.Collections.IDictionary] $Body,
         [System.Collections.IDictionary] $QueryParameter #,
-       # [switch] $FullUri
+        # [switch] $FullUri
     )
     # This forces a reconnect of session in case it's about to time out. If it's not timeouting a cache value is used
     if ($Headers.Splat) {
@@ -28,17 +28,17 @@
     if ($Body) {
         $RestSplat['Body'] = $Body | ConvertTo-Json -Depth 5
     }
-  #  if ($FullUri) {
-        $RestSplat.Uri = $Uri
-   # } else {
-   #     $RestSplat.Uri = Join-UriQuery -BaseUri $BaseUri -RelativeOrAbsoluteUri $Uri -QueryParameter $QueryParameter
-   # }
+    #  if ($FullUri) {
+    $RestSplat.Uri = $Uri
+    # } else {
+    #     $RestSplat.Uri = Join-UriQuery -BaseUri $BaseUri -RelativeOrAbsoluteUri $Uri -QueryParameter $QueryParameter
+    # }
     try {
         Write-Verbose "Invoke-O365Admin - Querying [$Method] $($RestSplat.Uri)"
         if ($PSCmdlet.ShouldProcess($($RestSplat.Uri), "Querying [$Method]")) {
             $OutputQuery = Invoke-RestMethod @RestSplat -Verbose:$false
             if ($Method -in 'GET') {
-                if ($OutputQuery) {
+                if ($null -ne $OutputQuery) {
                     $OutputQuery
                 }
                 if ($OutputQuery.'@odata.nextLink') {
@@ -58,14 +58,17 @@
         $RestError = $_.ErrorDetails.Message
         if ($RestError) {
             try {
-                $ErrorMessage = ConvertFrom-Json -InputObject $RestError
+                $ErrorMessage = ConvertFrom-Json -InputObject $RestError -ErrorAction Stop
                 # Write-Warning -Message "Invoke-Graph - [$($ErrorMessage.error.code)] $($ErrorMessage.error.message), exception: $($_.Exception.Message)"
-                Write-Warning -Message "Invoke-O365Admin - Error: $($_.Exception.Message) $($ErrorMessage.error.message)"
+                Write-Warning -Message "Invoke-O365Admin - Error JSON: $($_.Exception.Message) $($ErrorMessage.error.message)"
             } catch {
-                Write-Warning -Message "Invoke-O365Admin - Error: $($_.Exception.Message)"
+                Write-Warning -Message "Invoke-O365Admin - Error: $($RestError.Trim())"
             }
         } else {
-            Write-Warning $_.Exception.Message
+            Write-Warning -Message "Invoke-O365Admin - $($_.Exception.Message)"
+        }
+        if ($_.ErrorDetails.RecommendedAction) {
+            Write-Warning -Message "Invoke-O365Admin - Recommended action: $RecommendedAction"
         }
         if ($Method -notin 'GET', 'POST') {
             return $false
