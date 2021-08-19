@@ -17,8 +17,10 @@
     #>
     [cmdletbinding()]
     param(
-        [parameter(Mandatory)][string] $Domain
+        [parameter(Mandatory)][alias('DomainName')][string] $Domain
     )
-    (Invoke-RestMethod "https://login.windows.net/$Domain/.well-known/openid-configuration" -Method GET).userinfo_endpoint.Split("/")[3]
+    $Invoke = Invoke-RestMethod "https://login.windows.net/$Domain/.well-known/openid-configuration" -Method GET -Verbose:$false
+    if ($Invoke) {
+        $Invoke.userinfo_endpoint.Split("/")[3]
+    }
 }
-
