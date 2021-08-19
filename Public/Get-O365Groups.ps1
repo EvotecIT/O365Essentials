@@ -1,14 +1,14 @@
 ﻿function Get-O365Groups {
     [cmdletbinding()]
     param(
-        [parameter(Mandatory)][alias('Authorization')][System.Collections.IDictionary] $Headers
+        [alias('Authorization')][System.Collections.IDictionary] $Headers
     )
     $Uri = "https://admin.microsoft.com/admin/api/settings/security/guestUserPolicy"
-    $Output1 = Invoke-O365Admin -Uri $Uri -Headers $Headers.Headers
+    $Output1 = Invoke-O365Admin -Uri $Uri -Headers $Headers
 
 
     $Uri = "https://admin.microsoft.com/admin/api/settings/security/o365guestuser"
-    $Output2 = Invoke-O365Admin -Uri $Uri -Headers $Headers.Headers
+    $Output2 = Invoke-O365Admin -Uri $Uri -Headers $Headers
 
     <# same/similar properties on both objects
     $Object = [ordered] @{}

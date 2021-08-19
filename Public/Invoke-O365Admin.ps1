@@ -1,38 +1,45 @@
 ﻿function Invoke-O365Admin {
     [cmdletBinding(SupportsShouldProcess)]
     param(
-        #[alias('PrimaryUri')][uri] $BaseUri = '',
         [uri] $Uri,
-        [parameter(Mandatory)][alias('Authorization')][System.Collections.IDictionary] $Headers,
+        [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [validateset('GET', 'DELETE', 'POST', 'PATCH')][string] $Method = 'GET',
         [string] $ContentType = "application/json; charset=UTF-8",
-        [System.Collections.IDictionary] $Body,
-        [System.Collections.IDictionary] $QueryParameter #,
-        # [switch] $FullUri
+        [System.Collections.IDictionary] $Body
     )
-    # This forces a reconnect of session in case it's about to time out. If it's not timeouting a cache value is used
-    if ($Headers.Splat) {
-        $Splat = $Headers.Splat
-        #$Headers = Connect-O365Admin @Splat
+    if (-not $Headers) {
+        if ($Script:AuthorizationO365Cache -and $Script:AuthorizationO365Cache['CurrentUserName']) {
+            $UserName = $Script:AuthorizationO365Cache['CurrentUsername']
+            if ($Script:AuthorizationO365Cache[$UserName]) {
+                $Headers = $Script:AuthorizationO365Cache[$UserName]
+            }
+        }
     }
 
-    if ($Authorization.Error) {
+    if (-not $Headers) {
+        Write-Warning "Invoke-O365Admin - Not connected. Please connect using Connect-O365Admin."
+        return
+    }
+
+    if ($Headers) {
+        # This forces a reconnect of session in case it's about to time out. If it's not timeouting a cache value is used
+        $Headers = Connect-O365Admin -Credential $Headers.Credential
+    }
+
+
+    if ($Headers.Error) {
         Write-Warning "Invoke-O365Admin - Authorization error. Skipping."
         return
     }
     $RestSplat = @{
-        Headers     = $Headers
+        Headers     = $Headers.Headers
         Method      = $Method
         ContentType = $ContentType
     }
     if ($Body) {
         $RestSplat['Body'] = $Body | ConvertTo-Json -Depth 5
     }
-    #  if ($FullUri) {
     $RestSplat.Uri = $Uri
-    # } else {
-    #     $RestSplat.Uri = Join-UriQuery -BaseUri $BaseUri -RelativeOrAbsoluteUri $Uri -QueryParameter $QueryParameter
-    # }
     try {
         Write-Verbose "Invoke-O365Admin - Querying [$Method] $($RestSplat.Uri)"
         if ($PSCmdlet.ShouldProcess($($RestSplat.Uri), "Querying [$Method]")) {

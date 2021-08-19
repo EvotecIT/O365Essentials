@@ -1,13 +1,13 @@
 ﻿function Get-O365OfficeProductivity {
     [cmdletbinding()]
     param(
-        [parameter(Mandatory)][alias('Authorization')][System.Collections.IDictionary] $Headers
+        [alias('Authorization')][System.Collections.IDictionary] $Headers
     )
     $Uri = "https://admin.microsoft.com/admin/api/reports/productivityScoreCustomerOption"
-    $Output1 = Invoke-O365Admin -Uri $Uri -Headers $Headers.Headers
+    $Output1 = Invoke-O365Admin -Uri $Uri -Headers $Headers
 
     $Uri = "https://admin.microsoft.com/admin/api/reports/productivityScoreConfig/GetProductivityScoreConfig"
-    $Output2 = Invoke-O365Admin -Uri $Uri -Headers $Headers.Headers
+    $Output2 = Invoke-O365Admin -Uri $Uri -Headers $Headers
     $Output2Json = $Output2.Output | ConvertFrom-Json
     $Output1Json = $Output1.Output | ConvertFrom-Json
     $Output = [PSCustomObject] @{
