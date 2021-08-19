@@ -28,3 +28,5 @@ This module wouldn't happen without great help from following people:
 
 - [Jannick Oeben](https://twitter.com/JannickOeben)
 - [Jos Lieben](https://twitter.com/joslieben)
+
+It is recommended to use **PowerShell 7** or higher. While the module does work in PowerShell 5.1 it has some issues with cookies most likely related to lenght of password.
