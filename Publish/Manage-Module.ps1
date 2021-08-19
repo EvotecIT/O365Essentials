@@ -8,11 +8,11 @@ $Configuration = @{
 
         Manifest          = @{
             # Version number of this module.
-            ModuleVersion              = '0.0.1'
+            ModuleVersion              = '0.0.X'
             # Supported PSEditions
             CompatiblePSEditions       = @('Desktop', 'Core')
             # ID used to uniquely identify this module
-            GUID                       = '54ac7896-42b5-4af3-bc4c-2de6ff38b021'
+            GUID                       = 'a8752d7b-17c8-41db-b3f9-b8f225de028d'
             # Author of this module
             Author                     = 'Przemyslaw Klys'
             # Company or vendor of this module
@@ -20,18 +20,18 @@ $Configuration = @{
             # Copyright statement for this module
             Copyright                  = 'Przemyslaw Klys. All rights reserved.'
             # Description of the functionality provided by this module
-            Description                = 'Module that helps managing some tasks on Office 365/Azure via undocumented API'
+            Description                = 'A module that helps to manage some tasks on Office 365/Azure via undocumented API'
             # Minimum version of the Windows PowerShell engine required by this module
             PowerShellVersion          = '5.1'
             # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
-            Tags                       = @('Windows', 'MacOS', 'Linux', 'Office365', 'Graph', 'Azure')
+            Tags                       = @('Windows', 'MacOS', 'Linux', 'Office365', 'Graph', 'Azure', 'Unsupported', 'API')
 
             #IconUri              = 'https://evotec.xyz/wp-content/uploads/2018/12/PSWriteHTML.png'
 
             ProjectUri                 = 'https://github.com/EvotecIT/O365Essentials'
 
             RequiredModules            = @(
-                @{ ModuleName = 'PSSharedGoods'; ModuleVersion = "Latest"; Guid = 'ee272aa8-baaa-4edf-9f45-b6d6f7d844fe' }
+                #@{ ModuleName = 'PSSharedGoods'; ModuleVersion = "Latest"; Guid = 'ee272aa8-baaa-4edf-9f45-b6d6f7d844fe' }
                 @{ ModuleName = 'Az.Accounts'; ModuleVersion = "Latest"; Guid = '17a2feff-488b-47f9-8729-e2cec094624c' }
             )
             ExternalModuleDependencies = @(
