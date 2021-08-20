@@ -1,4 +1,4 @@
-@{
+﻿@{
     AliasesToExport      = @()
     Author               = 'Przemyslaw Klys'
     CmdletsToExport      = @()
@@ -18,12 +18,12 @@
         }
     }
     RequiredModules      = @(@{
-            ModuleName    = 'PSSharedGoods'
             ModuleVersion = '0.0.210'
+            ModuleName    = 'PSSharedGoods'
             Guid          = 'ee272aa8-baaa-4edf-9f45-b6d6f7d844fe'
         }, @{
-            ModuleName    = 'Az.Accounts'
             ModuleVersion = '2.5.2'
+            ModuleName    = 'Az.Accounts'
             Guid          = '17a2feff-488b-47f9-8729-e2cec094624c'
         }, 'Microsoft.PowerShell.Utility')
     RootModule           = 'O365Essentials.psm1'
