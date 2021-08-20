@@ -7,27 +7,14 @@
         [string] $ContentType = "application/json; charset=UTF-8",
         [System.Collections.IDictionary] $Body
     )
-    if (-not $Headers) {
-        if ($Script:AuthorizationO365Cache -and $Script:AuthorizationO365Cache['CurrentUserName']) {
-            $UserName = $Script:AuthorizationO365Cache['CurrentUsername']
-            if ($Script:AuthorizationO365Cache[$UserName]) {
-                $Headers = $Script:AuthorizationO365Cache[$UserName]
-            }
-        }
-    }
-
-    if (-not $Headers) {
+    if (-not $Headers -and $Script:AuthorizationO365Cache) {
+        # This forces a reconnect of session in case it's about to time out. If it's not timeouting a cache value is used
+        $Headers = Connect-O365Admin -Headers $Headers
+    } else {
         Write-Warning "Invoke-O365Admin - Not connected. Please connect using Connect-O365Admin."
         return
     }
-
-    if ($Headers) {
-        # This forces a reconnect of session in case it's about to time out. If it's not timeouting a cache value is used
-        $Headers = Connect-O365Admin -Credential $Headers.Credential
-    }
-
-
-    if ($Headers.Error) {
+    if (-not $Headers) {
         Write-Warning "Invoke-O365Admin - Authorization error. Skipping."
         return
     }
@@ -43,6 +30,8 @@
     try {
         Write-Verbose "Invoke-O365Admin - Querying [$Method] $($RestSplat.Uri)"
         if ($PSCmdlet.ShouldProcess($($RestSplat.Uri), "Querying [$Method]")) {
+            #$CookieContainer = [System.Net.CookieContainer]::new()
+            #$CookieContainer.MaxCookieSize = 8096
             $OutputQuery = Invoke-RestMethod @RestSplat -Verbose:$false
             if ($Method -in 'GET') {
                 if ($null -ne $OutputQuery) {
