@@ -46,3 +46,5 @@ Get-O365ConsiergeAll
 Get-O365BillingAccounts -Verbose
 Get-O365BillingNotificationsList -Verbose
 Get-O365BillingNotifications -Verbose
+Get-O365DirectorySync -Verbose
+Get-O365Dynamics365ConnectionGraph -Verbose

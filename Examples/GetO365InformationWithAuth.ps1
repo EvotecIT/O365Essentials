@@ -45,3 +45,5 @@ Get-O365ConsiergeAll -Authorization $Authorization -Verbose
 Get-O365BillingAccounts -Authorization $Authorization -Verbose
 Get-O365BillingNotificationsList -Authorization $Authorization -Verbose
 Get-O365BillingNotifications -Authorization $Authorization -Verbose
+Get-O365DirectorySync -Verbose
+Get-O365Dynamics365ConnectionGraph -Verbose
