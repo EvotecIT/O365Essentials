@@ -31,7 +31,7 @@ $Configuration = @{
             ProjectUri                 = 'https://github.com/EvotecIT/O365Essentials'
 
             RequiredModules            = @(
-                #@{ ModuleName = 'PSSharedGoods'; ModuleVersion = "Latest"; Guid = 'ee272aa8-baaa-4edf-9f45-b6d6f7d844fe' }
+                @{ ModuleName = 'PSSharedGoods'; ModuleVersion = "Latest"; Guid = 'ee272aa8-baaa-4edf-9f45-b6d6f7d844fe' }
                 @{ ModuleName = 'Az.Accounts'; ModuleVersion = "Latest"; Guid = '17a2feff-488b-47f9-8729-e2cec094624c' }
             )
             ExternalModuleDependencies = @(
