@@ -56,3 +56,13 @@ That's it. Whenever there's a new version, you run the command, and you can enjo
 
 - 0.0.1 - 2021.08.19
   - First version
+
+## Cmdlets available
+
+| Get cmdlet                  | Set cmdlet              | Native API available | Description                       |
+| --------------------------- | ----------------------- | -------------------- | --------------------------------- |
+| Get-O365AzureSpeechServices | Set-AzureSpeechServices | No                   | Get and set Azure Speech Services |
+| Get-O365Forms               | Set-O365Forms           |                      | Get and set Forms                 |
+| Get-O365Planner             | Set-O365Planner         |                      | Get and set Planner               |
+| Get-O365Bookinsg            | ----                    | Think so             | Get Bookings                      |
+| Get-O365BriefingEmail       | Set-O365BriefingEmail   | No                   | Get and set Briefing Email        |
