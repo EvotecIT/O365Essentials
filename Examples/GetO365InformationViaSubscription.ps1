@@ -3,9 +3,11 @@
 if (-not $Credentials) {
     $Credentials = Get-Credential
 }
+
 # This makes a connection to Office 365 tenant, using credentials
 # keep in mind that if there's an MFA you would be better left without Credentials and just let it prompt you
-$null = Connect-O365Admin -Verbose -Credential $Credentials
+# you still would may need to provide subscription
+$null = Connect-O365Admin -Verbose -Credential $Credentials -TenantID 'ceb371f6-8745-4876-a040-69f2d10a9d1a' -Subscription '6bc9b60d-3c09-491c-826a-f2fec4241677'
 
 # We then used connection from above internally on module scope to get the tenant's information
 Get-O365Planner -Verbose

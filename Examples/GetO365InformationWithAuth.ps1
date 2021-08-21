@@ -3,9 +3,10 @@
 if (-not $Credentials) {
     $Credentials = Get-Credential
 }
+# This makes a connection to Office 365 tenant, using credentials
+# keep in mind that if there's an MFA you would be better left without Credentials and just let it prompt you
 $Authorization = Connect-O365Admin -Verbose -Credential $Credentials
 
-Get-O365Forms -Authorization $Authorization -Verbose
 Get-O365Planner -Authorization $Authorization -Verbose
 Get-O365Forms -Authorization $Authorization -Verbose
 Get-O365AzureSpeechServices -Authorization $Authorization -Verbose
@@ -30,10 +31,17 @@ Get-O365UserConsentApps -Authorization $Authorization -Verbose
 Get-O365Project -Authorization $Authorization -Verbose
 Get-O365UserOwnedApps -Authorization $Authorization -Verbose
 Get-O365InstallationOptions -Authorization $Authorization -Verbose
-
-# Not ready yet
-Get-O365CommunicationToUsers -Authorization $Authorization -Verbose # no data
-Get-O365News -Authorization $Authorization -Verbose # problems
-Get-O365MicrosoftSearch -Authorization $Authorization -Verbose # problems
-Get-O365Scripts -Authorization $Authorization -Verbose # problems
-Get-O365Whiteboard -Authorization $Authorization -Verbose # problems
+Get-O365BingDataCollection -Authorization $Authorization -Verbose
+Get-O365DataLocation -Authorization $Authorization -Verbose
+Get-O365PasswordExpirationPolicy -Authorization $Authorization -Verbose
+Get-O365PrivacyProfile -Authorization $Authorization -Verbose
+Get-O365Sharing -Authorization $Authorization -Verbose
+Get-O365HelpdeskInformation -Authorization $Authorization -Verbose
+Get-O365OrganizationInformation -Authorization $Authorization -Verbose
+Get-O365ReleasePreferences -Authorization $Authorization -Verbose
+Get-O365CustomThemes -Authorization $Authorization -Verbose
+Get-O365DirectorySyncErrors -Authorization $Authorization -Verbose
+Get-O365ConsiergeAll -Authorization $Authorization -Verbose
+Get-O365BillingAccounts -Authorization $Authorization -Verbose
+Get-O365BillingNotificationsList -Authorization $Authorization -Verbose
+Get-O365BillingNotifications -Authorization $Authorization -Verbose
