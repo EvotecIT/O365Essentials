@@ -2,7 +2,7 @@
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
-        [bool] $ServiceEnabled
+        [Parameter(Mandatory)][bool] $ServiceEnabled
     )
     $Uri = "https://admin.microsoft.com/admin/api/settings/apps/dci"
 
