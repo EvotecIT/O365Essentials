@@ -1,12 +1,12 @@
 @{
-    AliasesToExport      = @()
+    AliasesToExport      = @('*')
     Author               = 'Przemyslaw Klys'
     CmdletsToExport      = @()
     CompanyName          = 'Evotec'
     CompatiblePSEditions = @('Desktop', 'Core')
     Copyright            = 'Przemyslaw Klys. All rights reserved.'
     Description          = 'A module that helps to manage some tasks on Office 365/Azure via undocumented API'
-    FunctionsToExport    = @('Connect-O365Admin', 'Get-O365AzureSpeechServices', 'Get-O365BillingAccounts', 'Get-O365BillingNotifications', 'Get-O365BillingNotificationsList', 'Get-O365BillingPaymentMethods', 'Get-O365BingDataCollection', 'Get-O365Bookings', 'Get-O365BriefingEmail', 'Get-O365CalendarSharing', 'Get-O365CommunicationToUsers', 'Get-O365CompanyInformation', 'Get-O365ConsiergeAll', 'Get-O365Cortana', 'Get-O365CustomThemes', 'Get-O365DataLocation', 'Get-O365DirectorySync', 'Get-O365DirectorySyncErrors', 'Get-O365Dynamics365ConnectionGraph', 'Get-O365Dynamics365CustomerVoice', 'Get-O365Dynamics365SalesInsights', 'Get-O365Forms', 'Get-O365GraphDataConnect', 'Get-O365Groups', 'Get-O365HelpdeskInformation', 'Get-O365InstallationOptions', 'Get-O365LicensesAutoClaim', 'Get-O365MicrosoftTeams', 'Get-O365ModernAuthentication', 'Get-O365MyAnalytics', 'Get-O365OfficeOnTheWeb', 'Get-O365OfficeProductivity', 'Get-O365OrganizationInformation', 'Get-O365PasswordExpirationPolicy', 'Get-O365Planner', 'Get-O365PrivacyProfile', 'Get-O365Project', 'Get-O365ReleasePreferences', 'Get-O365Reports', 'Get-O365SearchIntelligenceItemInsights', 'Get-O365SearchIntelligenceMeetingInsights', 'Get-O365SharePoint', 'Get-O365Sharing', 'Get-O365Sway', 'Get-O365TenantID', 'Get-O365ToDo', 'Get-O365UserConsentApps', 'Get-O365UserOwnedApps', 'Invoke-O365Admin', 'Set-O365AzureSpeechServices', 'Set-O365BriefingEmail', 'Set-O365CalendarSharing', 'Set-O365CommunicationToUsers', 'Set-O365Cortana', 'Set-O365Dynamics365ConnectionGraph', 'Set-O365Dynamics365SalesInsights', 'Set-O365Forms', 'Set-O365Groups', 'Set-O365Planner')
+    FunctionsToExport    = @('*')
     GUID                 = 'a8752d7b-17c8-41db-b3f9-b8f225de028d'
     ModuleVersion        = '0.0.2'
     PowerShellVersion    = '5.1'
