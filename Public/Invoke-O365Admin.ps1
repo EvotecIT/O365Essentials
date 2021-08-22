@@ -3,7 +3,7 @@
     param(
         [uri] $Uri,
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
-        [validateset('GET', 'DELETE', 'POST', 'PATCH')][string] $Method = 'GET',
+        [validateset('GET', 'DELETE', 'POST', 'PATCH', 'PUT')][string] $Method = 'GET',
         [string] $ContentType = "application/json; charset=UTF-8",
         [System.Collections.IDictionary] $Body
     )
@@ -19,10 +19,15 @@
         return
     }
     $RestSplat = @{
-        Headers     = $Headers.Headers
         Method      = $Method
         ContentType = $ContentType
     }
+    if ($Uri -like '*admin.microsoft.com*') {
+        $RestSplat['Headers'] = $Headers.HeadersO365
+    } else {
+        $RestSplat['Headers'] = $Headers.HeadersAzure
+    }
+
     #$RestSplat.Headers."x-ms-mac-hosting-app" = 'M365AdminPortal'
     #$RestSplat.Headers."x-ms-mac-version" = 'host-mac_2021.8.16.1'
     #$RestSplat.Headers."sec-ch-ua" = '"Chromium";v="92", " Not A;Brand";v="99", "Microsoft Edge";v="92"'
@@ -56,12 +61,14 @@
                 if ($OutputQuery.'@odata.nextLink') {
                     $RestSplat.Uri = $OutputQuery.'@odata.nextLink'
                     $MoreData = Invoke-O365Admin @RestSplat -FullUri
-                    if ($MoreData) {
+                    if ($null -ne $MoreData) {
                         $MoreData
                     }
                 }
-            } elseif ($Method -in 'POST') {
-                $OutputQuery
+            } elseif ($Method -in 'POST', 'PUT') {
+                if ($null -ne $OutputQuery) {
+                    $OutputQuery
+                }
             } else {
                 return $true
             }
