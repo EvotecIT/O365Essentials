@@ -33,13 +33,19 @@
     #$RestSplat.UserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.73'
     #$RestSplat.Headers.Cookie = 'MC1=GUID=480c128a5ba04faea7df151a53bdfa9a&HASH=480c&LV=202107&V=4&LU=1627670649689'
 
+    #$RestSplat.Headers."x-ms-mac-hosting-app" = 'M365AdminPortal'
+    #$RestSplat.Headers."x-adminapp-request" = '/Settings/Services/:/Settings/L1/EndUserCommunications'
+    #$RestSplat.Headers."Referer" = 'https://admin.microsoft.com/'
+    #$RestSplat.Headers."AjaxSessionKey" = 'x5eAwqzbVehBOP7QHfrjpwr9eYtLiHJt7TZFj0uhUMUPQ2T7yNdA7rEgOulejHDHYM1ZyCT0pgXo96EwrfVpMA=='
+
     if ($Body) {
         $RestSplat['Body'] = $Body | ConvertTo-Json -Depth 5
     }
     $RestSplat.Uri = $Uri
     try {
         Write-Verbose "Invoke-O365Admin - Querying [$Method] $($RestSplat.Uri)"
-        if ($PSCmdlet.ShouldProcess($($RestSplat.Uri), "Querying [$Method]")) {
+        $WhatIfInformation = "Invoking [$Method] " + [System.Environment]::NewLine + $RestSplat['Body'] + [System.Environment]::NewLine
+        if ($PSCmdlet.ShouldProcess($($RestSplat.Uri), $WhatIfInformation)) {
             #$CookieContainer = [System.Net.CookieContainer]::new()
             #$CookieContainer.MaxCookieSize = 8096
             $OutputQuery = Invoke-RestMethod @RestSplat -Verbose:$false
