@@ -59,35 +59,65 @@
     }
 
     $Context = $AzConnect.Context
+
     try {
-        $Authentication = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
+        $AuthenticationO365 = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
             $Context.Account,
             $Context.Environment,
             $Context.Tenant.Id.ToString(),
             $null,
             [Microsoft.Azure.Commands.Common.Authentication.ShowDialog]::Auto,
             $null,
-            "https://admin.microsoft.com"
+            'https://admin.microsoft.com'
         )
 
     } catch {
         Write-Warning -Message "Connect-O365Admin - Authentication failure. Error: $($_.Exception.Message)"
         return
     }
-
+    try {
+        $AuthenticationAzure = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
+            $Context.Account,
+            $Context.Environment,
+            $Context.Tenant.Id.ToString(),
+            $null,
+            [Microsoft.Azure.Commands.Common.Authentication.ShowDialog]::Auto,
+            $null,
+            "74658136-14ec-4630-ad9b-26e160ff0fc6"
+        )
+    } catch {
+        Write-Warning -Message "Connect-O365Admin - Authentication failure. Error: $($_.Exception.Message)"
+        return
+    }
     $null = Disconnect-AzAccount -AzureContext $Context
 
     $Script:AuthorizationO365Cache = [ordered] @{
-        'Credential'     = $Credential
-        'UserName'       = $Context.Account
-        'Environment'    = $Context.Environment
-        'Subscription'   = $Subscription
-        'Tenant'         = $Context.Tenant.Id
-        'Authentication' = $Authentication
-        'AccessToken'    = $Authentication.AccessToken
-        'ExpiresOnUTC'   = ([datetime]::UtcNow).AddSeconds($ExpiresIn - $ExpiresTimeout)
-        'Headers'        = [ordered] @{ "Content-Type" = "application/json; charset=UTF-8" ; "Authorization" = "Bearer $($Authentication.AccessToken)" }
-
+        'Credential'          = $Credential
+        'UserName'            = $Context.Account
+        'Environment'         = $Context.Environment
+        'Subscription'        = $Subscription
+        'Tenant'              = $Context.Tenant.Id
+        'ExpiresOnUTC'        = ([datetime]::UtcNow).AddSeconds($ExpiresIn - $ExpiresTimeout)
+        # This authorization is used for admin.microsoft.com
+        'AuthenticationO365'  = $AuthenticationO365
+        'AccessTokenO365'     = $AuthenticationO365.AccessToken
+        'HeadersO365'         = [ordered] @{
+            "Content-Type"           = "application/json; charset=UTF-8" ; 
+            "Authorization"          = "Bearer $($AuthenticationO365.AccessToken)"
+            'X-Requested-With'       = 'XMLHttpRequest'
+            'x-ms-client-request-id' = [guid]::NewGuid()
+            'x-ms-correlation-id'    = [guid]::NewGuid()
+        }
+        # This authorization is used for azure stuff
+        'AuthenticationAzure' = $AuthenticationAzure
+        'AccessTokenAzure'    = $AuthenticationAzure.AccessToken
+        'HeadersAzure'        = [ordered] @{
+            "Content-Type"           = "application/json; charset=UTF-8" ; 
+            "Authorization"          = "Bearer $($AuthenticationAzure.AccessToken)"
+            'X-Requested-With'       = 'XMLHttpRequest'
+            'x-ms-client-request-id' = [guid]::NewGuid()
+            'x-ms-correlation-id'    = [guid]::NewGuid()
+        }
     }
     $Script:AuthorizationO365Cache
 }
