@@ -1,5 +1,5 @@
 ﻿function Set-O365Planner {
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [bool] $AllowCalendarSharing

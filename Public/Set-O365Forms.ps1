@@ -1,5 +1,5 @@
 ﻿function Set-O365Forms {
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [nullable[bool]] $BingImageSearchEnabled,

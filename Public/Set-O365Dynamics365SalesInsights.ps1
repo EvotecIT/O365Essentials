@@ -1,5 +1,5 @@
 ﻿function Set-O365Dynamics365SalesInsights {
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [Parameter(Mandatory)][bool] $ServiceEnabled

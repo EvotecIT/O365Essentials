@@ -19,7 +19,7 @@
     Users will receive ‎Briefing‎ email by default, but can unsubscribe at any time from their ‎Briefing‎ email or ‎Briefing‎ settings page. Email is only sent to users if their ‎Office 365‎ language is English or Spanish.
 
     #>
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         #[bool] $MailEnable,

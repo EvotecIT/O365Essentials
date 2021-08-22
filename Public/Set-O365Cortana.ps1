@@ -18,7 +18,7 @@
     .NOTES
     General notes
     #>
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [bool] $Enabled

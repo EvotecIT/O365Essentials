@@ -1,5 +1,5 @@
 ﻿function Set-O365Groups {
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [nullable[bool]] $AllowGuestAccess,

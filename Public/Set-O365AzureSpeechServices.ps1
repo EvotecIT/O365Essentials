@@ -1,5 +1,5 @@
 ﻿function Set-O365AzureSpeechServices {
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [bool] $AllowTheOrganizationWideLanguageModel
