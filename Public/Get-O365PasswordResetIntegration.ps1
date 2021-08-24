@@ -11,7 +11,7 @@
         [PSCustomObject] @{
             PasswordWritebackSupported = $Output.passwordWritebackSupported
             # This one doesn't change and stays enabled all the time
-            #accountUnlockSupported     = $Output.accountUnlockSupported
+            #AccountUnlockSupported     = $Output.accountUnlockSupported
             AccountUnlockEnabled       = $Output.accountUnlockEnabled
         }
     }
