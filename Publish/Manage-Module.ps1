@@ -137,14 +137,18 @@ $Configuration = @{
     }
     Steps       = @{
         BuildModule        = @{  # requires Enable to be on to process all of that
-            Enable           = $true
-            DeleteBefore     = $false
-            Merge            = $true
-            MergeMissing     = $true
-            SignMerged       = $true
-            Releases         = $true
-            ReleasesUnpacked = $false
-            RefreshPSD1Only  = $false
+            Enable                  = $true
+            DeleteBefore            = $false
+            Merge                   = $true
+            MergeMissing            = $true
+            SignMerged              = $true
+            Releases                = $true
+            ReleasesUnpacked        = $false
+            RefreshPSD1Only         = $false
+            # Applicable only for non-merge/publish situation
+            # It's simply to make life easier during debugging
+            # It makes all functions/aliases exportable
+            UseWildcardForFunctions = $true
         }
         BuildDocumentation = $false
         ImportModules      = @{
