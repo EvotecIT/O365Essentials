@@ -50,27 +50,35 @@
     try {
         Write-Verbose "Invoke-O365Admin - Querying [$Method] $($RestSplat.Uri)"
         $WhatIfInformation = "Invoking [$Method] " + [System.Environment]::NewLine + $RestSplat['Body'] + [System.Environment]::NewLine
-        if ($PSCmdlet.ShouldProcess($($RestSplat.Uri), $WhatIfInformation)) {
-            #$CookieContainer = [System.Net.CookieContainer]::new()
-            #$CookieContainer.MaxCookieSize = 8096
+        if ($Method -eq 'GET') {
+            # We use separate check because WHATIF would sometimes trigger when GET was used inside a SET
             $OutputQuery = Invoke-RestMethod @RestSplat -Verbose:$false
-            if ($Method -in 'GET') {
-                if ($null -ne $OutputQuery) {
-                    $OutputQuery
-                }
-                if ($OutputQuery.'@odata.nextLink') {
-                    $RestSplat.Uri = $OutputQuery.'@odata.nextLink'
-                    $MoreData = Invoke-O365Admin @RestSplat -FullUri
-                    if ($null -ne $MoreData) {
-                        $MoreData
+            if ($null -ne $OutputQuery) {
+                $OutputQuery
+            }
+        } else {
+            if ($PSCmdlet.ShouldProcess($($RestSplat.Uri), $WhatIfInformation)) {
+                #$CookieContainer = [System.Net.CookieContainer]::new()
+                #$CookieContainer.MaxCookieSize = 8096
+                $OutputQuery = Invoke-RestMethod @RestSplat -Verbose:$false
+                if ($Method -in 'GET') {
+                    if ($null -ne $OutputQuery) {
+                        $OutputQuery
                     }
+                    if ($OutputQuery.'@odata.nextLink') {
+                        $RestSplat.Uri = $OutputQuery.'@odata.nextLink'
+                        $MoreData = Invoke-O365Admin @RestSplat -FullUri
+                        if ($null -ne $MoreData) {
+                            $MoreData
+                        }
+                    }
+                } elseif ($Method -in 'POST', 'PUT') {
+                    if ($null -ne $OutputQuery) {
+                        $OutputQuery
+                    }
+                } else {
+                    return $true
                 }
-            } elseif ($Method -in 'POST', 'PUT') {
-                if ($null -ne $OutputQuery) {
-                    $OutputQuery
-                }
-            } else {
-                return $true
             }
         }
     } catch {
