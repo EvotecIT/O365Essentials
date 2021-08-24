@@ -47,9 +47,9 @@
         $RestSplat['Body'] = $Body | ConvertTo-Json -Depth 5
     }
     $RestSplat.Uri = $Uri
+    $WhatIfInformation = "Invoking [$Method] " + [System.Environment]::NewLine + $RestSplat['Body'] + [System.Environment]::NewLine
     try {
-        Write-Verbose "Invoke-O365Admin - Querying [$Method] $($RestSplat.Uri)"
-        $WhatIfInformation = "Invoking [$Method] " + [System.Environment]::NewLine + $RestSplat['Body'] + [System.Environment]::NewLine
+        Write-Verbose "Invoke-O365Admin - $($WhatIfInformation)over URI $($RestSplat.Uri)"
         if ($Method -eq 'GET') {
             # We use separate check because WHATIF would sometimes trigger when GET was used inside a SET
             $OutputQuery = Invoke-RestMethod @RestSplat -Verbose:$false
