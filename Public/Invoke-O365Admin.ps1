@@ -61,25 +61,27 @@
             # We use separate check because WHATIF would sometimes trigger when GET was used inside a SET
             $OutputQuery = Invoke-RestMethod @RestSplat -Verbose:$false
             if ($null -ne $OutputQuery) {
-                $OutputQuery
+                if ($OutputQuery.value) {
+                    $Properties = $OutputQuery.value | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type'
+                    $OutputQuery.value | Select-Object -Property $Properties
+                } else {
+                    $Properties = $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type'
+                    $OutputQuery | Select-Object -Property $Properties
+                }
+            }
+            if ($OutputQuery.'@odata.nextLink') {
+                $RestSplat.Uri = $OutputQuery.'@odata.nextLink'
+                $MoreData = Invoke-O365Admin @RestSplat
+                if ($null -ne $MoreData) {
+                    $MoreData
+                }
             }
         } else {
             if ($PSCmdlet.ShouldProcess($($RestSplat.Uri), $WhatIfInformation)) {
                 #$CookieContainer = [System.Net.CookieContainer]::new()
                 #$CookieContainer.MaxCookieSize = 8096
                 $OutputQuery = Invoke-RestMethod @RestSplat -Verbose:$false
-                if ($Method -in 'GET') {
-                    if ($null -ne $OutputQuery) {
-                        $OutputQuery
-                    }
-                    if ($OutputQuery.'@odata.nextLink') {
-                        $RestSplat.Uri = $OutputQuery.'@odata.nextLink'
-                        $MoreData = Invoke-O365Admin @RestSplat -FullUri
-                        if ($null -ne $MoreData) {
-                            $MoreData
-                        }
-                    }
-                } elseif ($Method -in 'POST', 'PUT') {
+                if ($Method -in 'POST', 'PUT') {
                     if ($null -ne $OutputQuery) {
                         $OutputQuery
                     }
