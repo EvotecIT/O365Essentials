@@ -20,9 +20,9 @@
 
 # O365Essentials - PowerShell Module
 
-This PowerShell module is highly experimental collection of PowerShell commands to help with Office 365 operations using undocumented and unsupported APIs.
+This PowerShell module is highly experimental collection of PowerShell commands to help with Office 365 operations using undocumented and unsupported APIs (among standard graph API calls).
 While the module works just fine today, it may break in the future, as it's impossible to tell how and when Microsoft will update the APIs.
-As there are no other ways to achive most of the actions done by this module, it is what it is.
+As there are no other ways to achive most of the actions done by this module, it is what it is. You either do it via unsupported API or you're stuck using things manually.
 
 This module wouldn't happen without great help from following people:
 
