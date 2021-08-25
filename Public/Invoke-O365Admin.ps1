@@ -5,7 +5,8 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [validateset('GET', 'DELETE', 'POST', 'PATCH', 'PUT')][string] $Method = 'GET',
         [string] $ContentType = "application/json; charset=UTF-8",
-        [System.Collections.IDictionary] $Body
+        [System.Collections.IDictionary] $Body,
+        [System.Collections.IDictionary] $QueryParameter
     )
     if (-not $Headers -and $Script:AuthorizationO365Cache) {
         # This forces a reconnect of session in case it's about to time out. If it's not timeouting a cache value is used
@@ -48,7 +49,7 @@
     if ($Body) {
         $RestSplat['Body'] = $Body | ConvertTo-Json -Depth 5
     }
-    $RestSplat.Uri = $Uri
+    $RestSplat.Uri = Join-UriQuery -BaseUri $Uri -QueryParameter $QueryParameter
     if ($RestSplat['Body']) {
         $WhatIfInformation = "Invoking [$Method] " + [System.Environment]::NewLine + $RestSplat['Body'] + [System.Environment]::NewLine
     } else {
