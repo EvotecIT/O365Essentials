@@ -89,6 +89,22 @@
         Write-Warning -Message "Connect-O365Admin - Authentication failure. Error: $($_.Exception.Message)"
         return
     }
+
+    try {
+        $AuthenticationGraph = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
+            $Context.Account,
+            $Context.Environment,
+            $Context.Tenant.Id.ToString(),
+            $null,
+            [Microsoft.Azure.Commands.Common.Authentication.ShowDialog]::Auto,
+            $null,
+            "https://graph.microsoft.com"
+        )
+    } catch {
+        Write-Warning -Message "Connect-O365Admin - Authentication failure. Error: $($_.Exception.Message)"
+        return
+    }
+
     $null = Disconnect-AzAccount -AzureContext $Context
 
     $Script:AuthorizationO365Cache = [ordered] @{
@@ -114,6 +130,15 @@
         'HeadersAzure'        = [ordered] @{
             "Content-Type"           = "application/json; charset=UTF-8" ; 
             "Authorization"          = "Bearer $($AuthenticationAzure.AccessToken)"
+            'X-Requested-With'       = 'XMLHttpRequest'
+            'x-ms-client-request-id' = [guid]::NewGuid()
+            'x-ms-correlation-id'    = [guid]::NewGuid()
+        }
+        'AuthenticationGraph' = $AuthenticationGraph
+        'AccessTokenGraph'    = $AuthenticationGraph.AccessToken
+        'HeadersGraph'        = [ordered] @{
+            "Content-Type"           = "application/json; charset=UTF-8" ; 
+            "Authorization"          = "Bearer $($AuthenticationGraph.AccessToken)"
             'X-Requested-With'       = 'XMLHttpRequest'
             'x-ms-client-request-id' = [guid]::NewGuid()
             'x-ms-correlation-id'    = [guid]::NewGuid()
