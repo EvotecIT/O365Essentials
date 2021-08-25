@@ -24,6 +24,8 @@
     }
     if ($Uri -like '*admin.microsoft.com*') {
         $RestSplat['Headers'] = $Headers.HeadersO365
+    } elseif ($Uri -like '*graph.microsoft.com*') {
+        $RestSplat['Headers'] = $Headers.HeadersGraph
     } else {
         $RestSplat['Headers'] = $Headers.HeadersAzure
     }
