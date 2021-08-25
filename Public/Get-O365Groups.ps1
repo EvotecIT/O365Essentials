@@ -1,20 +1,32 @@
 ﻿function Get-O365Groups {
-    [cmdletbinding()]
+    [cmdletBinding()]
     param(
-        [alias('Authorization')][System.Collections.IDictionary] $Headers
+        [alias('Authorization')][System.Collections.IDictionary] $Headers,
+        [string] $Id,
+        [string[]] $Property,
+        [string] $Filter,
+        [string] $OrderBy
     )
-    #$Uri = "https://admin.microsoft.com/admin/api/settings/security/guestUserPolicy"
-    #$Output1 = Invoke-O365Admin -Uri $Uri -Headers $Headers
-
-
-    $Uri = "https://admin.microsoft.com/admin/api/settings/security/o365guestuser"
-    $Output2 = Invoke-O365Admin -Uri $Uri -Headers $Headers
-
-    [PSCustomObject] @{
-        #AllowGuestAccess      = $Output1.AllowGuestAccess
-        #AllowGuestInvitations = $Output1.AllowGuestInvitations
-        #SitesSharingEnabled   = $Output1.SitesSharingEnabled
-        AllowGuestsAsMembers = $Output2.AllowGuestsAsMembers
-        AllowGuestAccess     = $Output2.AllowGuestAccess
+    if ($ID) {
+        # Query a single group
+        $Uri = "https://graph.microsoft.com/v1.0/groups/$ID"
+        $QueryParameter = @{
+            '$Select' = $Property -join ','
+        }
+    } else {
+        # Query multiple groups
+        $Uri = 'https://graph.microsoft.com/v1.0/groups'
+        $QueryParameter = @{
+            '$Select'  = $Property -join ','
+            '$filter'  = $Filter
+            '$orderby' = $OrderBy
+        }
+    }
+    Remove-EmptyValue -Hashtable $QueryParameter
+    $Output2 = Invoke-O365Admin -Uri $Uri -Headers $Headers -QueryParameter $QueryParameter
+    if ($Output2.value) {
+        $Output2.value
+    } else {
+        $Output2
     }
 }
