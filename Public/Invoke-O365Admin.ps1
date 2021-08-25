@@ -61,19 +61,31 @@
             # We use separate check because WHATIF would sometimes trigger when GET was used inside a SET
             $OutputQuery = Invoke-RestMethod @RestSplat -Verbose:$false
             if ($null -ne $OutputQuery) {
-                if ($OutputQuery.value) {
-                    $Properties = $OutputQuery.value | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type'
-                    $OutputQuery.value | Select-Object -Property $Properties
-                } else {
+                if ($OutputQuery -is [array]) {
                     $Properties = $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type'
                     $OutputQuery | Select-Object -Property $Properties
+                } elseif ($OutputQuery -is [PSCustomObject]) {
+                    if ($OutputQuery.value) {
+                        $Properties = $OutputQuery.value | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type'
+                        $OutputQuery.value | Select-Object -Property $Properties
+                    } else {
+                        $Properties = $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type'
+                        $OutputQuery | Select-Object -Property $Properties
+                    }
+                } else {
+                    Write-Warning -Message "Invoke-O365Admin - Type $($OutputQuery.GetType().Name) potentially unsupported."
+                    $OutputQuery
                 }
             }
-            if ($OutputQuery.'@odata.nextLink') {
-                $RestSplat.Uri = $OutputQuery.'@odata.nextLink'
-                $MoreData = Invoke-O365Admin @RestSplat
-                if ($null -ne $MoreData) {
-                    $MoreData
+            if ($OutputQuery -isnot [array]) {
+                if ($OutputQuery.'@odata.nextLink') {
+                    $RestSplat.Uri = $OutputQuery.'@odata.nextLink'
+                    if ($RestSplat.Uri) {
+                        $MoreData = Invoke-O365Admin @RestSplat
+                        if ($null -ne $MoreData) {
+                            $MoreData
+                        }
+                    }
                 }
             }
         } else {
