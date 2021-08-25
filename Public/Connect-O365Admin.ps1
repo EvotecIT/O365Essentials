@@ -13,7 +13,7 @@
 
     if ($Headers) {
         if ($Headers.ExpiresOnUTC -gt [datetime]::UtcNow -and -not $ForceRefresh) {
-            Write-Verbose "Connect-O365Admin - Using cache for connection $($Headers.UserName)"
+            Write-Verbose -Message "Connect-O365Admin - Using cache for connection $($Headers.UserName)"
             return $Headers
         } else {
             # if header is expired, we need to use it's values to try and push it for refresh
@@ -23,7 +23,7 @@
         }
     } elseif ($Script:AuthorizationO365Cache) {
         if ($Script:AuthorizationO365Cache.ExpiresOnUTC -gt [datetime]::UtcNow -and -not $ForceRefresh) {
-            Write-Verbose "Connect-O365Admin - Using cache for connection $($Script:AuthorizationO365Cache.UserName)"
+            Write-Verbose -Message "Connect-O365Admin - Using cache for connection $($Script:AuthorizationO365Cache.UserName)"
             return $Script:AuthorizationO365Cache
         } else {
             $Credential = $Script:AuthorizationO365Cache.Credential
@@ -33,6 +33,7 @@
     }
 
     if ($DomainName) {
+        Write-Verbose -Message "Connect-O365Admin - Querying tenant to get domain name"
         $Tenant = Get-O365TenantID -DomainName $DomainName
     }
 
@@ -44,6 +45,7 @@
             Subscription = $Subscription
         }
         Remove-EmptyValue -Hashtable $connectAzAccountSplat
+        Write-Verbose -Message "Connect-O365Admin - Connecting to Office 365 using Connect-AzAccount"
         $AzConnect = (Connect-AzAccount @connectAzAccountSplat -WarningVariable warningAzAccount -WarningAction SilentlyContinue )
     } catch {
         if ($_.CategoryInfo.Reason -eq 'AzPSAuthenticationFailedException') {
@@ -61,6 +63,7 @@
     $Context = $AzConnect.Context
 
     try {
+        Write-Verbose -Message "Connect-O365Admin - Establishing tokens for O365"
         $AuthenticationO365 = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
             $Context.Account,
             $Context.Environment,
@@ -76,6 +79,7 @@
         return
     }
     try {
+        Write-Verbose -Message "Connect-O365Admin - Establishing tokens for Azure"
         $AuthenticationAzure = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
             $Context.Account,
             $Context.Environment,
@@ -91,6 +95,7 @@
     }
 
     try {
+        Write-Verbose -Message "Connect-O365Admin - Establishing tokens for Graph"
         $AuthenticationGraph = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
             $Context.Account,
             $Context.Environment,
@@ -105,6 +110,7 @@
         return
     }
 
+    Write-Verbose -Message "Connect-O365Admin - Disconnecting from O365 using Disconnect-AzAccount"
     $null = Disconnect-AzAccount -AzureContext $Context
 
     $Script:AuthorizationO365Cache = [ordered] @{
