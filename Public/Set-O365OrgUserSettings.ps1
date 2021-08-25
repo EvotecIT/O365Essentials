@@ -1,4 +1,4 @@
-﻿function Set-O365UserSettings {
+﻿function Set-O365OrgUserSettings {
     <#
     .SYNOPSIS
     Short description
