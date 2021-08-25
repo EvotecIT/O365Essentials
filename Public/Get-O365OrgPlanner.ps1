@@ -1,4 +1,4 @@
-﻿function Get-O365Planner {
+﻿function Get-O365OrgPlanner {
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
