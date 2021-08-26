@@ -44,3 +44,8 @@ Get-O365BillingNotificationsList -Verbose
 Get-O365BillingNotifications -Verbose
 Get-O365DirectorySync -Verbose
 Get-O365Dynamics365ConnectionGraph -Verbose
+Get-O365PartnerRelationship -Verbose
+Get-O365MultiFactorAuthentication -Verbose
+
+Get-O365Domains -Verbose | Format-Table *
+Get-O365Domains | Out-HtmlView -Online -Filtering
