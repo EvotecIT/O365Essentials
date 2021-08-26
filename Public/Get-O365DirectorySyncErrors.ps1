@@ -6,5 +6,7 @@
 
     $Uri = "https://admin.microsoft.com/admin/api/dirsyncerrors/listdirsyncerrors"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method POST
-    $Output
+    if ($Output.ObjectsWithErrorsList) {
+        $Output.ObjectsWithErrorsList
+    }
 }
