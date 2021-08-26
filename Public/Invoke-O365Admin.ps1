@@ -62,14 +62,18 @@
             $OutputQuery = Invoke-RestMethod @RestSplat -Verbose:$false
             if ($null -ne $OutputQuery) {
                 if ($OutputQuery -is [array]) {
-                    $Properties = $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type'
+                    $Properties = $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length'
                     $OutputQuery | Select-Object -Property $Properties
+                } elseif ($OutputQuery -is [string]) {
+                    if ($OutputQuery) {
+                        $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length'
+                    }
                 } elseif ($OutputQuery -is [PSCustomObject]) {
                     if ($OutputQuery.value) {
-                        $Properties = $OutputQuery.value | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type'
+                        $Properties = $OutputQuery.value | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length'
                         $OutputQuery.value | Select-Object -Property $Properties
                     } else {
-                        $Properties = $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type'
+                        $Properties = $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length'
                         $OutputQuery | Select-Object -Property $Properties
                     }
                 } else {
