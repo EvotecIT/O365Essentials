@@ -7,9 +7,9 @@
     $Uri = "https://admin.microsoft.com/admin/api/Domains/CheckIsTroubleshootingAllowed"
 
     $QueryParameter = @{
-        'domainName'             = $DomainName
+        'domainName'      = $DomainName
         #'overrideSkip'           = $true
-        'canRefreshCache'        = $true
+        'canRefreshCache' = $true
         #'dnsHealthCheckScenario' = 2
     }
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -QueryParameter $QueryParameter
