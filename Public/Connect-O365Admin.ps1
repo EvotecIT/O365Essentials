@@ -143,6 +143,7 @@
             'X-Requested-With'       = 'XMLHttpRequest'
             'x-ms-client-request-id' = [guid]::NewGuid()
             'x-ms-correlation-id'    = [guid]::NewGuid()
+            #'x-ms-client-session-id' = [guid]::NewGuid()
         }
         'AuthenticationGraph' = $AuthenticationGraph
         'AccessTokenGraph'    = $AuthenticationGraph.AccessToken

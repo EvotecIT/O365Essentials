@@ -45,6 +45,7 @@
     #$RestSplat.Headers."x-adminapp-request" = '/Settings/Services/:/Settings/L1/EndUserCommunications'
     #$RestSplat.Headers."Referer" = 'https://admin.microsoft.com/'
     #$RestSplat.Headers."AjaxSessionKey" = 'x5eAwqzbVehBOP7QHfrjpwr9eYtLiHJt7TZFj0uhUMUPQ2T7yNdA7rEgOulejHDHYM1ZyCT0pgXo96EwrfVpMA=='
+    #$RestSplat.Headers."etag" = '1629993527.826253_3ce8143d'
 
     if ($Body) {
         $RestSplat['Body'] = $Body | ConvertTo-Json -Depth 5
