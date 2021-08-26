@@ -45,7 +45,11 @@
             Subscription = $Subscription
         }
         Remove-EmptyValue -Hashtable $connectAzAccountSplat
-        Write-Verbose -Message "Connect-O365Admin - Connecting to Office 365 using Connect-AzAccount"
+        if ($Credential) {
+            Write-Verbose -Message "Connect-O365Admin - Connecting to Office 365 using Connect-AzAccount ($($Credential.UserName))"
+        } else {
+            Write-Verbose -Message "Connect-O365Admin - Connecting to Office 365 using Connect-AzAccount"
+        }
         $AzConnect = (Connect-AzAccount @connectAzAccountSplat -WarningVariable warningAzAccount -WarningAction SilentlyContinue )
     } catch {
         if ($_.CategoryInfo.Reason -eq 'AzPSAuthenticationFailedException') {
