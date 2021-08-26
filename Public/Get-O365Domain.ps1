@@ -1,4 +1,4 @@
-﻿function Get-O365Domains {
+﻿function Get-O365Domain {
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
