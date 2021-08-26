@@ -11,3 +11,8 @@ $null = Connect-O365Admin -Verbose -Credential $Credentials
 Set-O365Planner -AllowCalendarSharing $true
 Set-O365Forms -InOrgFormsPhishingScanEnabled $true
 Set-O365AzureSpeechServices -AllowTheOrganizationWideLanguageModel $false
+Set-O365BriefingEmail -SubscribeByDefault $false
+Set-O365CalendarSharing -SharingOption CalendarSharingFreeBusyReviewed
+Set-O365Cortana -Enabled $false
+Set-O365Dynamics365SalesInsights -ServiceEnabled $false
+Set-O365Groups -AllowGuestAccess $true -AllowGuestsAsMembers $true
