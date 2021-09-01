@@ -116,3 +116,16 @@ GET https://graph.microsoft.com/beta/groups?$filter=displayName+eq+'Contoso_Help
 
 GET https://graph.microsoft.com/beta/roleManagement/directory/roleAssignments?$filter=principalId eq
 #>
+
+<#
+Invoke-WebRequest -Uri "https://api.azrbac.mspim.azure.com/api/v2/privilegedAccess/aadroles/roleAssignments?`$expand=linkedEligibleRoleAssignment,subject,scopedResource,roleDefinition(`$expand=resource)&`$count=true&`$filter=(roleDefinition/resource/id%20eq%20%27ceb371f6-8745-4876-a040-69f2d10a9d1a%27)+and+(roleDefinition/id%20eq%20%275d6b6bb7-de71-4623-b4af-96380a352509%27)+and+(assignmentState%20eq%20%27Eligible%27)&`$orderby=roleDefinition/displayName&`$skip=0&`$top=10" -Headers @{
+"x-ms-client-session-id"="3049c4c42d944f68bb7423154f7a1da5"
+  "Accept-Language"="en"
+  "Authorization"="Bearer ."
+  "x-ms-effective-locale"="en.en-us"
+  "Accept"="application/json, text/javascript, */*; q=0.01"
+  #"Referer"=""
+  "x-ms-client-request-id"="b0a543fc-ca4c-4ac6-aef6-5ceb09ad9003"
+  "User-Agent"="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36 Edg/92.0.902.84"
+}
+#>
