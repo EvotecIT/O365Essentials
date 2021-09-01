@@ -70,7 +70,7 @@
                         $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length'
                     }
                 } elseif ($OutputQuery -is [PSCustomObject]) {
-                    if ($OutputQuery.value) {
+                    if ($OutputQuery.PSObject.Properties.Name -contains 'value') {
                         $Properties = $OutputQuery.value | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length'
                         $OutputQuery.value | Select-Object -Property $Properties
                     } else {
