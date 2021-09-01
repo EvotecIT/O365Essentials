@@ -16,4 +16,5 @@ Get-O365AzureADRolesMember -RoleName 'Global Administrator' | Format-Table
 #Get-O365AzureADRolesMember -All -Verbose | Format-Table
 
 $Roles = Get-O365AzureADRolesMember -RoleName 'Global Administrator', 'Directory readers', 'Security Reader'
-$Roles.'Directory readers'
+$Roles.'Directory readers' | Format-Table
+$Roles.'Security Reader' | Format-Table
