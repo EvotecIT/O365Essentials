@@ -24,7 +24,6 @@
         if ($null -ne $ExternalShareEnabled) {
             $Body.IsExternalShareEnabled = $ExternalShareEnabled
         }
-        Remove-EmptyValue -Hashtable $Body
         $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method POST -Body $Body
         $Output
     }
