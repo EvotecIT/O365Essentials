@@ -1,4 +1,4 @@
-﻿function Get-O365GraphDataConnect {
+﻿function Get-O365OrgGraphDataConnect {
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
