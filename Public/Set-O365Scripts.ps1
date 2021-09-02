@@ -26,7 +26,7 @@
             if ($LetUsersAutomateTheirTasks -eq 'SpecificGroup' -or $LetUsersAutomateTheirTasksGroup -or $LetUsersAutomateTheirTasksGroupID) {
                 if ($LetUsersAutomateTheirTasksGroup) {
                     # we find the id of the group from the name
-                    $Group = Get-O365Group -DisplayName $LetUsersAutomateTheirTasksGroup
+                    $Group = Get-O365Group -DisplayName $LetUsersAutomateTheirTasksGroup -Headers $Headers
                     if ($Group.Id) {
                         $Body.EnabledOption = 2
                         $Body.EnabledGroup = $Group.Id
@@ -53,7 +53,7 @@
             if ($LetUsersShareTheirScripts -eq 'SpecificGroup' -or $LetUsersShareTheirScriptsGroup -or $LetUsersShareTheirScriptsGroupID) {
                 if ($LetUsersShareTheirScriptsGroup) {
                     # we find the id of the group from the name
-                    $Group = Get-O365Group -DisplayName $LetUsersShareTheirScriptsGroup
+                    $Group = Get-O365Group -DisplayName $LetUsersShareTheirScriptsGroup -Headers $Headers
                     if ($Group.Id) {
                         $Body.ShareOption = 2
                         $Body.ShareGroup = $Group.Id
@@ -80,7 +80,7 @@
             if ($LetUsersRunScriptPowerAutomate -eq 'SpecificGroup' -or $LetUsersRunScriptPowerAutomateGroup -or $LetUsersRunScriptPowerAutomateGroupID) {
                 if ($LetUsersRunScriptPowerAutomateGroup) {
                     # we find the id of the group from the name
-                    $Group = Get-O365Group -DisplayName $LetUsersRunScriptPowerAutomateGroup
+                    $Group = Get-O365Group -DisplayName $LetUsersRunScriptPowerAutomateGroup -Headers $Headers
                     if ($Group.Id) {
                         $Body.UnattendedOption = 2
                         $Body.UnattendedGroup = $Group.Id

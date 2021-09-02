@@ -21,7 +21,7 @@
     [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
-        [bool] $Enabled
+        [Parameter(Mandatory)][bool] $Enabled
     )
     $Uri = "https://admin.microsoft.com/admin/api/services/apps/cortana"
 

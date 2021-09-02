@@ -24,7 +24,7 @@
     )
     $Uri = "https://admin.microsoft.com/admin/api/settings/apps/bookings"
 
-    $CurrentSettings = Get-O365Bookings
+    $CurrentSettings = Get-O365Bookings -Headers $Headers
     if ($CurrentSettings) {
         $Body = @{
             Enabled                                               = $CurrentSettings.Enabled                                               #: True
