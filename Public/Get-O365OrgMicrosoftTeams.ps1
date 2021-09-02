@@ -1,4 +1,4 @@
-﻿function Get-O365MicrosoftTeams {
+﻿function Get-O365OrgMicrosoftTeams {
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
