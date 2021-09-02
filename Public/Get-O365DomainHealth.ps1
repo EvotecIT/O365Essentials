@@ -13,7 +13,11 @@
         'dnsHealthCheckScenario' = 2
     }
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -QueryParameter $QueryParameter
-    $Output
+    if ($Output.Succeeded) {
+        $Output.Data
+    } else {
+        $Output
+    }
 }
 
 <#
