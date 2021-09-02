@@ -5,5 +5,14 @@
     )
     $Uri = "https://admin.microsoft.com/admin/api/services/apps/myanalytics"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
-    $Output
+    if ($Output) {
+        [PSCustomObject] @{
+            EnableInsightsDashboard    = -not $Output.IsDashboardOptedOut
+            EnableWeeklyDigest         = -not $Output.IsEmailOptedOut
+            EnableInsightsOutlookAddIn = -not $Output.IsAddInOptedOut
+            # IsNudgesOptedOut           : False
+            # IsWindowsSignalOptedOut    : False
+            # MeetingEffectivenessSurvey : Unavailable
+        }
+    }
 }
