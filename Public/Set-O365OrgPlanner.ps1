@@ -2,7 +2,7 @@
     [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
-        [bool] $AllowCalendarSharing
+        [Parameter(Mandatory)][bool] $AllowCalendarSharing
     )
     $Uri = "https://admin.microsoft.com/admin/api/services/apps/planner"
 

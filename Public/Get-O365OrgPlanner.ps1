@@ -8,12 +8,14 @@
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
     if ($Output) {
         [PSCustomObject] @{
-            id                                  = $Output.id # : 1
-            isPlannerAllowed                    = $Output.isPlannerAllowed # : True
-            allowCalendarSharing                = $Output.allowCalendarSharing # : True
-            allowTenantMoveWithDataLoss         = $Output.allowTenantMoveWithDataLoss # : False
-            allowRosterCreation                 = $Output.allowRosterCreation # : True
-            allowPlannerMobilePushNotifications = $Output.allowPlannerMobilePushNotifications # : True
+            # Thos are always the same
+            #id                   = $Output.id # : 1
+            #isPlannerAllowed     = $Output.isPlannerAllowed # : True
+            allowCalendarSharing = $Output.allowCalendarSharing # : True
+            # GUI doesn't show that
+            # allowTenantMoveWithDataLoss         = $Output.allowTenantMoveWithDataLoss # : False
+            # allowRosterCreation                 = $Output.allowRosterCreation # : True
+            # allowPlannerMobilePushNotifications = $Output.allowPlannerMobilePushNotifications # : True
         }
     }
 }
