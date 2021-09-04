@@ -8,7 +8,7 @@
     )
     $Uri = "https://admin.microsoft.com/admin/api/services/apps/todo"
 
-    $CurrentSettings = Get-O365ToDo -Headers $Headers
+    $CurrentSettings = Get-O365OrgToDo -Headers $Headers
     if ($CurrentSettings) {
         $Body = @{
             IsExternalJoinEnabled     = $CurrentSettings.IsExternalJoinEnabled
