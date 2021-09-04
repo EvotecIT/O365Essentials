@@ -5,5 +5,9 @@
     )
     $Uri = "https://admin.microsoft.com/admin/api/settings/apps/IntegratedApps"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
-    $Output
+    if ($null -ne $Output) {
+        [PSCustomObject] @{
+            UserConsentToAppsEnabled = $Output
+        }
+    }
 }
