@@ -2,7 +2,7 @@
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
-        [switch] $Original
+        [switch] $NoTranslation
     )
     $Branches = @{
         "0" = 'Not applicable'
@@ -13,7 +13,7 @@
 
     $Uri = "https://admin.microsoft.com/admin/api/settings/apps/usersoftware"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
-    if ($Original) {
+    if ($NoTranslation) {
         $Output.UserSoftwareSettings
     } else {
         if ($Output.UserSoftwareSettings) {
