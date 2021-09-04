@@ -1,4 +1,4 @@
-﻿function Get-O365PrivacyProfile {
+﻿function Get-O365OrgPrivacyProfile {
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
