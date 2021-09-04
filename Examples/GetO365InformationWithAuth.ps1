@@ -7,43 +7,43 @@ if (-not $Credentials) {
 # keep in mind that if there's an MFA you would be better left without Credentials and just let it prompt you
 $Authorization = Connect-O365Admin -Verbose -Credential $Credentials
 
-Get-O365Planner -Authorization $Authorization -Verbose
-Get-O365Forms -Authorization $Authorization -Verbose
-Get-O365AzureSpeechServices -Authorization $Authorization -Verbose
-Get-O365Bookings -Authorization $Authorization -Verbose
-Get-O365BriefingEmail -Authorization $Authorization -Verbose
-Get-O365CalendarSharing -Authorization $Authorization -Verbose
-Get-O365Cortana -Authorization $Authorization -Verbose
-Get-O365Dynamics365CustomerVoice -Authorization $Authorization -Verbose
-Get-O365Dynamics365SalesInsights -Authorization $Authorization -Verbose
-Get-O365GraphDataConnect -Authorization $Authorization -Verbose
-Get-O365MicrosoftTeams -Authorization $Authorization -Verbose
-Get-O365ToDo -Authorization $Authorization -Verbose
-Get-O365Groups -Authorization $Authorization -Verbose
-Get-O365ModernAuthentication -Authorization $Authorization -Verbose
-Get-O365MyAnalytics -Authorization $Authorization -Verbose
-Get-O365OfficeOnTheWeb -Authorization $Authorization -Verbose
-Get-O365OfficeProductivity -Authorization $Authorization -Verbose
-Get-O365Reports -Authorization $Authorization -Verbose
-Get-O365SharePoint -Authorization $Authorization -Verbose
-Get-O365Sway -Authorization $Authorization -Verbose
-Get-O365UserConsentApps -Authorization $Authorization -Verbose
-Get-O365Project -Authorization $Authorization -Verbose
-Get-O365UserOwnedApps -Authorization $Authorization -Verbose
-Get-O365InstallationOptions -Authorization $Authorization -Verbose
-Get-O365BingDataCollection -Authorization $Authorization -Verbose
-Get-O365DataLocation -Authorization $Authorization -Verbose
-Get-O365PasswordExpirationPolicy -Authorization $Authorization -Verbose
-Get-O365PrivacyProfile -Authorization $Authorization -Verbose
-Get-O365Sharing -Authorization $Authorization -Verbose
-Get-O365HelpdeskInformation -Authorization $Authorization -Verbose
-Get-O365OrganizationInformation -Authorization $Authorization -Verbose
-Get-O365ReleasePreferences -Authorization $Authorization -Verbose
-Get-O365CustomThemes -Authorization $Authorization -Verbose
+Get-O365OrgPlanner -Authorization $Authorization -Verbose
+Get-O365OrgForms -Authorization $Authorization -Verbose
+Get-O365OrgAzureSpeechServices -Authorization $Authorization -Verbose
+Get-O365OrgBookings -Authorization $Authorization -Verbose
+Get-O365OrgBriefingEmail -Authorization $Authorization -Verbose
+Get-O365OrgCalendarSharing -Authorization $Authorization -Verbose
+Get-O365OrgCortana -Authorization $Authorization -Verbose
+Get-O365OrgDynamics365CustomerVoice -Authorization $Authorization -Verbose
+Get-O365OrgDynamics365SalesInsights -Authorization $Authorization -Verbose
+Get-O365OrgGraphDataConnect -Authorization $Authorization -Verbose
+Get-O365OrgMicrosoftTeams -Authorization $Authorization -Verbose
+Get-O365OrgToDo -Authorization $Authorization -Verbose
+Get-O365OrgGroups -Authorization $Authorization -Verbose
+Get-O365OrgModernAuthentication -Authorization $Authorization -Verbose
+Get-O365OrgMyAnalytics -Authorization $Authorization -Verbose
+Get-O365OrgOfficeOnTheWeb -Authorization $Authorization -Verbose
+Get-O365OrgOfficeProductivity -Authorization $Authorization -Verbose
+Get-O365OrgReports -Authorization $Authorization -Verbose
+Get-O365OrgSharePoint -Authorization $Authorization -Verbose
+Get-O365OrgSway -Authorization $Authorization -Verbose
+Get-O365OrgUserConsentApps -Authorization $Authorization -Verbose
+Get-O365OrgProject -Authorization $Authorization -Verbose
+Get-O365OrgUserOwnedApps -Authorization $Authorization -Verbose
+Get-O365OrgInstallationOptions -Authorization $Authorization -Verbose
+Get-O365OrgBingDataCollection -Authorization $Authorization -Verbose
+Get-O365OrgDataLocation -Authorization $Authorization -Verbose
+Get-O365OrgPasswordExpirationPolicy -Authorization $Authorization -Verbose
+Get-O365OrgPrivacyProfile -Authorization $Authorization -Verbose
+Get-O365OrgSharing -Authorization $Authorization -Verbose
+Get-O365OrgHelpdeskInformation -Authorization $Authorization -Verbose
+Get-O365OrgOrganizationInformation -Authorization $Authorization -Verbose
+Get-O365OrgReleasePreferences -Authorization $Authorization -Verbose
+Get-O365OrgCustomThemes -Authorization $Authorization -Verbose
 Get-O365DirectorySyncErrors -Authorization $Authorization -Verbose
 Get-O365ConsiergeAll -Authorization $Authorization -Verbose
 Get-O365BillingAccounts -Authorization $Authorization -Verbose
 Get-O365BillingNotificationsList -Authorization $Authorization -Verbose
 Get-O365BillingNotifications -Authorization $Authorization -Verbose
 Get-O365DirectorySync -Verbose
-Get-O365Dynamics365ConnectionGraph -Verbose
+Get-O365OrgDynamics365ConnectionGraph -Verbose

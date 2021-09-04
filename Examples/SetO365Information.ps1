@@ -8,11 +8,11 @@ if (-not $Credentials) {
 # keep in mind that if there's an MFA you would be better left without Credentials and just let it prompt you
 $null = Connect-O365Admin -Verbose -Credential $Credentials
 
-Set-O365Planner -AllowCalendarSharing $true
-Set-O365Forms -InOrgFormsPhishingScanEnabled $true
-Set-O365AzureSpeechServices -AllowTheOrganizationWideLanguageModel $false
-Set-O365BriefingEmail -SubscribeByDefault $false
-Set-O365CalendarSharing -SharingOption CalendarSharingFreeBusyReviewed
-Set-O365Cortana -Enabled $false
-Set-O365Dynamics365SalesInsights -ServiceEnabled $false
-Set-O365Groups -AllowGuestAccess $true -AllowGuestsAsMembers $true
+Set-O365OrgPlanner -AllowCalendarSharing $true
+Set-O365OrgForms -InOrgFormsPhishingScanEnabled $true
+Set-O365OrgAzureSpeechServices -AllowTheOrganizationWideLanguageModel $false
+Set-O365OrgBriefingEmail -SubscribeByDefault $false
+Set-O365OrgCalendarSharing -SharingOption CalendarSharingFreeBusyReviewed
+Set-O365OrgCortana -Enabled $false
+Set-O365OrgDynamics365SalesInsights -ServiceEnabled $false
+Set-O365OrgGroups -AllowGuestAccess $true -AllowGuestsAsMembers $true

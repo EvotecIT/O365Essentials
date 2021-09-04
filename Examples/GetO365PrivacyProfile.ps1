@@ -9,6 +9,5 @@ if (-not $Credentials) {
 $null = Connect-O365Admin -Verbose -Credential $Credentials
 
 Get-O365OrgPrivacyProfile
-
-#Set-O365OrgPrivacyProfile -PrivacyUrl 'https://evotec.pl' -PrivacyContact 'kontakt@evotec.pl' -Verbose
-Set-O365OrgPrivacyProfile -PrivacyUrl '' -PrivacyContact '' -Verbose
+Set-O365OrgPrivacyProfile -PrivacyUrl 'https://evotec.pl' -PrivacyContact 'kontakt@evotec.pl' -Verbose -WhatIf
+Set-O365OrgPrivacyProfile -PrivacyUrl '' -PrivacyContact '' -Verbose -WhatIf

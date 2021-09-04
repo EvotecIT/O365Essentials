@@ -8,11 +8,11 @@ if (-not $Credentials) {
 $null = Connect-O365Admin -Verbose -Credential $Credentials
 
 # Not working
-Get-O365News -Verbose # problems
-Get-O365Scripts -Verbose # problems
-Get-O365Whiteboard -Verbose # problem
-Get-O365CommunicationToUsers -Verbose # no data
-Get-O365MicrosoftSearch -Verbose # problems
+Get-O365OrgNews -Verbose # problems
+Get-O365OrgScripts -Verbose # problems
+Get-O365OrgWhiteboard -Verbose # problem
+Get-O365OrgCommunicationToUsers -Verbose # no data
+Get-O365OrgMicrosoftSearch -Verbose # problems
 Get-O365SearchIntelligenceBingConfigurations # problems
 Get-O365BillingInvoices # not working
 Get-O365BillingProfile # not working

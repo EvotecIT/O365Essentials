@@ -9,6 +9,4 @@ if (-not $Credentials) {
 $null = Connect-O365Admin -Verbose -Credential $Credentials
 
 Get-O365OrgWhiteboard -Verbose | Format-List
-
-
 Set-O365OrgWhiteboard -DiagnosticData Neither -OptionalConnectedExperiences $true -BoardSharingEnabled $true -OneDriveStorageEnabled $false -WhiteboardEnabled $true -Verbose -WhatIf

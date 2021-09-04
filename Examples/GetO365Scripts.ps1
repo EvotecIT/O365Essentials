@@ -8,8 +8,8 @@ if (-not $Credentials) {
 # keep in mind that if there's an MFA you would be better left without Credentials and just let it prompt you
 $null = Connect-O365Admin -Verbose -Credential $Credentials
 
-Get-O365Scripts | Format-Table
+Get-O365OrgScripts | Format-Table
 
-#Set-O365Scripts -Verbose -LetUsersAutomateTheirTasks SpecificGroup -LetUsersAutomateTheirTasksGroup 'Wszyscy' -WhatIf
-#Set-O365Scripts -Verbose -LetUsersAutomateTheirTasksGroup 'Wszyscy' -LetUsersShareTheirScriptsGroup 'Wszyscy' -LetUsersRunScriptPowerAutomateGroup 'Wszyscy' #-WhatIf
-Set-O365Scripts -Verbose -LetUsersAutomateTheirTasks Everyone -LetUsersShareTheirScriptsGroup 'Wszyscy' -LetUsersRunScriptPowerAutomateGroup 'Wszyscy' #-WhatIf
+#Set-O365OrgScripts -Verbose -LetUsersAutomateTheirTasks SpecificGroup -LetUsersAutomateTheirTasksGroup 'Wszyscy' -WhatIf
+#Set-O365OrgScripts -Verbose -LetUsersAutomateTheirTasksGroup 'Wszyscy' -LetUsersShareTheirScriptsGroup 'Wszyscy' -LetUsersRunScriptPowerAutomateGroup 'Wszyscy' #-WhatIf
+Set-O365OrgScripts -Verbose -LetUsersAutomateTheirTasks Everyone -LetUsersShareTheirScriptsGroup 'Wszyscy' -LetUsersRunScriptPowerAutomateGroup 'Wszyscy' #-WhatIf

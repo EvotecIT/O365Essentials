@@ -9,5 +9,4 @@ if (-not $Credentials) {
 $null = Connect-O365Admin -Verbose -Credential $Credentials
 
 Get-O365OrgSharing -Verbose
-
 Set-O365OrgSharing -LetUsersAddNewGuests $false -Verbose

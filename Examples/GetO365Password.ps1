@@ -14,7 +14,5 @@ $null = Connect-O365Admin -Verbose -Credential $Credentials
 #Set-O365PasswordReset -Verbose -MobileAppCodeEnabled $true -EmailOptionEnabled $true -MobilePhoneOptionEnabled $true -NumberOfAuthenticationMethodsRequired 1
 #Get-O365PasswordResetIntegration -Verbose
 #Set-O365PasswordResetIntegration -WhatIf -Verbose -PasswordWritebackSupported $true
-
-
 #Set-O365PasswordResetIntegration -AccountUnlockEnabled $false -PasswordWritebackSupported $false -Verbose
 Set-O365PasswordResetIntegration -AccountUnlockEnabled $true -PasswordWritebackSupported $true -Verbose

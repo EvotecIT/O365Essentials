@@ -9,5 +9,4 @@ if (-not $Credentials) {
 $null = Connect-O365Admin -Verbose -Credential $Credentials
 
 Get-O365OrgReleasePreferences -Verbose
-
-Set-O365OrgReleasePreferences -ReleaseTrack FirstRelease -Verbose
+Set-O365OrgReleasePreferences -ReleaseTrack FirstRelease -Verbose -WhatIf

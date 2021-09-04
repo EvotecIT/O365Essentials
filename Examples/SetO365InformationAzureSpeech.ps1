@@ -8,5 +8,5 @@ if (-not $Credentials) {
 # keep in mind that if there's an MFA you would be better left without Credentials and just let it prompt you
 $null = Connect-O365Admin -Verbose -Credential $Credentials
 
-Get-O365AzureSpeechServices -Verbose
-Set-O365AzureSpeechServices -WhatIf -AllowTheOrganizationWideLanguageModel $true
+Get-O365OrgAzureSpeechServices -Verbose
+Set-O365OrgAzureSpeechServices -WhatIf -AllowTheOrganizationWideLanguageModel $true

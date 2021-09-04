@@ -9,6 +9,6 @@ if (-not $Credentials) {
 $null = Connect-O365Admin -Verbose -Credential $Credentials
 
 # Doesn't work!!
-Get-O365CommunicationToUsers
-Set-O365CommunicationToUsers -ServiceEnabled $true -WhatIf
-Get-O365CommunicationToUsers
+Get-O365OrgCommunicationToUsers
+Set-O365OrgCommunicationToUsers -ServiceEnabled $true -WhatIf
+Get-O365OrgCommunicationToUsers
