@@ -1,4 +1,4 @@
-﻿function Get-O365Sway {
+﻿function Get-O365OrgSway {
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
