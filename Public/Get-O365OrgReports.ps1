@@ -1,4 +1,4 @@
-﻿function Get-O365Reports {
+﻿function Get-O365OrgReports {
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
