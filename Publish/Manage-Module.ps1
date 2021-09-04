@@ -36,6 +36,7 @@ $Configuration = @{
             )
             ExternalModuleDependencies = @(
                 'Microsoft.PowerShell.Utility'
+                'Microsoft.PowerShell.Management'
             )
         }
     }
