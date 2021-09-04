@@ -10,7 +10,7 @@
     Parameter description
 
     .PARAMETER WindowsBranch
-    Enable/Disable Windows 
+    Enable/Disable Windows
 
     .PARAMETER WindowsOffice
     Parameter description
@@ -48,7 +48,7 @@
 
     $Uri = "https://admin.microsoft.com/admin/api/settings/apps/usersoftware"
 
-    $CurrentSettings = Get-O365OrgInstallationOptions -Original
+    $CurrentSettings = Get-O365OrgInstallationOptions -NoTranslation -Headers $Headers
     if ($CurrentSettings) {
         $Body = @{
             UserSoftwareSettings = $CurrentSettings
