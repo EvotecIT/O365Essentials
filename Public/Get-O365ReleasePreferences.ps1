@@ -1,4 +1,4 @@
-﻿function Get-O365ReleasePreferences {
+﻿function Get-O365OrgReleasePreferences {
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
