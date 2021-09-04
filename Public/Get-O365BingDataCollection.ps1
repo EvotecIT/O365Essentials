@@ -1,4 +1,4 @@
-﻿function Get-O365BingDataCollection {
+﻿function Get-O365OrgBingDataCollection {
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
