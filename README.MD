@@ -54,7 +54,11 @@ That's it. Whenever there's a new version, you run the command, and you can enjo
 
 ## Changelog
 
+- 0.0.3
+  - Renamed most of commands to be more descriptive
+  - Added new commands
+  - Fixed some bugs
 - 0.0.2 - 2021.08.27
--   Added more commands
+  - Added more commands
 - 0.0.1 - 2021.08.19
   - First version
