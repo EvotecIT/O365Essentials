@@ -62,7 +62,9 @@
             # We use separate check because WHATIF would sometimes trigger when GET was used inside a SET
             $OutputQuery = Invoke-RestMethod @RestSplat -Verbose:$false
             if ($null -ne $OutputQuery) {
-                if ($OutputQuery -is [array]) {
+                if ($OutputQuery -is [bool]) {
+                    $OutputQuery
+                } elseif ($OutputQuery -is [array]) {
                     $Properties = $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length'
                     $OutputQuery | Select-Object -Property $Properties
                 } elseif ($OutputQuery -is [string]) {
