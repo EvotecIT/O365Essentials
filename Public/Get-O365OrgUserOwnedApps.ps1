@@ -15,7 +15,7 @@
     [PSCustomObject] @{
         LetUsersAccessOfficeStore = $Output1
         LetUsersStartTrials       = $Output2
-        LetUsersAutoClaimLicenses = $Output4.tenantPolicyValue
+        LetUsersAutoClaimLicenses = if ($Output4.tenantPolicyValue -eq 'Disabled') { $false } elseif ($Output4.tenantPolicyValue -eq 'Enabled') { $true } else { $null }
         <#
         {
         "policyId": "Autoclaim",
