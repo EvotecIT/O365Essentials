@@ -65,19 +65,28 @@
                 if ($OutputQuery -is [bool]) {
                     $OutputQuery
                 } elseif ($OutputQuery -is [array]) {
-                    $Properties = $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length'
-                    $OutputQuery | Select-Object -Property $Properties
+                    $Properties = $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length' -WarningAction SilentlyContinue -WarningVariable varWarning
+                    if (-not $varWarning) {
+                        $OutputQuery | Select-Object -Property $Properties
+                    }
                 } elseif ($OutputQuery -is [string]) {
                     if ($OutputQuery) {
-                        $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length'
+                        $Properties = $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length' -WarningAction SilentlyContinue -WarningVariable varWarning
+                        if (-not $varWarning) {
+                            $OutputQuery | Select-Object -Property $Properties
+                        }
                     }
                 } elseif ($OutputQuery -is [PSCustomObject]) {
                     if ($OutputQuery.PSObject.Properties.Name -contains 'value') {
-                        $Properties = $OutputQuery.value | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length'
-                        $OutputQuery.value | Select-Object -Property $Properties
+                        $Properties = $OutputQuery.value | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length' -WarningAction SilentlyContinue -WarningVariable varWarning
+                        if (-not $varWarning) {
+                            $OutputQuery.value | Select-Object -Property $Properties
+                        }
                     } else {
-                        $Properties = $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length'
-                        $OutputQuery | Select-Object -Property $Properties
+                        $Properties = $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length' -WarningAction SilentlyContinue -WarningVariable varWarning
+                        if (-not $varWarning) {
+                            $OutputQuery | Select-Object -Property $Properties
+                        }
                     }
                 } else {
                     Write-Warning -Message "Invoke-O365Admin - Type $($OutputQuery.GetType().Name) potentially unsupported."
