@@ -8,7 +8,7 @@
     )
     $Uri = "https://admin.microsoft.com/admin/api/services/apps/myanalytics"
 
-    $CurrentSettings = Get-O365MyAnalytics -Headers $Headers
+    $CurrentSettings = Get-O365OrgMyAnalytics -Headers $Headers
     if ($CurrentSettings) {
         $Body = @{
             value = @{
