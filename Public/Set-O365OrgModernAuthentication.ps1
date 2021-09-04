@@ -1,4 +1,4 @@
-﻿function Set-O365ModernAuthentication {
+﻿function Set-O365OrgModernAuthentication {
     <#
     .SYNOPSIS
     Short description
@@ -52,10 +52,10 @@
     Parameter description
 
     .EXAMPLE
-    Set-O365ModernAuthentication -AllowBasicAuthImap $true -AllowBasicAuthPop $true -WhatIf
+    Set-O365OrgModernAuthentication -AllowBasicAuthImap $true -AllowBasicAuthPop $true -WhatIf
 
     .EXAMPLE
-    Set-O365ModernAuthentication -AllowBasicAuthImap $false -AllowBasicAuthPop $false -Verbose -WhatIf
+    Set-O365OrgModernAuthentication -AllowBasicAuthImap $false -AllowBasicAuthPop $false -Verbose -WhatIf
 
     .NOTES
     https://admin.microsoft.com/#/Settings/Services/:/Settings/L1/ModernAuthentication
@@ -80,7 +80,7 @@
         [nullable[bool]] $AllowOutlookClient                #:
     )
     $Uri = "https://admin.microsoft.com/admin/api/services/apps/modernAuth"
-    $CurrentSettings = Get-O365ModernAuthentication -Headers $Headers
+    $CurrentSettings = Get-O365OrgModernAuthentication -Headers $Headers
     if (-not $CurrentSettings) {
         Write-Warning -Message "Set-O365ModernAuthentication - Couldn't gather current settings. Skipping setting anything."
         return

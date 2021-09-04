@@ -1,4 +1,4 @@
-﻿function Get-O365ModernAuthentication {
+﻿function Get-O365OrgModernAuthentication {
     <#
     .SYNOPSIS
     Short description
@@ -10,7 +10,7 @@
     Parameter description
 
     .EXAMPLE
-    Get-O365ModernAuthentication -Verbose
+    Get-O365OrgModernAuthentication -Verbose
 
     .NOTES
     https://admin.microsoft.com/#/Settings/Services/:/Settings/L1/ModernAuthentication
