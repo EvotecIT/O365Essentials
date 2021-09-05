@@ -1,4 +1,4 @@
-﻿function Get-O365OrgUserSettings {
+﻿function Get-O365AzureUserSettings {
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
