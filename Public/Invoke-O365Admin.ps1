@@ -31,6 +31,16 @@
         $RestSplat['Headers'] = $Headers.HeadersAzure
     }
 
+    if ($PSVersionTable.PSVersion.Major -eq 5) {
+        $CookieContainer = [System.Net.CookieContainer]::new()
+        $CookieContainer.MaxCookieSize = 1048576
+
+        $Session = [Microsoft.PowerShell.Commands.WebRequestSession]::new()
+        $Session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36 Edg/93.0.961.38"
+        $Session.Cookies = $CookieContainer
+        $RestSplat['WebSession'] = $Session
+    }
+
     #$RestSplat.Headers."x-ms-mac-hosting-app" = 'M365AdminPortal'
     #$RestSplat.Headers."x-ms-mac-version" = 'host-mac_2021.8.16.1'
     #$RestSplat.Headers."sec-ch-ua" = '"Chromium";v="92", " Not A;Brand";v="99", "Microsoft Edge";v="92"'
