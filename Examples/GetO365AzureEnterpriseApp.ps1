@@ -13,3 +13,4 @@ Set-O365AzureEnterpriseAppsUserConsent -Verbose -PermissionGrantPoliciesAssigned
 
 Get-O365AzureEnterpriseAppsGroupConsent -Verbose
 Set-O365AzureEnterpriseAppsGroupConsent -EnableGroupSpecificConsent $true -GroupName 'All Users' -Verbose -WhatIf
+Set-O365AzureEnterpriseAppsGroupConsent -EnableGroupSpecificConsent $false -EnableAdminConsentRequests $false -Verbose -WhatIf
