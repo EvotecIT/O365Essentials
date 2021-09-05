@@ -29,7 +29,7 @@ This module wouldn't happen without great help from following people:
 - [Jannick Oeben](https://twitter.com/JannickOeben)
 - [Jos Lieben](https://twitter.com/joslieben)
 
-It is recommended to use **PowerShell 7** or higher. While the module does work in PowerShell 5.1 it has some issues with cookies most likely related to lenght of password.
+It is recommended to use **PowerShell 7** or higher. While the module does work in PowerShell 5.1 the error handling of RestMethod is superior in PowerShell 7 so all errors are more readable in it.
 
 ## Installing
 
@@ -58,6 +58,7 @@ That's it. Whenever there's a new version, you run the command, and you can enjo
   - Renamed most of commands to be more descriptive
   - Added new commands
   - Fixed some bugs
+  - Fixes support for PowerShell 5.1
 - 0.0.2 - 2021.08.27
   - Added more commands
 - 0.0.1 - 2021.08.19
