@@ -1,6 +1,7 @@
 ﻿function Get-O365Group {
     [cmdletBinding(DefaultParameterSetName = 'Default')]
     param(
+        [parameter(ParameterSetName = 'UnifiedGroupsOnly')]
         [parameter(ParameterSetName = 'Default')]
         [parameter(ParameterSetName = 'Filter')]
         [parameter(ParameterSetName = 'EmailAddress')]
@@ -14,6 +15,7 @@
 
         [alias('Mail')][parameter(ParameterSetName = 'EmailAddress')][string] $EmailAddress,
 
+        [parameter(ParameterSetName = 'UnifiedGroupsOnly')]
         [parameter(ParameterSetName = 'Default')]
         [parameter(ParameterSetName = 'Filter')]
         [parameter(ParameterSetName = 'EmailAddress')]
@@ -24,9 +26,13 @@
         [parameter(ParameterSetName = 'Default')]
         [parameter(ParameterSetName = 'Filter')][string] $Filter,
 
+        [parameter(ParameterSetName = 'UnifiedGroupsOnly')]
         [parameter(ParameterSetName = 'Default')]
         [parameter(ParameterSetName = 'Filter')]
-        [string] $OrderBy
+        [string] $OrderBy,
+
+        [parameter(ParameterSetName = 'UnifiedGroupsOnly')]
+        [switch] $UnifiedGroupsOnly
     )
     if ($DisplayName) {
         $Uri = 'https://graph.microsoft.com/v1.0/groups'
@@ -45,6 +51,13 @@
         $Uri = "https://graph.microsoft.com/v1.0/groups/$ID"
         $QueryParameter = @{
             '$Select' = $Property -join ','
+        }
+    } elseif ($UnifiedGroupsOnly) {
+        $Uri = "https://graph.microsoft.com/v1.0/groups"
+        $QueryParameter = @{
+            '$Select'  = $Property -join ','
+            '$filter'  = "groupTypes/any(c: c eq 'Unified')"
+            '$orderby' = $OrderBy
         }
     } else {
         # Query multiple groups
