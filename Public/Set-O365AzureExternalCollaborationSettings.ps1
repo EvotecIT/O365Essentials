@@ -1,4 +1,4 @@
-﻿function Set-O365OrgExternalCollaborationSettings {
+﻿function Set-O365AzureExternalCollaborationSettings {
     [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,

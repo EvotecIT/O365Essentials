@@ -1,4 +1,4 @@
-﻿function Set-O365MultiFactorAuthentication {
+﻿function Set-O365AzureMultiFactorAuthentication {
     <#
     .SYNOPSIS
     Short description
