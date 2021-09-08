@@ -1,4 +1,42 @@
 ﻿function Get-O365AzureLicenses {
+    <#
+    .SYNOPSIS
+    Short description
+
+    .DESCRIPTION
+    Long description
+
+    .PARAMETER Headers
+    Parameter description
+
+    .PARAMETER LicenseName
+    Parameter description
+
+    .PARAMETER ServicePlans
+    Parameter description
+
+    .PARAMETER LicenseSKUID
+    Parameter description
+
+    .EXAMPLE
+    $Licenses = Get-O365AzureLicenses
+    $Licenses | Format-Table
+
+    .EXAMPLE
+    $ServicePlans = Get-O365AzureLicenses -ServicePlans -LicenseName 'Enterprise Mobility + Security E5' -Verbose
+    $ServicePlans | Format-Table
+
+    .EXAMPLE
+    $ServicePlans = Get-O365AzureLicenses -ServicePlans -LicenseSKUID 'EMSPREMIUM' -Verbose
+    $ServicePlans | Format-Table
+
+    .EXAMPLE
+    $ServicePlans = Get-O365AzureLicenses -ServicePlans -LicenseSKUID 'evotecpoland:EMSPREMIUM' -Verbose
+    $ServicePlans | Format-Table
+
+    .NOTES
+    General notes
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
