@@ -34,6 +34,10 @@
     $ServicePlans = Get-O365AzureLicenses -ServicePlans -LicenseSKUID 'evotecpoland:EMSPREMIUM' -Verbose
     $ServicePlans | Format-Table
 
+    .EXAMPLE
+    $ServicePlans = Get-O365AzureLicenses -ServicePlans -LicenseSKUID 'evotecpoland:EMSPREMIUM' -IncludeLicenseDetails -Verbose
+    $ServicePlans | Format-Table
+
     .NOTES
     General notes
     #>
@@ -42,7 +46,9 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [string] $LicenseName,
         [switch] $ServicePlans,
-        [string] $LicenseSKUID
+        [switch] $ServicePlansComplete,
+        [string] $LicenseSKUID,
+        [switch] $IncludeLicenseDetails
     )
 
     $Uri = "https://main.iam.ad.ext.azure.com/api/AccountSkus"
@@ -52,32 +58,46 @@
     }
 
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -QueryParameter $QueryParameter
+
+    # If license name or license id is provided we filter thjings out
     if ($LicenseName) {
         $Output = $Output | Where-Object { $_.Name -eq $LicenseName }
     } elseif ($LicenseSKUID) {
         $Output = $Output | Where-Object {
             $TempSplit = $_.AccountSkuId -split ':'
-            $TempSplit[1].AccountSkuId -eq $LicenseSKUID -or $_.AccountSkuId -eq $LicenseSKUID
+            $TempSplit[1] -eq $LicenseSKUID -or $_.AccountSkuId -eq $LicenseSKUID
         }
     }
-    if ($LicenseName -and $ServicePlans) {
+
+    # we then based on ServicePlans request only display service plans
+    if ($ServicePlans) {
         foreach ($O in $Output) {
-            $O.serviceStatuses.servicePlan
+            if ($IncludeLicenseDetails) {
+                foreach ($Plan in $O.serviceStatuses.servicePlan) {
+                    [PSCustomObject] @{
+                        LicenseName        = $O.Name
+                        LicenseSKUID       = $O.AccountSkuId
+                        ServiceDisplayName = $Plan.displayName
+                        ServiceName        = $Plan.serviceName
+                        ServicePlanId      = $Plan.servicePlanId
+                        ServiceType        = $Plan.serviceType
+                    }
+                }
+            } else {
+                $O.serviceStatuses.servicePlan
+            }
         }
-    } elseif ($LicenseSKUID -and $ServicePlans) {
-        foreach ($O in $Output) {
-            $O.serviceStatuses.servicePlan
-        }
-    } elseif ($ServicePlans) {
+    } elseif ($ServicePlansComplete) {
+        # or display everything
         foreach ($O in $Output) {
             [PSCustomObject] @{
                 Name           = $O.Name
                 AccountSkuID   = $O.AccountSkuId
                 ServicePlan    = $O.serviceStatuses.servicePlan
-                availableUnits = $o.availableUnits
-                totalUnits     = $O.totalUnits
-                consumedUnits  = $O.consumedUnits
-                warningUnits   = $O.warningUnits
+                AvailableUnits = $o.availableUnits
+                TotalUnits     = $O.totalUnits
+                ConsumedUnits  = $O.consumedUnits
+                WarningUnits   = $O.warningUnits
             }
         }
     } else {
