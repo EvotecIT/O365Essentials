@@ -4,7 +4,8 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [parameter()][string] $GroupID,
         [parameter()][alias('GroupName')][string] $GroupDisplayName,
-        [switch] $ServicePlans
+        [switch] $ServicePlans,
+        [switch] $NoTranslation
     )
 
     if ($GroupID) {
@@ -19,17 +20,21 @@
         $Uri = "https://main.iam.ad.ext.azure.com/api/AccountSkus/Group/$Group"
         $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
         if ($Output) {
-            foreach ($License in $Output.licenses) {
-                $SP = Convert-SKUToLicense -SKU $License.accountSkuID
-                if ($SP) {
-                    $ServicePlansPrepared = Find-EnabledServicePlan -ServicePlans $SP -DisabledServicePlans $License.disabledServicePlans
-                    [PSCustomObject] @{
-                        License      = $SP[0].LicenseName
-                        LicenseSKUID = $SP[0].LicenseSKUID
-                        Enabled      = $ServicePlansPrepared.Enabled.ServiceDisplayName
-                        Disabled     = $ServicePlansPrepared.Disabled.ServiceDisplayName
-                        EnabledPlan  = $ServicePlansPrepared.Enabled
-                        DisabledPlan = $ServicePlansPrepared.Disabled
+            if ($NoTranslation) {
+                $Output
+            } else {
+                foreach ($License in $Output.licenses) {
+                    $SP = Convert-SKUToLicense -SKU $License.accountSkuID
+                    if ($SP) {
+                        $ServicePlansPrepared = Find-EnabledServicePlan -ServicePlans $SP -DisabledServicePlans $License.disabledServicePlans
+                        [PSCustomObject] @{
+                            License      = $SP[0].LicenseName
+                            LicenseSKUID = $SP[0].LicenseSKUID
+                            Enabled      = $ServicePlansPrepared.Enabled.ServiceDisplayName
+                            Disabled     = $ServicePlansPrepared.Disabled.ServiceDisplayName
+                            EnabledPlan  = $ServicePlansPrepared.Enabled
+                            DisabledPlan = $ServicePlansPrepared.Disabled
+                        }
                     }
                 }
             }
