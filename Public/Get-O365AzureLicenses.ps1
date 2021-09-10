@@ -51,13 +51,27 @@
         [switch] $IncludeLicenseDetails
     )
 
+    # Maybe change it to https://docs.microsoft.com/en-us/graph/api/subscribedsku-list?view=graph-rest-1.0&tabs=http
+    # Or maybe not because it doesn't contain exactly same data missing displayName from service plans
+    # $Uri = "https://graph.microsoft.com/v1.0/subscribedSkus"
+
     $Uri = "https://main.iam.ad.ext.azure.com/api/AccountSkus"
 
     $QueryParameter = @{
         backfillTenants = $false
     }
 
-    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -QueryParameter $QueryParameter
+    if (-not $Script:AzureLicensesList) {
+        Write-Verbose -Message "Get-O365AzureLicenses - Querying for Licenses SKU"
+        $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -QueryParameter $QueryParameter
+        # We build a list of all the licenses, for caching purposes
+        if ($Output) {
+            $Script:AzureLicensesList = $Output
+        }
+    } else {
+        Write-Verbose -Message "Get-O365AzureLicenses - Reusing cache for Licenses SKU"
+        $Output = $Script:AzureLicensesList
+    }
 
     # If license name or license id is provided we filter thjings out
     if ($LicenseName) {
