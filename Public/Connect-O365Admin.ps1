@@ -128,7 +128,7 @@
         'AuthenticationO365'  = $AuthenticationO365
         'AccessTokenO365'     = $AuthenticationO365.AccessToken
         'HeadersO365'         = [ordered] @{
-            "Content-Type"           = "application/json; charset=UTF-8" ; 
+            "Content-Type"           = "application/json; charset=UTF-8"
             "Authorization"          = "Bearer $($AuthenticationO365.AccessToken)"
             'X-Requested-With'       = 'XMLHttpRequest'
             'x-ms-client-request-id' = [guid]::NewGuid()
@@ -138,12 +138,11 @@
         'AuthenticationAzure' = $AuthenticationAzure
         'AccessTokenAzure'    = $AuthenticationAzure.AccessToken
         'HeadersAzure'        = [ordered] @{
-            "Content-Type"           = "application/json; charset=UTF-8" ; 
+            "Content-Type"           = "application/json; charset=UTF-8"
             "Authorization"          = "Bearer $($AuthenticationAzure.AccessToken)"
             'X-Requested-With'       = 'XMLHttpRequest'
             'x-ms-client-request-id' = [guid]::NewGuid()
             'x-ms-correlation-id'    = [guid]::NewGuid()
-            #'x-ms-client-session-id' = [guid]::NewGuid()
         }
         'AuthenticationGraph' = $AuthenticationGraph
         'AccessTokenGraph'    = $AuthenticationGraph.AccessToken
