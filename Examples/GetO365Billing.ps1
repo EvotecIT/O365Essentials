@@ -9,4 +9,5 @@ if (-not $Credentials) {
 $null = Connect-O365Admin -Verbose -Credential $Credentials
 
 
-Get-O365BillingSubscriptions | Format-Table
+$Billing = Get-O365BillingSubscriptions
+$Billing | Format-Table
