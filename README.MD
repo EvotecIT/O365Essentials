@@ -30,7 +30,6 @@ This module wouldn't happen without great help from following people:
 - [Jos Lieben](https://twitter.com/joslieben)
 
 It is recommended to use **PowerShell 7** or higher. While the module does work in PowerShell 5.1 the error handling of RestMethod is superior in PowerShell 7 so all errors are more readable in it.
-
 ## Installing
 
 Everyone can install this module from **PowerShellGallery** hosted by Microsoft. It's recommended way to work with the module.
