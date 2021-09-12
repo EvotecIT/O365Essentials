@@ -36,11 +36,18 @@
             groupIdsToMonitorExpirations   : {}
             policyIdentifier               : 6f843b54-8fa0-4837-a8e7-b01d00d25892
             #>
+
+            [Array] $Groups = foreach ($ID in $Output.groupIdsToMonitorExpirations) {
+                $Group = Get-O365Group -Id $ID
+                if ($Group.id) {
+                    $Group.DisplayName
+                }
+            }
             [PSCustomObject] @{
                 GroupLifeTime           = $GroupLifeTime
                 AdminNotificationEmails = $Output.adminNotificationEmails
                 ExpirationEnabled       = $ExpirationEnabled
-                ExpirationGroups        = $Output.groupIdsToMonitorExpirations
+                ExpirationGroups        = $Groups
             }
         }
     }

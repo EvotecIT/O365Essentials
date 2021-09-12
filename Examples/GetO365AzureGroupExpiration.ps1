@@ -14,6 +14,6 @@ Get-O365AzureGroupExpiration -Verbose
 #$Groups = Get-O365Group -Verbose -UnifiedGroupsOnly
 #$Groups | Format-Table
 
-Set-O365AzureGroupExpiration -Verbose -GroupLifeTime 400 -ExpirationGroups 'Wsparcie SPES', 'Kontakt' -WhatIf
-Set-O365AzureGroupExpiration -Verbose -GroupLifeTime 400 -ExpirationGroupsID '283ce825-8c97-4de3-80b1-d51051157b3a', '376aaf31-509e-4a7e-8ea1-6eabbd22b94a' -WhatIf
+Set-O365AzureGroupExpiration -Verbose -GroupLifeTime 400 -ExpirationGroups 'Wsparcie SPES', 'Kontakt' -ExpirationEnabled Selected -WhatIf
+Set-O365AzureGroupExpiration -Verbose -GroupLifeTime 400 -ExpirationGroupsID '283ce825-8c97-4de3-80b1-d51051157b3a', '376aaf31-509e-4a7e-8ea1-6eabbd22b94a' -ExpirationEnabled Selected -WhatIf
 Set-O365AzureGroupExpiration -Verbose -GroupLifeTime 400 -ExpirationEnabled None -WhatIf
