@@ -129,11 +129,22 @@
     }
     if ($PasswordResetEnabledGroupName) {
         # We should find an easy way to find ID of a group and set it here
-        # Not implemented yet
-        $Body.passwordResetEnabledGroupIds = @(
-            # Query for group id from group name $PasswordResetEnabledGroupName
-        )
-        throw 'PasswordResetEnabledGroupName is not implemented yet'
+        $Group = Get-O365Group -DisplayName $PasswordResetEnabledGroupName
+        if ($Group.id) {
+            if ($Group -is [PSCustomObject]) {
+                # Not implemented yet
+                $Body.passwordResetEnabledGroupIds = @(
+                    # Query for group id from group name $PasswordResetEnabledGroupName
+                    $Group.id
+                )
+            } else {
+                Write-Warning -Message "Set-O365PasswordReset - Group with name $PasswordResetEnabledGroupName not found or too many groups returned ($($Group.id -join ", "))"
+                return
+            }
+        } else {
+            Write-Warning -Message "Set-O365PasswordReset - Group with name $PasswordResetEnabledGroupName not found."
+            return
+        }
     } elseif ($PasswordResetEnabledGroupIds) {
         $Body.passwordResetEnabledGroupIds = @(
             $PasswordResetEnabledGroupIds
@@ -167,5 +178,5 @@
         $Body.mobileAppCodeOptionAllowed = $mobileAppCodeOptionAllowed
     }
 
-    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method PUT -Body $Body
+    $null = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method PUT -Body $Body
 }

@@ -10,4 +10,4 @@ $null = Connect-O365Admin -Verbose -Credential $Credentials
 
 Get-O365OrgPasswordExpirationPolicy | Format-List
 
-Set-O365OrgPasswordExpirationPolicy -PasswordNeverExpires $true -DaysBeforePasswordExpires 180 -DaysBeforeUserNotified 30 -Verbose #-WhatIf
+Set-O365OrgPasswordExpirationPolicy -PasswordNeverExpires $true -DaysBeforePasswordExpires 180 -DaysBeforeUserNotified 30 -Verbose -WhatIf
