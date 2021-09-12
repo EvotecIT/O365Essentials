@@ -8,7 +8,7 @@
     Description          = 'A module that helps to manage some tasks on Office 365/Azure via undocumented API'
     FunctionsToExport    = @('*')
     GUID                 = 'a8752d7b-17c8-41db-b3f9-b8f225de028d'
-    ModuleVersion        = '0.0.5'
+    ModuleVersion        = '0.0.6'
     PowerShellVersion    = '5.1'
     PrivateData          = @{
         PSData = @{
