@@ -80,8 +80,8 @@
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [nullable[int]] $AccountLockoutDurationMinutes,
-        [nullable[int]] $AccountLockoutResetMinutes,
-        [nullable[int]] $AccountLockoutThreshold,
+        [nullable[int]] $AccountLockoutCounterResetMinutes,
+        [nullable[int]] $AccountLockoutDenialsToTriggerLockout,
         #$AllowPhoneMenu,
         [nullable[bool]] $BlockForFraud,
         #$CallerId,
@@ -105,14 +105,12 @@
 
     # Whatever I do, doesn't work!
 
-    $Uri = "https://main.iam.ad.ext.azure.com/api/MultiFactorAuthentication/TenantModel"
-    $Body = [ordered] @{
+    $Uri = "https://main.iam.ad.ext.azure.com/api/MultiFactorAuthentication/TenantModel?licenseKey="
+    $Body = [ordered] @{}
+    <#
         #tenantId                        = $CurrentSettings #: ceb371f6
         #licenseKey                      = $CurrentSettings #:
         #customerId                      = $CurrentSettings #:
-        AccountLockoutDurationMinutes   = $accountLockoutDurationMinutes #:
-        AccountLockoutResetMinutes      = $accountLockoutResetMinutes #:
-        AccountLockoutThreshold         = $accountLockoutThreshold #:
         AllowPhoneMenu                  = $allowPhoneMenu #: False
         BlockForFraud                   = $BlockForFraud #: False
         CallerId                        = $callerId #: 8553308653
@@ -132,34 +130,24 @@
         #bypassedUsers                   = $bypassedUsers #: {}
         #groups                          = $groups
         #etag                            = $etag
+    #>
+    if ($PSBoundParameters.ContainsKey('AccountLockoutDurationMinutes')) {
+        $Body['AccountLockoutDurationMinutes'] = $AccountLockoutDurationMinutes
     }
-
-    Remove-EmptyValue -Hashtable $Body
-    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method PATCH -Body $Body
-    $Output
+    if ($PSBoundParameters.ContainsKey('AccountLockoutCounterResetMinutes')) {
+        $Body['AccountLockoutResetMinutes'] = $AccountLockoutCounterResetMinutes
+    }
+    if ($PSBoundParameters.ContainsKey('AccountLockoutDenialsToTriggerLockout')) {
+        $Body['AccountLockoutThreshold'] = $AccountLockoutDenialsToTriggerLockout
+    }
+    if ($PSBoundParameters.ContainsKey('BlockForFraud')) {
+        $Body['BlockForFraud'] = $BlockForFraud
+    }
+    if ($PSBoundParameters.ContainsKey('EnableFraudAlert')) {
+        $Body['EnableFraudAlert'] = $EnableFraudAlert
+    }
+    if ($PSBoundParameters.ContainsKey('FraudCode')) {
+        $Body['FraudCode'] = $FraudCode
+    }
+    $null = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method PATCH -Body $Body
 }
-
-<#
-/api/MultiFactorAuthentication/TenantModel?licenseKey=
-
-PATCH https://main.iam.ad.ext.azure.com/api/MultiFactorAuthentication/TenantModel?licenseKey= HTTP/1.1
-Host: main.iam.ad.ext.azure.com
-Connection: keep-alive
-Content-Length: 67
-x-ms-client-session-id: 9fb6b21894f14f5786814508d7462a51
-Accept-Language: en
-etag: 1629994960.340884_c0565cb3
-Authorization: Bearer .
-x-ms-effective-locale: en.en-us
-Content-Type: application/json
-Accept: */*
-x-ms-client-request-id: 983affdb-0b06-4095-b652-048e18d8d010
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36 Edg/92.0.902.78
-Origin: https://portal.azure.com
-Sec-Fetch-Site: same-site
-Sec-Fetch-Mode: cors
-Sec-Fetch-Dest: empty
-Accept-Encoding: gzip, deflate, br
-
-{"AccountLockoutResetMinutes":5,"AccountLockoutDurationMinutes":20}
-#>
