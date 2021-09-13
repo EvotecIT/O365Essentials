@@ -58,7 +58,7 @@
     }
     Remove-EmptyValue -Hashtable $Body -Recursive -Rerun 2
     if ($Body) {
-        $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method PATCH -Body $Body
+        $null = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method PATCH -Body $Body
         #$Output
     }
 }
