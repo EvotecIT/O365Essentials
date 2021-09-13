@@ -53,6 +53,8 @@ That's it. Whenever there's a new version, you run the command, and you can enjo
 
 ## Changelog
 
+- 0.0.6 - 2021.09.13
+  - Added more commands
 - 0.0.5 - 2021.09.10
   - Added new cmdlets
   - Fixes some bugs
