@@ -1,4 +1,23 @@
 ﻿function Get-O365AzureGroupNamingPolicy {
+    <#
+    .SYNOPSIS
+    Gets the Azure Group naming policy.
+
+    .DESCRIPTION
+    Gets the Azure Group naming policy.
+
+    .PARAMETER Headers
+    Authorization header as created by Connect-O365Admin. If not provided the function will try to fetch it from the current execution context.
+
+    .PARAMETER NoTranslation
+    Provides output without any translation. Mostly required for testing or during internal configuration.
+
+    .EXAMPLE
+    Get-O365AzureGroupNamingPolicy
+
+    .NOTES
+    https://portal.azure.com/#blade/Microsoft_AAD_IAM/GroupsManagementMenuBlade/NamingPolicy
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
