@@ -8,8 +8,15 @@ if (-not $Credentials) {
 # keep in mind that if there's an MFA you would be better left without Credentials and just let it prompt you
 $null = Connect-O365Admin -Verbose -Credential $Credentials
 
-#$LicenseGroup = Get-O365GroupLicenses -GroupName 'Test-Group-TestEVOTECPL' -Verbose
-#$LicenseGroup | Format-Table
+# General liceses in tenat
+$Licenses = Get-O365AzureLicenses -Verbose
+$Licenses | Format-Table
+
+$LicensesServicePlans = Get-O365AzureLicenses -ServicePlans -IncludeLicenseDetails -Verbose
+$LicensesServicePlans | Format-Table
+
+$LicenseGroup = Get-O365GroupLicenses -GroupName 'Test-Group-TestEVOTECPL' -Verbose
+$LicenseGroup | Format-Table
 #$LicenseGroup | Format-List
 
 #New-O365License -LicenseName 'Office 365 E3' -Verbose -EnabledServicesDisplayName 'Microsoft Kaizala Pro', 'Whiteboard (Plan 2)', 'Microsoft Forms (Plan E3)'
