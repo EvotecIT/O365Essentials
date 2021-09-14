@@ -8,8 +8,10 @@ if (-not $Credentials) {
 # keep in mind that if there's an MFA you would be better left without Credentials and just let it prompt you
 $null = Connect-O365Admin -Verbose -Credential $Credentials
 
-$CA = Get-O365AzureConditionalAccess
-$CA | Format-Table
+$Output = Get-O365AzureConditionalAccessPolicy -PolicyName 'Guest Access Policy 1'
+$Output | Format-List
+$Output.Users | Format-List *
 
-$CA = Get-O365AzureConditionalAccess -Details
-$CA | Format-Table
+$Output.ServicePrincipals | Format-List *
+$Output.ServicePrincipals.included | Format-List *
+$Output.ServicePrincipals.excluded | Format-List *

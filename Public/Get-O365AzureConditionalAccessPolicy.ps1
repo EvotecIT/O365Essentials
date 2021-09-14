@@ -49,12 +49,11 @@
             BaselineType           = $PolicyDetails.baselineType     #: 0
             CreatedDate            = $PolicyDetails.createdDateTime  #: 11.09.2021 09:02:21
             ModifiedDate           = $PolicyDetails.modifiedDateTime #: 11.09.2021 17:38:21
-            users                  = $PolicyDetails.users                  #   # : @{allUsers=2; included=; excluded=}
-            usersV2                = $PolicyDetails.usersV2                #   # : @{allUsers=2; included=; excluded=}
-            servicePrincipals      = $PolicyDetails.servicePrincipals      #   # : @{allServicePrincipals=1; included=; excluded=; filter=; includeAllMicrosoftApps=False; excludeAllMicrosoftApps=False; userActions=; stepUpTags=}
-            servicePrincipalsV2    = $PolicyDetails.servicePrincipalsV2    #   # : @{allServicePrincipals=1; included=; excluded=; filter=; includedAppContext=; shouldIncludeAppContext=False}
-            controls               = $PolicyDetails.controls               #   # : @{controlsOr=True; blockAccess=False; challengeWithMfa=True; compliantDevice=False; domainJoinedDevice=False; approvedClientApp=False; claimProviderControlIds=System.Object[]; requireCompliantApp=False; requirePasswordChange=False; requiredFe
-            #   #   deratedAuthMethod=0}
+            #users                  = $PolicyDetails.users                  #   # : @{allUsers=2; included=; excluded=}
+            Users                  = $PolicyDetails.usersV2                #   # : @{allUsers=2; included=; excluded=}
+            #servicePrincipals      = $PolicyDetails.servicePrincipals      #   # : @{allServicePrincipals=1; included=; excluded=; filter=; includeAllMicrosoftApps=False; excludeAllMicrosoftApps=False; userActions=; stepUpTags=}
+            ServicePrincipals      = $PolicyDetails.servicePrincipalsV2    #   # : @{allServicePrincipals=1; included=; excluded=; filter=; includedAppContext=; shouldIncludeAppContext=False}
+            controls               = $PolicyDetails.controls               #   # : @{controlsOr=True; blockAccess=False; challengeWithMfa=True; compliantDevice=False; domainJoinedDevice=False; approvedClientApp=False; claimProviderControlIds=System.Object[]; requireCompliantApp=False; requirePasswordChange=False; requiredFederatedAuthMethod=0}
             sessionControls        = $PolicyDetails.sessionControls        #   # : @{appEnforced=False; cas=False; cloudAppSecuritySessionControlType=0; signInFrequencyTimeSpan=; signInFrequency=0; persistentBrowserSessionMode=0; continuousAccessEvaluation=0; resiliencyDefaults=0; secureSignIn=False}
             conditions             = $PolicyDetails.conditions             #   # : @{minUserRisk=; minSigninRisk=; devicePlatforms=; locations=; namedNetworks=; clientApps=; clientAppsV2=; time=; deviceState=}
             clientApplications     = $PolicyDetails.clientApplications     #   # : @{allServicePrincipals=0; filter=; includedServicePrincipals=; excludedServicePrincipals=}
