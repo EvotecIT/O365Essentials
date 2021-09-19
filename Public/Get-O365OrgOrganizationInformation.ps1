@@ -1,4 +1,5 @@
 ﻿function Get-O365OrgOrganizationInformation {
+    [alias('Get-O365OrgCompanyInformation')]
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
