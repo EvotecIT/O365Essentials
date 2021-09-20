@@ -11,6 +11,8 @@
     if (-not $Headers -and $Script:AuthorizationO365Cache) {
         # This forces a reconnect of session in case it's about to time out. If it's not timeouting a cache value is used
         $Headers = Connect-O365Admin -Headers $Headers
+    } elseif ($Headers) {
+        $Headers = Connect-O365Admin -Headers $Headers
     } else {
         Write-Warning "Invoke-O365Admin - Not connected. Please connect using Connect-O365Admin."
         return
