@@ -50,29 +50,3 @@ Update-Module -Name O365Essentials
 That's it. Whenever there's a new version, you run the command, and you can enjoy it. Remember that you may need to close, reopen PowerShell session if you have already used module before updating it.
 
 **The essential thing** is if something works for you on production, keep using it till you test the new version on a test computer. I do changes that may not be big, but big enough that auto-update may break your code. For example, small rename to a parameter and your code stops working! Be responsible!
-
-## Changelog
-
-- 0.0.8 - 2021.09.20
-  - Added more commands
-  - Improved some commands
-  - Cleaned up some duplicates
-- 0.0.7 - 2021.09.15
-  - Added more commands
-  - Improved some commands
-- 0.0.6 - 2021.09.13
-  - Added more commands
-- 0.0.5 - 2021.09.10
-  - Added new cmdlets
-  - Fixes some bugs
-- 0.0.4 - 2021.09.10
-  - Something went wrong during publish of 0.0.3 - this release fixes it
-- 0.0.3 - 2021.09.10
-  - Renamed most of commands to be more descriptive
-  - Added new commands
-  - Fixed some bugs
-  - Fixes support for PowerShell 5.1
-- 0.0.2 - 2021.08.27
-  - Added more commands
-- 0.0.1 - 2021.08.19
-  - First version
