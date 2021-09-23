@@ -109,6 +109,11 @@
                 if ($OutputQuery.'@odata.nextLink') {
                     $RestSplat.Uri = $OutputQuery.'@odata.nextLink'
                     if ($RestSplat.Uri) {
+                        # We must remove websession parameter because Invoke-o365admin doesn't have it and i don't want to add it to the code
+                        # it will set it self anyways
+                        $RestSplat.Remove('WebSession')
+                        # We need to reset the headers to full header, rather than the one that was used to invoke the previous call
+                        $RestSplat.Headers = $Headers
                         $MoreData = Invoke-O365Admin @RestSplat
                         if ($null -ne $MoreData) {
                             $MoreData
