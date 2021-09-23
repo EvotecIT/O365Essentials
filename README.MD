@@ -50,3 +50,45 @@ Update-Module -Name O365Essentials
 That's it. Whenever there's a new version, you run the command, and you can enjoy it. Remember that you may need to close, reopen PowerShell session if you have already used module before updating it.
 
 **The essential thing** is if something works for you on production, keep using it till you test the new version on a test computer. I do changes that may not be big, but big enough that auto-update may break your code. For example, small rename to a parameter and your code stops working! Be responsible!
+
+## Usage
+
+First we need to connect to O365. This is done using Connect-O365Admin command. If we don't have MFA we can automate connection around Credentials.
+
+```powershell
+if (-not $Credentials) {
+    $Credentials = Get-Credential
+}
+# This makes a connection to Office 365 tenant
+# since we don't want to save the data we null it out
+# keep in mind that if there's an MFA you would be better left without Credentials and just let it prompt you
+$null = Connect-O365Admin -Verbose -Credential $Credentials
+```
+
+If we have MFA we simply let it query you for MFA code.
+
+```powershell
+$null = Connect-O365Admin -Verbose
+```
+
+Once the connection is established we can use the module using any GET/SET commands.
+
+```powershell
+Get-O365Domain -Verbose | Format-Table
+
+Get-O365DomainHealth -DomainName 'evotec.pl'
+
+$T1 = Get-O365DomainDependencies -DomainName 'evotec.pl' -Type All -Verbose
+$T1 | Format-Table
+```
+
+For example enabling/disabling some News Settings.
+
+```powershell
+Get-O365OrgNews
+
+Set-O365OrgNews -CompanyInformationAndIndustryEnabled $false -ContentOnNewTabEnabled $false -Verbose
+Set-O365OrgNews -CompanyInformationAndIndustryEnabled $true -ContentOnNewTabEnabled $true -Verbose
+```
+
+All commands are listed [here](COMMANDS.MD). You can check their usage going thru Examples section.
