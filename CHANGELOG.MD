@@ -1,5 +1,7 @@
 ﻿# O365Essentials Release History
 
+## 0.0.9 - 2021.09.23
+  - Improved some commands
 ## 0.0.8 - 2021.09.20
   - Added more commands
   - Improved some commands
