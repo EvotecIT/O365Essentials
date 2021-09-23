@@ -122,7 +122,7 @@
         'UserName'            = $Context.Account
         'Environment'         = $Context.Environment
         'Subscription'        = $Subscription
-        'Tenant'              = $Context.Tenant.Id
+        'Tenant'              = if ($Tenant) { $Tenant } else { $Context.Tenant.Id }
         'ExpiresOnUTC'        = ([datetime]::UtcNow).AddSeconds($ExpiresIn - $ExpiresTimeout)
         # This authorization is used for admin.microsoft.com
         'AuthenticationO365'  = $AuthenticationO365
