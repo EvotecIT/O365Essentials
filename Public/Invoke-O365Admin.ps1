@@ -114,10 +114,12 @@
                         $RestSplat.Remove('WebSession')
                         # We need to reset the headers to full header, rather than the one that was used to invoke the previous call
                         $RestSplat.Headers = $Headers
-                        $MoreData = Invoke-O365Admin @RestSplat
-                        if ($null -ne $MoreData) {
-                            $MoreData
-                        }
+                        # Not sure if this is best/fastest way to do it, but it works
+                        # It's a bit better than saving it to variable and releasing everything later on as it can be used in pipeline
+                        Invoke-O365Admin @RestSplat | ForEach-Object { if ($null -ne $_) { $_ } }
+                        #if ($null -ne $MoreData) {
+                        #    $MoreData
+                        #}
                     }
                 }
             }
