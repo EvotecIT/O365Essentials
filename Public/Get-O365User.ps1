@@ -31,7 +31,15 @@
         [parameter(ParameterSetName = 'GuestsOnly')]
         [parameter(ParameterSetName = 'Default')]
         [parameter(ParameterSetName = 'Filter')]
-        [string] $OrderBy
+        [string] $OrderBy,
+
+        [parameter(ParameterSetName = 'Default')]
+        [parameter(ParameterSetName = 'Filter')]
+        [parameter(ParameterSetName = 'GuestsOnly')]
+        [parameter(ParameterSetName = 'EmailAddress')]
+        [parameter(ParameterSetName = 'UserPrincipalName')]
+        [parameter(ParameterSetName = 'Id')]
+        [switch] $IncludeManager
     )
     if ($GuestsOnly) {
         $Uri = 'https://graph.microsoft.com/v1.0/users'
@@ -67,6 +75,10 @@
             '$filter'  = $Filter
             '$orderby' = $OrderBy
         }
+    }
+    # https://docs.microsoft.com/en-us/graph/api/user-list-manager?view=graph-rest-1.0&tabs=http
+    if ($IncludeManager) {
+        $QueryParameter['$expand'] = 'manager'
     }
     Remove-EmptyValue -Hashtable $QueryParameter
     Invoke-O365Admin -Uri $Uri -Headers $Headers -QueryParameter $QueryParameter
