@@ -131,17 +131,24 @@
             }
         }
     } catch {
+        if ($PSBoundParameters.ErrorAction -eq 'Stop') {
+            Write-Error $_
+            return
+        }
         $RestError = $_.ErrorDetails.Message
+        $RestMessage = $_.Exception.Message
         if ($RestError) {
             try {
                 $ErrorMessage = ConvertFrom-Json -InputObject $RestError -ErrorAction Stop
-                # Write-Warning -Message "Invoke-Graph - [$($ErrorMessage.error.code)] $($ErrorMessage.error.message), exception: $($_.Exception.Message)"
-                Write-Warning -Message "Invoke-O365Admin - Error JSON: $($_.Exception.Message) $($ErrorMessage.error.message)"
+                $ErrorText = $ErrorMessage.error.message
+                # Write-Warning -Message "Invoke-O365Admin - [$($ErrorMessage.error.code)] $($ErrorMessage.error.message), exception: $($_.Exception.Message)"
+                Write-Warning -Message "Invoke-O365Admin - Error: $($RestMessage) $($ErrorText)"
             } catch {
-                Write-Warning -Message "Invoke-O365Admin - Error: $($RestError.Trim())"
+                $ErrorText = ''
+                Write-Warning -Message "Invoke-O365Admin - Error: $($RestMessage)"
             }
         } else {
-            Write-Warning -Message "Invoke-O365Admin - $($_.Exception.Message)"
+            Write-Warning -Message "Invoke-O365Admin - Error: $($_.Exception.Message)"
         }
         if ($_.ErrorDetails.RecommendedAction) {
             Write-Warning -Message "Invoke-O365Admin - Recommended action: $RecommendedAction"
