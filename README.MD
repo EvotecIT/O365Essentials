@@ -30,6 +30,10 @@ This module wouldn't happen without great help from following people:
 - [Jos Lieben](https://twitter.com/joslieben)
 
 It is recommended to use **PowerShell 7** or higher. While the module does work in PowerShell 5.1 the error handling of RestMethod is superior in PowerShell 7 so all errors are more readable in it.
+
+I've written a blog post with more information about this module [O365Essentials](https://evotec.xyz/configuring-office-365-settings-using-powershell-the-non-supported-way/).
+It contains detailed information about the module, including what's available, how things work and how to use it.
+
 ## Installing
 
 Everyone can install this module from **PowerShellGallery** hosted by Microsoft. It's recommended way to work with the module.
