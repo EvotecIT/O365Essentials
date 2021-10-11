@@ -24,7 +24,7 @@ $Configuration = @{
             # Minimum version of the Windows PowerShell engine required by this module
             PowerShellVersion          = '5.1'
             # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
-            Tags                       = @('Windows', 'MacOS', 'Linux', 'Office365', 'Graph', 'Azure', 'Unsupported', 'API')
+            Tags                       = @('Windows', 'Office365', 'Graph', 'Azure', 'Unsupported', 'API')
 
             #IconUri              = 'https://evotec.xyz/wp-content/uploads/2018/12/PSWriteHTML.png'
 
