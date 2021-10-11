@@ -7,7 +7,7 @@
     Long description
 
     .PARAMETER Headers
-    Parameter description
+    Authorization header as created by Connect-O365Admin. If not provided the function will try to fetch it from the current execution context.
 
     .PARAMETER LicenseName
     Parameter description
