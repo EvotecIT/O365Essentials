@@ -10,7 +10,7 @@
     Authorization header as created by Connect-O365Admin. If not provided the function will try to fetch it from the current execution context.
 
     .EXAMPLE
-    An example
+    Get-O365AzureMultiFactorAuthentication -Verbose
 
     .NOTES
     Based on: https://portal.azure.com/#blade/Microsoft_AAD_IAM/MultifactorAuthenticationMenuBlade/GettingStarted/fromProviders/
