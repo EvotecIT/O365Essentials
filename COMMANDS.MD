@@ -18,7 +18,7 @@
 | Get-O365AzureEnterpriseAppsUserSettings         | Set-O365AzureEnterpriseAppsUserSettings      |                                                             |
 | Get-O365AzureEnterpriseAppsUserSettingsAdmin    | Set-O365AzureEnterpriseAppsUserSettingsAdmin | Set cmd not working                                         |
 | Get-O365AzureEnterpriseAppsUserSettingsPromoted |                                              |                                                             |
-| Get-O365AzureExternalCollaborationFlows         |                                              | Not working                                                            |
+| Get-O365AzureExternalCollaborationFlows         |                                              | Not working                                                 |
 | Get-O365AzureExternalCollaborationSettings      | Set-O365AzureExternalCollaborationSettings   | Not working                                                 |
 | Get-O365AzureExternalIdentitiesEmail            |                                              | Missing scopes in Graph API calls                           |
 | Get-O365AzureExternalIdentitiesPolicies         |                                              |                                                             |
@@ -31,7 +31,9 @@
 | Get-O365AzureGroupSecurity                      | Set-O365AzureGroupSecurity                   |                                                             |
 | Get-O365AzureGroupSelfService                   | Set-O365AzureGroupSelfService                |                                                             |
 | Get-O365AzureLicenses                           |                                              |                                                             |
-| Get-O365AzureMultiFactorAuthentication          | Set-O365AzureMultiFactorAuthentication       | Set cmd not working                                                             |
+| Get-O365AzureMultiFactorAuthentication          | Set-O365AzureMultiFactorAuthentication       | Set cmd not working                                         |
+| Get-O365AzureProperties                         | Set-O365AzureProperties                      |                                                             |
+| Get-O365AzurePropertiesSecurity                 | Set-O365AzurePropertiesSecurity              |                                                             |
 | Get-O365AzureTenantSKU                          |                                              |                                                             |
 | Get-O365AzureUserSettings                       | Set-O365AzureUserSettings                    |                                                             |
 | Get-O365BillingAccounts                         |                                              | Doesn't work, probably missing parameters such as accountid |

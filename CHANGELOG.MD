@@ -1,5 +1,10 @@
 ﻿# O365Essentials Release History
 
+## 0.0.10 - 2021.10.11
+  - Added `Get-O365AzureProperties` from URL https://aad.portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/Properties
+  - Added `Set-O365AzureProperties` from URL https://aad.portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/Properties
+  - Added `Get-O365AzurePropertiesSecurity` from URL https://aad.portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/Properties
+  - Added `Set-O365AzurePropertiesSecurity` from URL https://aad.portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/Properties
 ## 0.0.9 - 2021.09.23
   - Improved some commands
 ## 0.0.8 - 2021.09.20
