@@ -10,13 +10,13 @@
     if ($Output) {
         [PSCustomObject] @{
             # GUI only allowes single change to all services at once - this means if one is TRUE else is TRUE
-            ServiceEnabled    = if ($Output.People -eq $true) { $true } else { $false }
-            People            = $Output.People
-            Groups            = $Output.Groups
-            Documents         = $Output.Documents
-            Yammer            = $Output.Yammer
-            Teams             = $Output.Teams
-            TenantState       = $Output.TenantState
+            ServiceEnabled = if ($Output.People -eq $true) { $true } else { $false }
+            People         = $Output.People
+            Groups         = $Output.Groups
+            Documents      = $Output.Documents
+            Yammer         = $Output.Yammer
+            Teams          = $Output.Teams
+            TenantState    = $Output.TenantState
         }
     }
 }
