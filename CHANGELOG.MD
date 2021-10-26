@@ -1,5 +1,8 @@
 ﻿# O365Essentials Release History
 
+## 0.0.11
+  - Added `Get-O365OrgMicrosoftEdgeSiteLists`
+  - Added `Get-O365OrgVivaLearning` and `Set-O365OrgVivaLearning`
 ## 0.0.10 - 2021.10.11
   - Added `Get-O365AzureProperties` from URL https://aad.portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/Properties
   - Added `Set-O365AzureProperties` from URL https://aad.portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/Properties

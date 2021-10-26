@@ -77,6 +77,7 @@
 | Get-O365OrgInstallationOptions                  | Set-O365OrgInstallationOptions               |                                                             |
 | Get-O365OrgM365Groups                           | Set-O365OrgM365Groups                        |                                                             |
 | Get-O365OrgMicrosoftTeams                       | Set-O365OrgMicrosoftTeams                    | Set command not working - 100-500 nested properties         |
+| Get-O365OrgMicrosoftEdgeSiteLists               |                                              |                                                             |
 | Get-O365OrgModernAuthentication                 | Set-O365OrgModernAuthentication              |                                                             |
 | Get-O365OrgMyAnalytics                          | Set-O365OrgMyAnalytics                       |                                                             |
 | Get-O365OrgNews                                 | Set-O365OrgNews                              |                                                             |
@@ -98,6 +99,7 @@
 | Get-O365OrgUserConsentApps                      | Set-O365OrgUserConsentApps                   |                                                             |
 | Get-O365OrgUserOwnedApps                        | Set-O365OrgUserOwnedApps                     |                                                             |
 | Get-O365OrgWhiteboard                           | Set-O365OrgWhiteboard                        |                                                             |
+| Get-O365OrgVivaLearning                         | Set-O365OrgVivaLearning                      |                                                             |
 | Get-O365PartnerRelationship                     |                                              |                                                             |
 | Get-O365PasswordReset                           | Set-O365PasswordReset                        |                                                             |
 | Get-O365PasswordResetIntegration                | Set-O365PasswordResetIntegration             |                                                             |
