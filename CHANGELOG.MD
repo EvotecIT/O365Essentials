@@ -3,6 +3,10 @@
 ## 0.0.11
   - Added `Get-O365OrgMicrosoftEdgeSiteLists`
   - Added `Get-O365OrgVivaLearning` and `Set-O365OrgVivaLearning`
+  - Added `Get-O365AzureExternalCollaborationRestrictions`
+  - Added `Set-O365AzureExternalCollaborationRestrictions`
+  - Added `Disconnect-O365Admin`
+
 ## 0.0.10 - 2021.10.11
   - Added `Get-O365AzureProperties` from URL https://aad.portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/Properties
   - Added `Set-O365AzureProperties` from URL https://aad.portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/Properties
