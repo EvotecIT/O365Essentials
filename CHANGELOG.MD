@@ -1,6 +1,6 @@
 ﻿# O365Essentials Release History
 
-## 0.0.11
+## 0.0.11 - 2023.07.18
   - Added `Get-O365OrgMicrosoftEdgeSiteLists`
   - Added `Get-O365OrgVivaLearning` and `Set-O365OrgVivaLearning`
   - Added `Get-O365AzureExternalCollaborationRestrictions`
