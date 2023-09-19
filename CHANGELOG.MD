@@ -1,6 +1,6 @@
 ﻿# O365Essentials Release History
 
-##  0.0.12
+##  0.0.12 - 2023.09.19
 - Add `Get-O365OrgAccountLinking` and `Set-O365OrgAccountLinking` to manage "Users who connect their Azure AD account with their MSA account can earn rewards points when they search on Bing. User searches are never shared."
 - Added `Get-O365OrgAdoptionScore`, `Get-O365OrgAdoptionScoreConfig` and `Set-O365OrgAdoptionScore` to manage Microsoft 365 Adoption Score
 
