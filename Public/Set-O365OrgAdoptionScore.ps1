@@ -1,5 +1,5 @@
 ﻿function Set-O365OrgAdoptionScore {
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [Parameter(Mandatory)][bool] $EnableInsights,
