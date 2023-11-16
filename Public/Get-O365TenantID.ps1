@@ -1,13 +1,13 @@
 ﻿function Get-O365TenantID {
     <#
     .SYNOPSIS
-    Short description
+    Quick way to find Office 365 Tenant ID by using domain name
 
     .DESCRIPTION
-    Long description
+    Quick way to find Office 365 Tenant ID by using domain name
 
     .PARAMETER Domain
-    Parameter description
+    Domain name to check
 
     .EXAMPLE
     Get-O365TenantID -Domain 'evotec.pl'
