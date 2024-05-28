@@ -29,7 +29,7 @@ Build-Module -ModuleName 'O365Essentials' {
     New-ConfigurationManifest @Manifest
 
     New-ConfigurationModule -Type RequiredModule -Name 'PSSharedGoods' -Guid 'Auto' -Version 'Latest'
-    New-ConfigurationModule -Type RequiredModule -Name 'Az.Accounts' -Guid 'Auto' -RequiredVersion '2.12.1'
+    New-ConfigurationModule -Type RequiredModule -Name 'Az.Accounts' -Guid 'Auto' -Version '2.12.1'
 
     # Add approved modules, that can be used as a dependency, but only when specific function from those modules is used
     # And on that time only that function and dependant functions will be copied over
