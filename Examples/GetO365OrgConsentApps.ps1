@@ -1,4 +1,5 @@
-﻿Import-Module .\O365Essentials.psd1 -Force
+﻿#Import-Module Az.Accounts -MaximumVersion 2.19.0 -Force
+Import-Module .\O365Essentials.psd1 -Force
 
 if (-not $Credentials) {
     $Credentials = Get-Credential
@@ -10,4 +11,4 @@ $null = Connect-O365Admin -Verbose -Credential $Credentials
 
 Get-O365OrgUserConsentApps
 
-Set-O365OrgUserConsentApps -UserConsentToAppsEnabled $false -Verbose
+Set-O365OrgUserConsentApps -UserConsentToApps AllowLimited -Verbose

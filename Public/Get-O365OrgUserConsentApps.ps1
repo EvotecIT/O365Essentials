@@ -1,13 +1,34 @@
 ﻿function Get-O365OrgUserConsentApps {
     [cmdletbinding()]
     param(
-        [alias('Authorization')][System.Collections.IDictionary] $Headers
+        [alias('Authorization')][System.Collections.IDictionary] $Headers,
+        [switch] $Native
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/IntegratedApps"
+    $Uri = "https://graph.microsoft.com/v1.0/policies/authorizationPolicy"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
     if ($null -ne $Output) {
-        [PSCustomObject] @{
-            UserConsentToAppsEnabled = $Output
+        if ($Native) {
+            $Output.defaultUserRolePermissions.permissionGrantPoliciesAssigned
+        } else {
+            if ($Output.defaultUserRolePermissions.permissionGrantPoliciesAssigned -is [Array]) {
+                if ($Output.defaultUserRolePermissions.permissionGrantPoliciesAssigned -contains "ManagePermissionGrantsForSelf.microsoft-user-default-low") {
+                    [PSCustomObject] @{
+                        UserConsentToApps = 'AllowLimited'
+                    }
+                } elseif ($Output.defaultUserRolePermissions.permissionGrantPoliciesAssigned -contains "ManagePermissionGrantsForSelf.microsoft-user-default-legacy") {
+                    [PSCustomObject] @{
+                        UserConsentToApps = 'AllowAll'
+                    }
+                } else {
+                    [PSCustomObject] @{
+                        UserConsentToApps = 'DoNotAllow'
+                    }
+                }
+            } else {
+                Write-Warning "No data found. Please check the connection and try again."
+            }
         }
+    } else {
+        Write-Warning "No data found. Please check the connection and try again."
     }
 }
