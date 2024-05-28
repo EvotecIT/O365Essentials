@@ -1,5 +1,10 @@
 ﻿# O365Essentials Release History
 
+## 0.0.13 - 2024.05.28
+- Downgraded `Az.Accounts` to minimal `2.12.1`. `3.0.0` is kind of broken and PS 5 has issues, you can still use newest one
+- Added `Get-O365OrgSendEmailNotification` and `Set-O365OrgSendEmailNotification` which allows configuring [SenderFromAddressSettings](https://admin.microsoft.com/Adminportal/Home?#/Settings/OrganizationProfile/:/Settings/L1/SendFromAddressSettings) for email notifications
+- Fixed `Get-O365OrgUserConsentApps` and `Set-O365OrgUserConsentApps` - but it changes how things work, so requires code changes. This configures [User consent settings](https://portal.azure.com/#view/Microsoft_AAD_IAM/ConsentPoliciesMenuBlade/~/UserSettings)
+
 ##  0.0.12 - 2023.09.19
 - Add `Get-O365OrgAccountLinking` and `Set-O365OrgAccountLinking` to manage "Users who connect their Azure AD account with their MSA account can earn rewards points when they search on Bing. User searches are never shared."
 - Added `Get-O365OrgAdoptionScore`, `Get-O365OrgAdoptionScoreConfig` and `Set-O365OrgAdoptionScore` to manage Microsoft 365 Adoption Score
