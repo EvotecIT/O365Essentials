@@ -1,26 +1,20 @@
 ﻿function ConvertFrom-JSONWebToken {
     <#
-    .SYNOPSIS
-    Converts JWT token to PowerShell object allowing for easier analysis.
-
-    .DESCRIPTION
-    Converts JWT token to PowerShell object allowing for easier analysis.
-
-    .PARAMETER Token
-    Provide Token to convert to PowerShell object
-
-    .PARAMETER IncludeHeader
-    Include header as part of ordered dictionary
-
-    .EXAMPLE
-    ConvertFrom-JSONWebToken -Token .....
-
-    .NOTES
-    Based on https://www.michev.info/Blog/Post/2140/decode-jwt-access-and-id-tokens-via-powershell
-
-    Basically does what: https://jwt.ms/ and https://jwt.io/ do for you online
+        .SYNOPSIS
+        Converts JWT token to PowerShell object allowing for easier analysis.
+        .DESCRIPTION
+        Converts JWT token to PowerShell object allowing for easier analysis.
+        .PARAMETER Token
+        Provide Token to convert to PowerShell object
+        .PARAMETER IncludeHeader
+        Include header as part of ordered dictionary
+        .EXAMPLE
+        ConvertFrom-JSONWebToken -Token .....
+        .NOTES
+        Based on https://www.michev.info/Blog/Post/2140/decode-jwt-access-and-id-tokens-via-powershell
+ 
+        Basically does what: https://jwt.ms/ and https://jwt.io/ do for you online
     #>
-
     [cmdletbinding()]
     param(
         [Parameter(Mandatory = $true)][string]$Token,
