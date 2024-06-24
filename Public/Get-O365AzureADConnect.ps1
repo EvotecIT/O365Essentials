@@ -1,16 +1,20 @@
 ﻿function Get-O365AzureADConnect {
     <#
-        .SYNOPSIS
-        Retrieves the status of Azure AD Connect for Office 365.
-        .DESCRIPTION
-        This function calls the Azure AD API to get the status of password synchronization and AD Connect status.
-        It returns a custom PowerShell object containing various synchronization and configuration details.
-        .PARAMETER Headers
-        Authorization header as created by Connect-O365Admin. If not provided the function will try to fetch it from the current execution context.
-        .EXAMPLE
-        Get-O365AzureADConnect -Verbose
-        .NOTES
-        https://portal.azure.com/#blade/Microsoft_AAD_IAM/PassThroughAuthenticationConnectorsBlade
+    .SYNOPSIS
+    Retrieves the status of Azure AD Connect for Office 365.
+
+    .DESCRIPTION
+    This function calls the Azure AD API to get the status of password synchronization and AD Connect status.
+    It returns a custom PowerShell object containing various synchronization and configuration details.
+
+    .PARAMETER Headers
+    Authorization header as created by Connect-O365Admin. If not provided the function will try to fetch it from the current execution context.
+
+    .EXAMPLE
+    Get-O365AzureADConnect -Verbose
+
+    .NOTES
+    https://portal.azure.com/#blade/Microsoft_AAD_IAM/PassThroughAuthenticationConnectorsBlade
     #>
     [cmdletbinding()]
     param(
