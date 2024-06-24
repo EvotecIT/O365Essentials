@@ -1,27 +1,36 @@
 ﻿function Set-O365AzureEnterpriseAppsGroupConsent {
     <#
-        .SYNOPSIS
-        Provides functionality to set group-specific consent for enterprise apps in Azure Active Directory.
-        .DESCRIPTION
-        This function allows administrators to configure group-specific consent for enterprise apps in Azure Active Directory.
-        .PARAMETER Headers
-        Specifies the headers for the API request, typically including authorization tokens.
-        .PARAMETER EnableGroupSpecificConsent
-        Specifies whether to enable group-specific consent.
-        .PARAMETER GroupId
-        The ID of the group for which to set consent.
-        .PARAMETER GroupName
-        The display name of the group for which to set consent.
-        .PARAMETER BlockUserConsentForRiskyApps
-        Specifies whether to block user consent for risky apps.
-        .PARAMETER EnableAdminConsentRequests
-        Specifies whether to enable admin consent requests.
-        .EXAMPLE
-        An example of how to use this function:
-        Set-O365AzureEnterpriseAppsGroupConsent -Headers $headers -EnableGroupSpecificConsent $true -GroupId "12345" -BlockUserConsentForRiskyApps $true -EnableAdminConsentRequests $false
-        .NOTES
-        Please ensure that:
-            - Group-specific consent can be set using either GroupId or GroupName parameter.
+    .SYNOPSIS
+    Provides functionality to set group-specific consent for enterprise apps in Azure Active Directory.
+
+    .DESCRIPTION
+    This function allows administrators to configure group-specific consent for enterprise apps in Azure Active Directory.
+
+    .PARAMETER Headers
+    Specifies the headers for the API request, typically including authorization tokens.
+
+    .PARAMETER EnableGroupSpecificConsent
+    Specifies whether to enable group-specific consent.
+
+    .PARAMETER GroupId
+    The ID of the group for which to set consent.
+
+    .PARAMETER GroupName
+    The display name of the group for which to set consent.
+
+    .PARAMETER BlockUserConsentForRiskyApps
+    Specifies whether to block user consent for risky apps.
+
+    .PARAMETER EnableAdminConsentRequests
+    Specifies whether to enable admin consent requests.
+
+    .EXAMPLE
+    An example of how to use this function:
+    Set-O365AzureEnterpriseAppsGroupConsent -Headers $headers -EnableGroupSpecificConsent $true -GroupId "12345" -BlockUserConsentForRiskyApps $true -EnableAdminConsentRequests $false
+
+    .NOTES
+    Please ensure that:
+    - Group-specific consent can be set using either GroupId or GroupName parameter.
     #>
     # https://portal.azure.com/#blade/Microsoft_AAD_IAM/ConsentPoliciesMenuBlade/UserSettings
     [cmdletbinding(SupportsShouldProcess)]
