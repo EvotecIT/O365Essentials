@@ -1,11 +1,13 @@
 ﻿function Get-O365AzureExternalCollaborationSettings {
     <#
-        .SYNOPSIS
-        Retrieves Azure external collaboration settings based on the provided headers.
-        .DESCRIPTION
-        This function retrieves Azure external collaboration settings from the specified API endpoint using the provided headers.
-        .PARAMETER Headers
-        A dictionary containing the necessary headers for the API request, typically including authorization information.
+    .SYNOPSIS
+    Retrieves Azure external collaboration settings based on the provided headers.
+
+    .DESCRIPTION
+    This function retrieves Azure external collaboration settings from the specified API endpoint using the provided headers.
+
+    .PARAMETER Headers
+    A dictionary containing the necessary headers for the API request, typically including authorization information.
     #>
     [cmdletbinding()]
     param(
