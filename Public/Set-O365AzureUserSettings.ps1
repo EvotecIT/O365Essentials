@@ -1,43 +1,31 @@
 ﻿function Set-O365AzureUserSettings {
     <#
-    .SYNOPSIS
-    Short description
-
-    .DESCRIPTION
-    Long description
-
-    .PARAMETER Headers
-    Parameter description
-
-    .PARAMETER UsersCanRegisterApps
-    Parameter description
-
-    .PARAMETER RestrictNonAdminUsers
-    Parameter description
-
-    .PARAMETER LinkedInAccountConnection
-    Parameter description
-
-    .PARAMETER LinkedInSelectedGroupObjectId
-    Parameter description
-
-    .PARAMETER LinkedInSelectedGroupDisplayName
-    Parameter description
-
-    .EXAMPLE
-    Set-O365UserSettings -RestrictNonAdminUsers $true -LinkedInAccountConnection $true -LinkedInSelectedGroupObjectId 'b6cdb9c3-d660-4558-bcfd-82c14a986b56'
-
-    .EXAMPLE
-    Set-O365UserSettings -RestrictNonAdminUsers $true -LinkedInAccountConnection $true -LinkedInSelectedGroupDisplayName 'All Users'
-
-    .EXAMPLE
-    Set-O365UserSettings -RestrictNonAdminUsers $true -LinkedInAccountConnection $false
-
-    .EXAMPLE
-    Set-O365UserSettings -RestrictNonAdminUsers $true
-
-    .NOTES
-    https://portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/UserSettings
+        .SYNOPSIS
+        Configures user settings for Azure AD.
+        .DESCRIPTION
+        This function allows you to set various user settings for Azure AD.
+        .PARAMETER Headers
+        A dictionary containing the necessary headers for the API request, typically including authorization information.
+        .PARAMETER UsersCanRegisterApps
+        Specifies whether users can register apps.
+        .PARAMETER RestrictNonAdminUsers
+        Specifies whether to restrict non-admin users.
+        .PARAMETER LinkedInAccountConnection
+        Specifies whether to enable LinkedIn account connection.
+        .PARAMETER LinkedInSelectedGroupObjectId
+        The object ID of the selected LinkedIn group.
+        .PARAMETER LinkedInSelectedGroupDisplayName
+        The display name of the selected LinkedIn group.
+        .EXAMPLE
+        Set-O365UserSettings -RestrictNonAdminUsers $true -LinkedInAccountConnection $true -LinkedInSelectedGroupObjectId 'b6cdb9c3-d660-4558-bcfd-82c14a986b56'
+        .EXAMPLE
+        Set-O365UserSettings -RestrictNonAdminUsers $true -LinkedInAccountConnection $true -LinkedInSelectedGroupDisplayName 'All Users'
+        .EXAMPLE
+        Set-O365UserSettings -RestrictNonAdminUsers $true -LinkedInAccountConnection $false
+        .EXAMPLE
+        Set-O365UserSettings -RestrictNonAdminUsers $true
+        .NOTES
+        For more information, visit: https://portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/UserSettings
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
