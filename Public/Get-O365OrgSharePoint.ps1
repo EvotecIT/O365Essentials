@@ -1,15 +1,19 @@
 ﻿function Get-O365OrgSharePoint {
     <#
-        .SYNOPSIS
-        Retrieves SharePoint organization settings.
-        .DESCRIPTION
-        This function retrieves SharePoint organization settings from the specified URI using the provided headers.
-        .PARAMETER Headers
-        Authentication token and additional information for the API request.
-        .EXAMPLE
-        Get-O365OrgSharePoint -Headers $headers
-        .NOTES
-        This function retrieves SharePoint organization settings from the specified URI.
+    .SYNOPSIS
+    Retrieves SharePoint organization settings.
+
+    .DESCRIPTION
+    This function retrieves SharePoint organization settings from the specified URI using the provided headers.
+
+    .PARAMETER Headers
+    Authentication token and additional information for the API request.
+
+    .EXAMPLE
+    Get-O365OrgSharePoint -Headers $headers
+
+    .NOTES
+    This function retrieves SharePoint organization settings from the specified URI.
     #>
     [cmdletbinding()]
     param(
