@@ -1,4 +1,29 @@
 ﻿function Set-O365OrgSway {
+    <#
+        .SYNOPSIS
+        Configures settings for Microsoft Sway in Office 365.
+        .DESCRIPTION
+        This function updates the configuration settings for Microsoft Sway in Office 365. It allows enabling or disabling external sharing, people picker search, Flickr, Pickit, Wikipedia, and YouTube.
+        .PARAMETER Headers
+        Specifies the headers for the API request. Typically includes authorization tokens.
+        .PARAMETER ExternalSharingEnabled
+        Specifies whether external sharing is enabled or disabled.
+        .PARAMETER PeoplePickerSearchEnabled
+        Specifies whether people picker search is enabled or disabled.
+        .PARAMETER FlickrEnabled
+        Specifies whether Flickr integration is enabled or disabled.
+        .PARAMETER PickitEnabled
+        Specifies whether Pickit integration is enabled or disabled.
+        .PARAMETER WikipediaEnabled
+        Specifies whether Wikipedia integration is enabled or disabled.
+        .PARAMETER YouTubeEnabled
+        Specifies whether YouTube integration is enabled or disabled.
+        .EXAMPLE
+        $headers = @{Authorization = "Bearer your_token"}
+        Set-O365OrgSway -Headers $headers -ExternalSharingEnabled $true -PeoplePickerSearchEnabled $false -FlickrEnabled $true -PickitEnabled $false -WikipediaEnabled $true -YouTubeEnabled $false
+
+        This example enables external sharing, disables people picker search, enables Flickr, disables Pickit, enables Wikipedia, and disables YouTube for Microsoft Sway.
+    #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
