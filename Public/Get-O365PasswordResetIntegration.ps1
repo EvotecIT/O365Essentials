@@ -1,4 +1,12 @@
 ﻿function Get-O365PasswordResetIntegration {
+    <#
+        .SYNOPSIS
+        Retrieves password reset integration details from the specified endpoint.
+        .DESCRIPTION
+        This function retrieves password reset integration details from the specified API endpoint using the provided headers.
+        .PARAMETER Headers
+        Authentication token and additional information for the API request.
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
