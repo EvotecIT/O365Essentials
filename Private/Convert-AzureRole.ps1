@@ -1,27 +1,27 @@
 ﻿function Convert-AzureRole {
     <#
-        .SYNOPSIS
-        Converts Azure role IDs to their corresponding role names.
+    .SYNOPSIS
+    Converts Azure role IDs to their corresponding role names.
 
-        .DESCRIPTION
-        This function takes one or more Azure role IDs and converts them to their human-readable role names. If the -All switch is used, it returns all available role names.
+    .DESCRIPTION
+    This function takes one or more Azure role IDs and converts them to their human-readable role names. If the -All switch is used, it returns all available role names.
         
-        .PARAMETER RoleID
-        An array of Azure role IDs to be converted to role names.
-        
-        .PARAMETER All
-        A switch parameter. If specified, the function returns all role names available in the system.
-        
-        .EXAMPLE
-        Convert-AzureRole -RoleID '62e90394-69f5-4237-9190-012177145e10'
-        Returns 'Global Administrator'.
-        
-        .EXAMPLE
-        Convert-AzureRole -All
-        Returns all role names available in the system.
-        
-        .NOTES
-        This function is useful for mapping role IDs to their descriptive names in scripts and reports.
+    .PARAMETER RoleID
+    An array of Azure role IDs to be converted to role names.
+    
+    .PARAMETER All
+    A switch parameter. If specified, the function returns all role names available in the system.
+
+    .EXAMPLE
+    Convert-AzureRole -RoleID '62e90394-69f5-4237-9190-012177145e10'
+    Returns 'Global Administrator'.
+
+    .EXAMPLE
+    Convert-AzureRole -All
+    Returns all role names available in the system.
+    
+    .NOTES
+    This function is useful for mapping role IDs to their descriptive names in scripts and reports.
     #>
     [cmdletbinding()]
     param(
