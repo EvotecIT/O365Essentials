@@ -1,17 +1,22 @@
 ﻿function Get-O365BillingSubscriptions {
     <#
-        .SYNOPSIS
-        Retrieves billing subscriptions for a specific organization in Office 365.
-        .DESCRIPTION
-        This function retrieves billing subscriptions for a specified organization in Office 365 from the designated API endpoint using the provided headers.
-        .PARAMETER Headers
-        A dictionary containing the necessary headers for the API request, typically including authorization information.
-        .PARAMETER Property
-        An array of properties to include in the query response.
-        .PARAMETER OrderBy
-        The property to order the query results by.
-        .EXAMPLE
-        Get-O365BillingSubscriptions -Headers $headers -Property @('displayName', 'status') -OrderBy 'displayName'
+    .SYNOPSIS
+    Retrieves billing subscriptions for a specific organization in Office 365.
+
+    .DESCRIPTION
+    This function retrieves billing subscriptions for a specified organization in Office 365 from the designated API endpoint using the provided headers.
+
+    .PARAMETER Headers
+    A dictionary containing the necessary headers for the API request, typically including authorization information.
+
+    .PARAMETER Property
+    An array of properties to include in the query response.
+
+    .PARAMETER OrderBy
+    The property to order the query results by.
+
+    .EXAMPLE
+    Get-O365BillingSubscriptions -Headers $headers -Property @('displayName', 'status') -OrderBy 'displayName'
     #>
     [cmdletbinding()]
     param(
