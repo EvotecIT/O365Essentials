@@ -1,19 +1,15 @@
 ﻿function Get-O365AzureADConnectSSO {
     <#
-    .SYNOPSIS
-    Short description
-
-    .DESCRIPTION
-    Long description
-
-    .PARAMETER Headers
-    Authorization header as created by Connect-O365Admin. If not provided the function will try to fetch it from the current execution context.
-
-    .EXAMPLE
-    Get-O365AzureADConnect -Verbose
-
-    .NOTES
-    https://portal.azure.com/#blade/Microsoft_AAD_IAM/PassThroughAuthenticationConnectorsBlade
+        .SYNOPSIS
+        Retrieves information about Azure AD Connect with Pass-Through Authentication (PTA).
+        .DESCRIPTION
+        This function retrieves detailed information about Azure AD Connect with Pass-Through Authentication (PTA) connectors.
+        .PARAMETER Headers
+        Authorization header as created by Connect-O365Admin. If not provided the function will try to fetch it from the current execution context.
+        .EXAMPLE
+        Get-O365AzureADConnect -Verbose
+        .NOTES
+        For more information, visit: https://portal.azure.com/#blade/Microsoft_AAD_IAM/PassThroughAuthenticationConnectorsBlade
     #>
     [cmdletbinding()]
     param(
