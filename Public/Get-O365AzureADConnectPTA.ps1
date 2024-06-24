@@ -1,19 +1,16 @@
 ﻿function Get-O365AzureADConnectPTA {
     <#
-    .SYNOPSIS
-    Short description
-
-    .DESCRIPTION
-    Long description
-
-    .PARAMETER Headers
-    Authorization header as created by Connect-O365Admin. If not provided the function will try to fetch it from the current execution context.
-
-    .EXAMPLE
-    Get-O365ModernAuthentication -Verbose
-
-    .NOTES
-    https://portal.azure.com/#blade/Microsoft_AAD_IAM/PassThroughAuthenticationConnectorsBlade
+        .SYNOPSIS
+        Retrieves the status of Pass-Through Authentication (PTA) connectors for Office 365.
+        .DESCRIPTION
+        This function calls the Azure AD API to get the status of Pass-Through Authentication (PTA) connectors.
+        It returns the details of the PTA connector groups.
+        .PARAMETER Headers
+        Authorization header as created by Connect-O365Admin. If not provided the function will try to fetch it from the current execution context.
+        .EXAMPLE
+        Get-O365AzureADConnectPTA -Headers $headers
+        .NOTES
+        https://portal.azure.com/#blade/Microsoft_AAD_IAM/PassThroughAuthenticationConnectorsBlade
     #>
     [cmdletbinding()]
     param(
