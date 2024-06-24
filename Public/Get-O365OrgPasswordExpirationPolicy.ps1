@@ -1,17 +1,22 @@
 ﻿function Get-O365OrgPasswordExpirationPolicy {
     <#
-        .SYNOPSIS
-        Retrieves password expiration policy information from the specified URI.
-        .DESCRIPTION
-        This function retrieves password expiration policy information from the specified URI using the provided headers.
-        .PARAMETER Headers
-        Authentication token and additional information for the API request.
-        .PARAMETER NoTranslation
-        Specifies whether to skip translation.
-        .EXAMPLE
-        Get-O365OrgPasswordExpirationPolicy -Headers $headers -NoTranslation
-        .NOTES
-        This function retrieves password expiration policy information from the specified URI.
+    .SYNOPSIS
+    Retrieves password expiration policy information from the specified URI.
+
+    .DESCRIPTION
+    This function retrieves password expiration policy information from the specified URI using the provided headers.
+
+    .PARAMETER Headers
+    Authentication token and additional information for the API request.
+
+    .PARAMETER NoTranslation
+    Specifies whether to skip translation.
+
+    .EXAMPLE
+    Get-O365OrgPasswordExpirationPolicy -Headers $headers -NoTranslation
+
+    .NOTES
+    This function retrieves password expiration policy information from the specified URI.
     #>
     [cmdletbinding()]
     param(
