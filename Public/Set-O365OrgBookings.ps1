@@ -1,53 +1,76 @@
 ﻿function Set-O365OrgBookings {
     <#
-        .SYNOPSIS
-        Set various settings for the Bookings app in the organization.
-        .DESCRIPTION
-        This function allows setting various configurations for the Bookings app in the organization.
-        .PARAMETER Headers
-        Authentication token and additional information created with Connect-O365Admin.
-        .PARAMETER Enabled
-        Enables or disables the Bookings app.
-        .PARAMETER ShowPaymentsToggle
-        Shows or hides the payments toggle in the Bookings app.
-        .PARAMETER PaymentsEnabled
-        Enables or disables payments in the Bookings app.
-        .PARAMETER ShowSocialSharingToggle
-        Shows or hides the social sharing toggle in the Bookings app.
-        .PARAMETER SocialSharingRestricted
-        Restricts social sharing in the Bookings app.
-        .PARAMETER ShowBookingsAddressEntryRestrictedToggle
-        Shows or hides the address entry restriction toggle in the Bookings app.
-        .PARAMETER BookingsAddressEntryRestricted
-        Restricts address entry in the Bookings app.
-        .PARAMETER ShowBookingsAuthEnabledToggle
-        Shows or hides the authentication enabled toggle in the Bookings app.
-        .PARAMETER BookingsAuthEnabled
-        Enables or disables authentication in the Bookings app.
-        .PARAMETER ShowBookingsCreationOfCustomQuestionsRestrictedToggle
-        Shows or hides the custom questions creation restriction toggle in the Bookings app.
-        .PARAMETER BookingsCreationOfCustomQuestionsRestricted
-        Restricts custom questions creation in the Bookings app.
-        .PARAMETER ShowBookingsExposureOfStaffDetailsRestrictedToggle
-        Shows or hides the staff details exposure restriction toggle in the Bookings app.
-        .PARAMETER BookingsExposureOfStaffDetailsRestricted
-        Restricts staff details exposure in the Bookings app.
-        .PARAMETER ShowBookingsNotesEntryRestrictedToggle
-        Shows or hides the notes entry restriction toggle in the Bookings app.
-        .PARAMETER BookingsNotesEntryRestricted
-        Restricts notes entry in the Bookings app.
-        .PARAMETER ShowBookingsPhoneNumberEntryRestrictedToggle
-        Shows or hides the phone number entry restriction toggle in the Bookings app.
-        .PARAMETER BookingsPhoneNumberEntryRestricted
-        Restricts phone number entry in the Bookings app.
-        .PARAMETER ShowStaffApprovalsToggle
-        Shows or hides the staff approvals toggle in the Bookings app.
-        .PARAMETER StaffMembershipApprovalRequired
-        Requires staff membership approval in the Bookings app.
-        .EXAMPLE
-        Set-O365OrgBookings -Headers $headers -Enabled $true -ShowPaymentsToggle $false -PaymentsEnabled $false
-        .NOTES
-        This function allows granular control over various settings in the Bookings app.
+    .SYNOPSIS
+    Set various settings for the Bookings app in the organization.
+
+    .DESCRIPTION
+    This function allows setting various configurations for the Bookings app in the organization.
+
+    .PARAMETER Headers
+    Authentication token and additional information created with Connect-O365Admin.
+
+    .PARAMETER Enabled
+    Enables or disables the Bookings app.
+
+    .PARAMETER ShowPaymentsToggle
+    Shows or hides the payments toggle in the Bookings app.
+
+    .PARAMETER PaymentsEnabled
+    Enables or disables payments in the Bookings app.
+
+    .PARAMETER ShowSocialSharingToggle
+    Shows or hides the social sharing toggle in the Bookings app.
+
+    .PARAMETER SocialSharingRestricted
+    Restricts social sharing in the Bookings app.
+
+    .PARAMETER ShowBookingsAddressEntryRestrictedToggle
+    Shows or hides the address entry restriction toggle in the Bookings app.
+
+    .PARAMETER BookingsAddressEntryRestricted
+    Restricts address entry in the Bookings app.
+
+    .PARAMETER ShowBookingsAuthEnabledToggle
+    Shows or hides the authentication enabled toggle in the Bookings app.
+
+    .PARAMETER BookingsAuthEnabled
+    Enables or disables authentication in the Bookings app.
+
+    .PARAMETER ShowBookingsCreationOfCustomQuestionsRestrictedToggle
+    Shows or hides the custom questions creation restriction toggle in the Bookings app.
+
+    .PARAMETER BookingsCreationOfCustomQuestionsRestricted
+    Restricts custom questions creation in the Bookings app.
+
+    .PARAMETER ShowBookingsExposureOfStaffDetailsRestrictedToggle
+    Shows or hides the staff details exposure restriction toggle in the Bookings app.
+
+    .PARAMETER BookingsExposureOfStaffDetailsRestricted
+    Restricts staff details exposure in the Bookings app.
+
+    .PARAMETER ShowBookingsNotesEntryRestrictedToggle
+    Shows or hides the notes entry restriction toggle in the Bookings app.
+
+    .PARAMETER BookingsNotesEntryRestricted
+    Restricts notes entry in the Bookings app.
+
+    .PARAMETER ShowBookingsPhoneNumberEntryRestrictedToggle
+    Shows or hides the phone number entry restriction toggle in the Bookings app.
+
+    .PARAMETER BookingsPhoneNumberEntryRestricted
+    Restricts phone number entry in the Bookings app.
+
+    .PARAMETER ShowStaffApprovalsToggle
+    Shows or hides the staff approvals toggle in the Bookings app.
+
+    .PARAMETER StaffMembershipApprovalRequired
+    Requires staff membership approval in the Bookings app.
+
+    .EXAMPLE
+    Set-O365OrgBookings -Headers $headers -Enabled $true -ShowPaymentsToggle $false -PaymentsEnabled $false
+
+    .NOTES
+    This function allows granular control over various settings in the Bookings app.
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
