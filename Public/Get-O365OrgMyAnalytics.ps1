@@ -1,13 +1,16 @@
 ﻿function Get-O365OrgMyAnalytics {
     <#
-        .SYNOPSIS
-        Retrieves MyAnalytics settings for Office 365.
-        .DESCRIPTION
-        This function retrieves MyAnalytics settings for Office 365 from the specified API endpoint using the provided headers.
-        .PARAMETER Headers
-        A dictionary containing the necessary headers for the API request, typically including authorization information.
-        .EXAMPLE
-        Get-O365OrgMyAnalytics -Headers $headers
+    .SYNOPSIS
+    Retrieves MyAnalytics settings for Office 365.
+
+    .DESCRIPTION
+    This function retrieves MyAnalytics settings for Office 365 from the specified API endpoint using the provided headers.
+
+    .PARAMETER Headers
+    A dictionary containing the necessary headers for the API request, typically including authorization information.
+
+    .EXAMPLE
+    Get-O365OrgMyAnalytics -Headers $headers
     #>
     [cmdletbinding()]
     param(
