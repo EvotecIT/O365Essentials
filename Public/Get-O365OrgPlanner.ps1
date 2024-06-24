@@ -1,15 +1,19 @@
 ﻿function Get-O365OrgPlanner {
     <#
-        .SYNOPSIS
-        Retrieves information about Planner settings from the specified URI.
-        .DESCRIPTION
-        This function retrieves information about Planner settings from the specified URI using the provided headers.
-        .PARAMETER Headers
-        Authentication token and additional information for the API request.
-        .EXAMPLE
-        Get-O365OrgPlanner -Headers $headers
-        .NOTES
-        This function retrieves information about Planner settings from the specified URI.
+    .SYNOPSIS
+    Retrieves information about Planner settings from the specified URI.
+
+    .DESCRIPTION
+    This function retrieves information about Planner settings from the specified URI using the provided headers.
+
+    .PARAMETER Headers
+    Authentication token and additional information for the API request.
+
+    .EXAMPLE
+    Get-O365OrgPlanner -Headers $headers
+
+    .NOTES
+    This function retrieves information about Planner settings from the specified URI.
     #>
     [cmdletbinding()]
     param(
