@@ -1,4 +1,29 @@
 ﻿function Set-O365AzureGroupExpiration {
+    <#
+        .SYNOPSIS
+        Sets the expiration settings for Office 365 Azure groups.
+        .DESCRIPTION
+        This function configures the lifecycle management settings for Office 365 Azure groups, including setting the group lifetime, specifying which groups are managed, and configuring admin notification emails.
+        .PARAMETER Headers
+        Specifies the headers for the API request. Typically includes authorization tokens.
+        .PARAMETER GroupLifeTime
+        Specifies the lifetime of the group in days. Accepts 180 or 365 days, or a custom value.
+        .PARAMETER ExpirationEnabled
+        Determines the scope of groups for which expiration is enabled. Valid values are 'None', 'Selected', 'All'.
+        .PARAMETER AdminNotificationEmails
+        Specifies the email addresses for sending notifications about group expiration events.
+        .PARAMETER ExpirationGroups
+        Specifies the display names of groups for which expiration settings are to be applied. This parameter is used when ExpirationEnabled is set to 'Selected'.
+        .PARAMETER ExpirationGroupsID
+        Specifies the IDs of groups for which expiration settings are to be applied. This parameter is used when ExpirationEnabled is set to 'Selected'.
+        .EXAMPLE
+        $Headers = @{Authorization = "Bearer your_token"}
+        Set-O365AzureGroupExpiration -Headers $Headers -GroupLifeTime 365 -ExpirationEnabled 'Selected' -AdminNotificationEmails 'admin@example.com' -ExpirationGroups @('Group1', 'Group2')
+
+        This example sets the group expiration for 'Group1' and 'Group2' with a lifetime of 365 days, where only selected groups are managed, and notifications are sent to 'admin@example.com'.
+        .LINK
+        https://main.iam.ad.ext.azure.com/api/Directories/LcmSettings
+    #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
