@@ -1,28 +1,25 @@
 ﻿function Set-O365OrgGraphDataConnect {
     <#
-    .SYNOPSIS
-    Short description
+        .SYNOPSIS
+        Configures the settings for Office 365 Organizational Graph Data Connect.
+        .DESCRIPTION
+        This function allows you to configure the settings for Office 365 Organizational Graph Data Connect. 
+        It sends a POST request to the Office 365 admin API with the specified settings.
+        .PARAMETER Headers
+        Specifies the headers for the API request. Typically includes authorization tokens.
+        .PARAMETER ServiceEnabled
+        Specifies whether the Organizational Graph Data Connect service should be enabled or disabled.
+        .PARAMETER TenantLockBoxApproverGroup
+        Specifies the email address of the group that will act as the Tenant LockBox approver. The email address must exist; otherwise, the API will break the cmdlet.
+        .PARAMETER Force
+        Forces the operation to run, ignoring current settings. Useful to overwrite settings after breaking tenant.
+        .EXAMPLE
+        $headers = @{Authorization = "Bearer your_token"}
+        Set-O365OrgGraphDataConnect -Headers $headers -ServiceEnabled $true -TenantLockBoxApproverGroup "approver@example.com" -Force
 
-    .DESCRIPTION
-    Long description
-
-    .PARAMETER Headers
-    Parameter description
-
-    .PARAMETER ServiceEnabled
-    Parameter description
-
-    .PARAMETER TenantLockBoxApproverGroup
-    Group provided in form of email address. The email address must exists! Otherwise the api will break cmdlet
-
-    .PARAMETER Force
-    Forces the operation to run ignoring current settings. Useful to overwrite settings after breaking tenant :-)
-
-    .EXAMPLE
-    An example
-
-    .NOTES
-    General notes
+        This example enables the Organizational Graph Data Connect service, sets the Tenant LockBox approver group to "approver@example.com", and forces the operation to run.
+        .NOTES
+        Ensure that the TenantLockBoxApproverGroup email address is valid and exists in your organization to avoid errors.
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
