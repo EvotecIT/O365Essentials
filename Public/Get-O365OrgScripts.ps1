@@ -1,15 +1,19 @@
 ﻿function Get-O365OrgScripts {
     <#
-        .SYNOPSIS
-        Retrieves organization scripts configuration.
-        .DESCRIPTION
-        This function retrieves the organization's scripts configuration from the specified URI using the provided headers.
-        .PARAMETER Headers
-        Authentication token and additional information for the API request.
-        .EXAMPLE
-        Get-O365OrgScripts -Headers $headers
-        .NOTES
-        This function retrieves organization scripts configuration from the specified URI.
+    .SYNOPSIS
+    Retrieves organization scripts configuration.
+
+    .DESCRIPTION
+    This function retrieves the organization's scripts configuration from the specified URI using the provided headers.
+
+    .PARAMETER Headers
+    Authentication token and additional information for the API request.
+
+    .EXAMPLE
+    Get-O365OrgScripts -Headers $headers
+
+    .NOTES
+    This function retrieves organization scripts configuration from the specified URI.
     #>
     [cmdletbinding()]
     param(
