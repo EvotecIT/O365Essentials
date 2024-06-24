@@ -1,4 +1,12 @@
 ﻿function Get-O365OrgUserOwnedApps {
+    <#
+        .SYNOPSIS
+        Retrieves organization user owned apps settings.
+        .DESCRIPTION
+        This function retrieves organization user owned apps settings from the specified URIs using the provided headers.
+        .PARAMETER Headers
+        Authentication token and additional information for the API request.
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
