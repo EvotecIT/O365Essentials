@@ -1,4 +1,26 @@
 ﻿function Get-O365AzureADRolesMember {
+    <#
+        .SYNOPSIS
+        Retrieves Azure AD roles members based on specified role names or filters.
+        .DESCRIPTION
+        This function retrieves Azure AD roles members based on specified role names or filters. It allows querying for one or more roles at the same time and provides the flexibility to filter the results based on specific criteria.
+        .PARAMETER RoleName
+        Specifies the name of the role(s) to retrieve members for.
+        .PARAMETER Filter
+        Specifies the filter criteria to apply when retrieving role members.
+        .PARAMETER Property
+        Specifies the properties to include in the results.
+        .PARAMETER OrderBy
+        Specifies the order in which the results should be sorted.
+        .PARAMETER All
+        Indicates whether all roles should be retrieved.
+        .EXAMPLE
+        Get-O365AzureADRolesMember -RoleName "Role1", "Role2" -Property "Property1", "Property2" -OrderBy "Property1" -All
+        Retrieves members for specified roles with specific properties and sorting order.
+        .EXAMPLE
+        Get-O365AzureADRolesMember -Filter "FilterCriteria"
+        Retrieves members based on the specified filter criteria.
+    #>
     [cmdletBinding(DefaultParameterSetName = 'Role')]
     param(
         [Parameter(Mandatory, ParameterSetName = 'Role')][Array] $RoleName,
