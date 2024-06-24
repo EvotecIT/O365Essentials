@@ -1,11 +1,13 @@
 ﻿function Get-O365SearchIntelligenceItemInsights {
     <#
-        .SYNOPSIS
-        Retrieves item insights for Office 365 search intelligence.
-        .DESCRIPTION
-        This function retrieves item insights for Office 365 search intelligence from the specified API endpoint using the provided headers.
-        .PARAMETER Headers
-        Authentication token and additional information for the API request.
+    .SYNOPSIS
+    Retrieves item insights for Office 365 search intelligence.
+
+    .DESCRIPTION
+    This function retrieves item insights for Office 365 search intelligence from the specified API endpoint using the provided headers.
+
+    .PARAMETER Headers
+    Authentication token and additional information for the API request.
     #>
     [cmdletbinding()]
     param(
