@@ -1,18 +1,15 @@
 ﻿function Get-O365OrgM365Groups {
     <#
-    .SYNOPSIS
-    Choose how guests from outside your organization can collaborate with your users in Microsoft 365 Groups. Learn more about guest access to Microsoft 365 Groups
-    .DESCRIPTION
-    Long description
-
-    .PARAMETER Headers
-    Parameter description
-
-    .EXAMPLE
-    An example
-
-    .NOTES
-    General notes
+        .SYNOPSIS
+        Provides information on how guests from outside the organization can collaborate with users in Microsoft 365 Groups.
+        .DESCRIPTION
+        This function retrieves settings related to guest access in Microsoft 365 Groups.
+        .PARAMETER Headers
+        A dictionary containing the necessary headers for the API request, typically including authorization information.
+        .EXAMPLE
+        Get-O365OrgM365Groups -Headers $headers
+        .NOTES
+        This function provides details on guest access settings in Microsoft 365 Groups.
     #>
     [cmdletbinding()]
     param(
