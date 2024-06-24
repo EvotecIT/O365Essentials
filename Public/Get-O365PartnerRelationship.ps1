@@ -1,13 +1,16 @@
 ﻿function Get-O365PartnerRelationship {
     <#
-        .SYNOPSIS
-        Retrieves partner relationship information based on the specified tenant ID.
-        .DESCRIPTION
-        This function retrieves partner relationship details for the provided tenant ID from the partner management API.
-        .PARAMETER Headers
-        Authentication token and additional information for the API request.
-        .PARAMETER TenantID
-        The ID of the tenant for which partner relationships are to be retrieved.
+    .SYNOPSIS
+    Retrieves partner relationship information based on the specified tenant ID.
+
+    .DESCRIPTION
+    This function retrieves partner relationship details for the provided tenant ID from the partner management API.
+
+    .PARAMETER Headers
+    Authentication token and additional information for the API request.
+
+    .PARAMETER TenantID
+    The ID of the tenant for which partner relationships are to be retrieved.
     #>
     [cmdletbinding()]
     param(
