@@ -1,4 +1,22 @@
 ﻿function Set-O365GroupLicenses {
+    <#
+        .SYNOPSIS
+        Sets Office 365 group licenses based on provided parameters.
+        .DESCRIPTION
+        This function assigns or removes licenses for an Office 365 group based on the provided parameters.
+        .PARAMETER Headers
+        A dictionary containing the necessary headers for the API request, typically including authorization information.
+        .PARAMETER GroupID
+        The ID of the Office 365 group to assign licenses to.
+        .PARAMETER GroupDisplayName
+        The display name of the Office 365 group to assign licenses to.
+        .PARAMETER Licenses
+        An array of licenses to assign to the group.
+        .EXAMPLE
+        Set-O365GroupLicenses -Headers $headers -GroupID "12345" -Licenses @($License1, $License2)
+        .NOTES
+        For more information, visit: https://docs.microsoft.com/en-us/office365/enterprise/office-365-service-descriptions
+    #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
