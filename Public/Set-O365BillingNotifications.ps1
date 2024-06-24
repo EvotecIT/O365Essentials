@@ -1,22 +1,17 @@
 ﻿function Set-O365BillingNotifications {
     <#
-    .SYNOPSIS
-    Sets settijngs for Billing notifications (Invoice PDF ON/OFF)
-
-    .DESCRIPTION
-    Sets settijngs for Billing notifications (Invoice PDF ON/OFF)
-
-    .PARAMETER Headers
-    Parameter description
-
-    .PARAMETER SendInvoiceEmails
-    Parameter description
-
-    .EXAMPLE
-    An example
-
-    .NOTES
-    Sets settings for Billing notifications https://admin.microsoft.com/#/BillingNotifications
+        .SYNOPSIS
+        Sets settings for Billing notifications, allowing control over Invoice PDF delivery.
+        .DESCRIPTION
+        This function configures the settings for Billing notifications, enabling the user to specify whether to receive Invoice PDFs.
+        .PARAMETER Headers
+        A dictionary containing the necessary headers for the API request, typically including authorization information.
+        .PARAMETER SendInvoiceEmails
+        Specifies whether to send Invoice emails. This parameter is mandatory.
+        .EXAMPLE
+        Set-O365BillingNotifications -Headers $headers -SendInvoiceEmails $true
+        .NOTES
+        For more information on Billing notifications settings, visit: https://admin.microsoft.com/#/BillingNotifications
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
