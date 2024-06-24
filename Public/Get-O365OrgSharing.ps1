@@ -1,17 +1,22 @@
 ﻿function Get-O365OrgSharing {
     <#
-        .SYNOPSIS
-        Retrieves organization sharing settings.
-        .DESCRIPTION
-        This function retrieves organization sharing settings from the specified URI using the provided headers.
-        .PARAMETER Headers
-        Authentication token and additional information for the API request.
-        .PARAMETER NoTranslation
-        Switch to bypass translation.
-        .EXAMPLE
-        Get-O365OrgSharing -Headers $headers
-        .NOTES
-        This function retrieves organization sharing settings from the specified URI.
+    .SYNOPSIS
+    Retrieves organization sharing settings.
+
+    .DESCRIPTION
+    This function retrieves organization sharing settings from the specified URI using the provided headers.
+
+    .PARAMETER Headers
+    Authentication token and additional information for the API request.
+
+    .PARAMETER NoTranslation
+    Switch to bypass translation.
+
+    .EXAMPLE
+    Get-O365OrgSharing -Headers $headers
+
+    .NOTES
+    This function retrieves organization sharing settings from the specified URI.
     #>
     [cmdletbinding()]
     param(
