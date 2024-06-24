@@ -1,4 +1,14 @@
 ﻿function Get-O365OrgWhiteboard {
+    <#
+        .SYNOPSIS
+        Retrieves organization whiteboard settings.
+        .DESCRIPTION
+        This function retrieves organization whiteboard settings from the specified URI using the provided headers.
+        .PARAMETER Headers
+        Authentication token and additional information for the API request.
+        .PARAMETER NoTranslation
+        Switch to disable translation of telemetry data.
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
