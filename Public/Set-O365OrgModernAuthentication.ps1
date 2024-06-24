@@ -1,50 +1,69 @@
 ﻿function Set-O365OrgModernAuthentication {
     <#
-        .SYNOPSIS
-        Configures Modern Authentication settings for an Office 365 organization.
-        .DESCRIPTION
-        This function allows you to configure the Modern Authentication settings for your Office 365 organization. 
-        It sends a POST request to the Office 365 admin API with the specified settings.
-        .PARAMETER Headers
-        Specifies the headers for the API request. Typically includes authorization tokens.
-        .PARAMETER EnableModernAuth
-        Specifies whether Modern Authentication should be enabled.
-        .PARAMETER SecureDefaults
-        Specifies whether Secure Defaults should be enabled.
-        .PARAMETER DisableModernAuth
-        Specifies whether Modern Authentication should be disabled.
-        .PARAMETER AllowBasicAuthActiveSync
-        Specifies whether Basic Authentication for ActiveSync should be allowed.
-        .PARAMETER AllowBasicAuthImap
-        Specifies whether Basic Authentication for IMAP should be allowed.
-        .PARAMETER AllowBasicAuthPop
-        Specifies whether Basic Authentication for POP should be allowed.
-        .PARAMETER AllowBasicAuthWebServices
-        Specifies whether Basic Authentication for Web Services should be allowed.
-        .PARAMETER AllowBasicAuthPowershell
-        Specifies whether Basic Authentication for PowerShell should be allowed.
-        .PARAMETER AllowBasicAuthAutodiscover
-        Specifies whether Basic Authentication for Autodiscover should be allowed.
-        .PARAMETER AllowBasicAuthMapi
-        Specifies whether Basic Authentication for MAPI should be allowed.
-        .PARAMETER AllowBasicAuthOfflineAddressBook
-        Specifies whether Basic Authentication for Offline Address Book should be allowed.
-        .PARAMETER AllowBasicAuthRpc
-        Specifies whether Basic Authentication for RPC should be allowed.
-        .PARAMETER AllowBasicAuthSmtp
-        Specifies whether Basic Authentication for SMTP should be allowed.
-        .PARAMETER AllowOutlookClient
-        Specifies whether Basic Authentication for Outlook Client should be allowed.
-        .EXAMPLE
-        Set-O365OrgModernAuthentication -AllowBasicAuthImap $true -AllowBasicAuthPop $true -WhatIf
+    .SYNOPSIS
+    Configures Modern Authentication settings for an Office 365 organization.
 
-        This example enables Basic Authentication for IMAP and POP, and uses the WhatIf parameter to show what would happen if the command runs.
-        .EXAMPLE
-        Set-O365OrgModernAuthentication -AllowBasicAuthImap $false -AllowBasicAuthPop $false -Verbose -WhatIf
+    .DESCRIPTION
+    This function allows you to configure the Modern Authentication settings for your Office 365 organization. 
+    It sends a POST request to the Office 365 admin API with the specified settings.
 
-        This example disables Basic Authentication for IMAP and POP, and uses the Verbose and WhatIf parameters to show detailed information about what would happen if the command runs.
-        .NOTES
-        https://admin.microsoft.com/#/Settings/Services/:/Settings/L1/ModernAuthentication
+    .PARAMETER Headers
+    Specifies the headers for the API request. Typically includes authorization tokens.
+
+    .PARAMETER EnableModernAuth
+    Specifies whether Modern Authentication should be enabled.
+
+    .PARAMETER SecureDefaults
+    Specifies whether Secure Defaults should be enabled.
+
+    .PARAMETER DisableModernAuth
+    Specifies whether Modern Authentication should be disabled.
+
+    .PARAMETER AllowBasicAuthActiveSync
+    Specifies whether Basic Authentication for ActiveSync should be allowed.
+
+    .PARAMETER AllowBasicAuthImap
+    Specifies whether Basic Authentication for IMAP should be allowed.
+
+    .PARAMETER AllowBasicAuthPop
+    Specifies whether Basic Authentication for POP should be allowed.
+
+    .PARAMETER AllowBasicAuthWebServices
+    Specifies whether Basic Authentication for Web Services should be allowed.
+
+    .PARAMETER AllowBasicAuthPowershell
+    Specifies whether Basic Authentication for PowerShell should be allowed.
+
+    .PARAMETER AllowBasicAuthAutodiscover
+    Specifies whether Basic Authentication for Autodiscover should be allowed.
+
+    .PARAMETER AllowBasicAuthMapi
+    Specifies whether Basic Authentication for MAPI should be allowed.
+
+    .PARAMETER AllowBasicAuthOfflineAddressBook
+    Specifies whether Basic Authentication for Offline Address Book should be allowed.
+
+    .PARAMETER AllowBasicAuthRpc
+    Specifies whether Basic Authentication for RPC should be allowed.
+
+    .PARAMETER AllowBasicAuthSmtp
+    Specifies whether Basic Authentication for SMTP should be allowed.
+
+    .PARAMETER AllowOutlookClient
+    Specifies whether Basic Authentication for Outlook Client should be allowed.
+
+    .EXAMPLE
+    Set-O365OrgModernAuthentication -AllowBasicAuthImap $true -AllowBasicAuthPop $true -WhatIf
+
+    This example enables Basic Authentication for IMAP and POP, and uses the WhatIf parameter to show what would happen if the command runs.
+
+    .EXAMPLE
+    Set-O365OrgModernAuthentication -AllowBasicAuthImap $false -AllowBasicAuthPop $false -Verbose -WhatIf
+
+    This example disables Basic Authentication for IMAP and POP, and uses the Verbose and WhatIf parameters to show detailed information about what would happen if the command runs.
+
+    .NOTES
+    https://admin.microsoft.com/#/Settings/Services/:/Settings/L1/ModernAuthentication
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
