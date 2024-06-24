@@ -1,21 +1,26 @@
 ﻿function Set-O365OrgMicrosoftTeams {
     <#
-        .SYNOPSIS
-        Configures Microsoft Teams settings for an Office 365 organization.
-        .DESCRIPTION
-        This function allows you to configure the Microsoft Teams settings for your Office 365 organization. 
-        It sends a POST request to the Office 365 admin API with the specified settings.
-        .PARAMETER Headers
-        Specifies the headers for the API request. Typically includes authorization tokens.
-        .PARAMETER AllowCalendarSharing
-        Specifies whether calendar sharing should be allowed in Microsoft Teams.
-        .EXAMPLE
-        $headers = @{Authorization = "Bearer your_token"}
-        Set-O365OrgMicrosoftTeams -Headers $headers -AllowCalendarSharing $true
+    .SYNOPSIS
+    Configures Microsoft Teams settings for an Office 365 organization.
 
-        This example enables calendar sharing in Microsoft Teams for the Office 365 organization.
-        .NOTES
-        https://admin.microsoft.com/#/Settings/Services/:/Settings/L1/SkypeTeams
+    .DESCRIPTION
+    This function allows you to configure the Microsoft Teams settings for your Office 365 organization. 
+    It sends a POST request to the Office 365 admin API with the specified settings.
+
+    .PARAMETER Headers
+    Specifies the headers for the API request. Typically includes authorization tokens.
+
+    .PARAMETER AllowCalendarSharing
+    Specifies whether calendar sharing should be allowed in Microsoft Teams.
+
+    .EXAMPLE
+    $headers = @{Authorization = "Bearer your_token"}
+    Set-O365OrgMicrosoftTeams -Headers $headers -AllowCalendarSharing $true
+
+    This example enables calendar sharing in Microsoft Teams for the Office 365 organization.
+
+    .NOTES
+    https://admin.microsoft.com/#/Settings/Services/:/Settings/L1/SkypeTeams
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
