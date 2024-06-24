@@ -1,18 +1,22 @@
 ﻿function Set-O365OrgUserConsentApps {
     <#
-        .SYNOPSIS
-        Configures user consent settings for integrated apps in Office 365.
-        .DESCRIPTION
-        This function updates the configuration settings for user consent to integrated apps in Office 365. It allows enabling or disabling user consent to apps.
-        .PARAMETER Headers
-        Specifies the headers for the API request. Typically includes authorization tokens.
-        .PARAMETER UserConsentToAppsEnabled
-        Specifies whether user consent to apps is enabled or disabled. This parameter is mandatory.
-        .EXAMPLE
-        $headers = @{Authorization = "Bearer your_token"}
-        Set-O365OrgUserConsentApps -Headers $headers -UserConsentToAppsEnabled $true
+    .SYNOPSIS
+    Configures user consent settings for integrated apps in Office 365.
 
-        This example enables user consent to integrated apps.
+    .DESCRIPTION
+    This function updates the configuration settings for user consent to integrated apps in Office 365. It allows enabling or disabling user consent to apps.
+
+    .PARAMETER Headers
+    Specifies the headers for the API request. Typically includes authorization tokens.
+
+    .PARAMETER UserConsentToAppsEnabled
+    Specifies whether user consent to apps is enabled or disabled. This parameter is mandatory.
+
+    .EXAMPLE
+    $headers = @{Authorization = "Bearer your_token"}
+    Set-O365OrgUserConsentApps -Headers $headers -UserConsentToAppsEnabled $true
+
+    This example enables user consent to integrated apps.
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
