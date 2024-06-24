@@ -1,43 +1,33 @@
 ﻿function New-O365License {
     <#
-    .SYNOPSIS
-    Helper cmdlet to create a new O365 license that is used in Set-O365AzureGroupLicenses cmdlet.
-
-    .DESCRIPTION
-    Helper cmdlet to create a new O365 license that is used in Set-O365AzureGroupLicenses cmdlet.
-
-    .PARAMETER LicenseName
-    LicenseName to assign. Can be used instead of LicenseSKUID
-
-    .PARAMETER LicenseSKUID
-    LicenseSKUID to assign. Can be used instead of LicenseName
-
-    .PARAMETER EnabledServicesDisplayName
-    Parameter description
-
-    .PARAMETER EnabledServicesName
-    Parameter description
-
-    .PARAMETER DisabledServicesDisplayName
-    Parameter description
-
-    .PARAMETER DisabledServicesName
-    Parameter description
-
-    .EXAMPLE
-    Set-O365GroupLicenses -GroupDisplayName 'Test-Group-TestEVOTECPL' -Licenses @(
-        New-O365License -LicenseName 'Office 365 E3' -Verbose
-        New-O365License -LicenseName 'Enterprise Mobility + Security E5' -Verbose
-    ) -Verbose -WhatIf
-
-    .EXAMPLE
-    Set-O365GroupLicenses -GroupDisplayName 'Test-Group-TestEVOTECPL' -Licenses @(
-        New-O365License -LicenseName 'Office 365 E3' -Verbose -DisabledServicesDisplayName 'Microsoft Kaizala Pro', 'Whiteboard (Plan 2)'
-        New-O365License -LicenseName 'Enterprise Mobility + Security E5' -Verbose -EnabledServicesDisplayName 'Azure Information Protection Premium P2', 'Microsoft Defender for Identity'
-    ) -Verbose -WhatIf
-
-    .NOTES
-    General notes
+        .SYNOPSIS
+        Helper cmdlet to create a new O365 license that is used in Set-O365AzureGroupLicenses cmdlet.
+        .DESCRIPTION
+        Helper cmdlet to create a new O365 license that is used in Set-O365AzureGroupLicenses cmdlet.
+        .PARAMETER LicenseName
+        LicenseName to assign. Can be used instead of LicenseSKUID
+        .PARAMETER LicenseSKUID
+        LicenseSKUID to assign. Can be used instead of LicenseName
+        .PARAMETER EnabledServicesDisplayName
+        Specifies the display names of services to enable.
+        .PARAMETER EnabledServicesName
+        Specifies the names of services to enable.
+        .PARAMETER DisabledServicesDisplayName
+        Specifies the display names of services to disable.
+        .PARAMETER DisabledServicesName
+        Specifies the names of services to disable.
+        .EXAMPLE
+        Set-O365GroupLicenses -GroupDisplayName 'Test-Group-TestEVOTECPL' -Licenses @(
+            New-O365License -LicenseName 'Office 365 E3' -Verbose
+            New-O365License -LicenseName 'Enterprise Mobility + Security E5' -Verbose
+        ) -Verbose -WhatIf
+        .EXAMPLE
+        Set-O365GroupLicenses -GroupDisplayName 'Test-Group-TestEVOTECPL' -Licenses @(
+            New-O365License -LicenseName 'Office 365 E3' -Verbose -DisabledServicesDisplayName 'Microsoft Kaizala Pro', 'Whiteboard (Plan 2)'
+            New-O365License -LicenseName 'Enterprise Mobility + Security E5' -Verbose -EnabledServicesDisplayName 'Azure Information Protection Premium P2', 'Microsoft Defender for Identity'
+        ) -Verbose -WhatIf
+        .NOTES
+        General notes
     #>
     [cmdletbinding(DefaultParameterSetName = 'ServiceDisplayNameEnable')]
     param(
