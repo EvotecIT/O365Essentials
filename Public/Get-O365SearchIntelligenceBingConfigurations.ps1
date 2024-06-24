@@ -1,4 +1,12 @@
 ﻿function Get-O365SearchIntelligenceBingConfigurations {
+    <#
+        .SYNOPSIS
+        Retrieves Bing configurations for Office 365 search intelligence.
+        .DESCRIPTION
+        This function retrieves Bing configurations for Office 365 search intelligence from the specified API endpoint using the provided headers.
+        .PARAMETER Headers
+        Authentication token and additional information for the API request.
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
