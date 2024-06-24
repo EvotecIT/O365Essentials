@@ -1,13 +1,16 @@
 ﻿function Get-O365OrgAzureSpeechServices {
     <#
-        .SYNOPSIS
-        Retrieves the status of Azure Speech Services for the organization.
-        .DESCRIPTION
-        This function queries the Microsoft Graph API to retrieve the status of Azure Speech Services for the organization.
-        .PARAMETER Headers
-        A dictionary containing the necessary headers for the API request, typically including authorization information.
-        .EXAMPLE
-        Get-O365OrgAzureSpeechServices -Headers $headers
+    .SYNOPSIS
+    Retrieves the status of Azure Speech Services for the organization.
+
+    .DESCRIPTION
+    This function queries the Microsoft Graph API to retrieve the status of Azure Speech Services for the organization.
+
+    .PARAMETER Headers
+    A dictionary containing the necessary headers for the API request, typically including authorization information.
+
+    .EXAMPLE
+    Get-O365OrgAzureSpeechServices -Headers $headers
     #>
     [cmdletbinding()]
     param(
