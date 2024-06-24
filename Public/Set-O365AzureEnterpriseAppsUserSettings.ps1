@@ -1,23 +1,30 @@
 ﻿function Set-O365AzureEnterpriseAppsUserSettings {
     <#
-        .SYNOPSIS
-        Configures user settings for Azure enterprise applications.
-        .DESCRIPTION
-        This function allows administrators to configure user settings for Azure enterprise applications.
-        .PARAMETER Headers
-        Specifies the headers for the API request, typically including authorization tokens.
-        .PARAMETER UsersCanConsentAppsAccessingData
-        Specifies whether users can consent to apps accessing company data.
-        .PARAMETER UsersCanAddGalleryAppsToMyApp
-        Specifies whether users can add gallery apps to their applications.
-        .PARAMETER UsersCanOnlySeeO365AppsInPortal
-        Specifies whether users can only see Office 365 apps in the portal.
-        .EXAMPLE
-        An example of how to use this function:
-        Set-O365AzureEnterpriseAppsUserSettings -Headers $headers -UsersCanConsentAppsAccessingData $true -UsersCanAddGalleryAppsToMyApp $false -UsersCanOnlySeeO365AppsInPortal $true
-        .NOTES
-        Please keep in mind that:
-            - Users can consent to apps accessing company data for the groups they own -> can be set using Set-O3465AzureEnterpriseAppsGroupConsent
+    .SYNOPSIS
+    Configures user settings for Azure enterprise applications.
+
+    .DESCRIPTION
+    This function allows administrators to configure user settings for Azure enterprise applications.
+
+    .PARAMETER Headers
+    Specifies the headers for the API request, typically including authorization tokens.
+
+    .PARAMETER UsersCanConsentAppsAccessingData
+    Specifies whether users can consent to apps accessing company data.
+
+    .PARAMETER UsersCanAddGalleryAppsToMyApp
+    Specifies whether users can add gallery apps to their applications.
+
+    .PARAMETER UsersCanOnlySeeO365AppsInPortal
+    Specifies whether users can only see Office 365 apps in the portal.
+
+    .EXAMPLE
+    An example of how to use this function:
+    Set-O365AzureEnterpriseAppsUserSettings -Headers $headers -UsersCanConsentAppsAccessingData $true -UsersCanAddGalleryAppsToMyApp $false -UsersCanOnlySeeO365AppsInPortal $true
+
+    .NOTES
+    Please keep in mind that:
+    - Users can consent to apps accessing company data for the groups they own -> can be set using Set-O3465AzureEnterpriseAppsGroupConsent
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
