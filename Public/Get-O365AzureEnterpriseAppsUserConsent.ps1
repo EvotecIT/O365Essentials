@@ -1,18 +1,23 @@
 ﻿function Get-O365AzureEnterpriseAppsUserConsent {
     <#
-        .SYNOPSIS
-        Retrieves user consent settings for Azure Enterprise Apps.
-        .DESCRIPTION
-        This function retrieves user consent settings for Azure Enterprise Apps based on the provided headers.
-        It returns information about permissions and policies assigned to users.
-        .PARAMETER Headers
-        A dictionary containing the headers for the API request, typically including authorization information.
-        .PARAMETER NoTranslation
-        Specifies whether to return the consent settings without translation.
-        .EXAMPLE
-        Get-O365AzureEnterpriseAppsUserConsent -Headers $headers
-        .NOTES
-        For more information, visit: https://docs.microsoft.com/en-us/azure/active-directory/manage-apps/configure-user-consent?tabs=azure-portal
+    .SYNOPSIS
+    Retrieves user consent settings for Azure Enterprise Apps.
+
+    .DESCRIPTION
+    This function retrieves user consent settings for Azure Enterprise Apps based on the provided headers.
+    It returns information about permissions and policies assigned to users.
+
+    .PARAMETER Headers
+    A dictionary containing the headers for the API request, typically including authorization information.
+
+    .PARAMETER NoTranslation
+    Specifies whether to return the consent settings without translation.
+
+    .EXAMPLE
+    Get-O365AzureEnterpriseAppsUserConsent -Headers $headers
+
+    .NOTES
+    For more information, visit: https://docs.microsoft.com/en-us/azure/active-directory/manage-apps/configure-user-consent?tabs=azure-portal
     #>
     [cmdletbinding()]
     param(
