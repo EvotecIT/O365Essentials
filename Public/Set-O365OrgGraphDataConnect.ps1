@@ -1,25 +1,32 @@
 ﻿function Set-O365OrgGraphDataConnect {
     <#
-        .SYNOPSIS
-        Configures the settings for Office 365 Organizational Graph Data Connect.
-        .DESCRIPTION
-        This function allows you to configure the settings for Office 365 Organizational Graph Data Connect. 
-        It sends a POST request to the Office 365 admin API with the specified settings.
-        .PARAMETER Headers
-        Specifies the headers for the API request. Typically includes authorization tokens.
-        .PARAMETER ServiceEnabled
-        Specifies whether the Organizational Graph Data Connect service should be enabled or disabled.
-        .PARAMETER TenantLockBoxApproverGroup
-        Specifies the email address of the group that will act as the Tenant LockBox approver. The email address must exist; otherwise, the API will break the cmdlet.
-        .PARAMETER Force
-        Forces the operation to run, ignoring current settings. Useful to overwrite settings after breaking tenant.
-        .EXAMPLE
-        $headers = @{Authorization = "Bearer your_token"}
-        Set-O365OrgGraphDataConnect -Headers $headers -ServiceEnabled $true -TenantLockBoxApproverGroup "approver@example.com" -Force
+    .SYNOPSIS
+    Configures the settings for Office 365 Organizational Graph Data Connect.
 
-        This example enables the Organizational Graph Data Connect service, sets the Tenant LockBox approver group to "approver@example.com", and forces the operation to run.
-        .NOTES
-        Ensure that the TenantLockBoxApproverGroup email address is valid and exists in your organization to avoid errors.
+    .DESCRIPTION
+    This function allows you to configure the settings for Office 365 Organizational Graph Data Connect. 
+    It sends a POST request to the Office 365 admin API with the specified settings.
+
+    .PARAMETER Headers
+    Specifies the headers for the API request. Typically includes authorization tokens.
+
+    .PARAMETER ServiceEnabled
+    Specifies whether the Organizational Graph Data Connect service should be enabled or disabled.
+
+    .PARAMETER TenantLockBoxApproverGroup
+    Specifies the email address of the group that will act as the Tenant LockBox approver. The email address must exist; otherwise, the API will break the cmdlet.
+
+    .PARAMETER Force
+    Forces the operation to run, ignoring current settings. Useful to overwrite settings after breaking tenant.
+
+    .EXAMPLE
+    $headers = @{Authorization = "Bearer your_token"}
+    Set-O365OrgGraphDataConnect -Headers $headers -ServiceEnabled $true -TenantLockBoxApproverGroup "approver@example.com" -Force
+
+    This example enables the Organizational Graph Data Connect service, sets the Tenant LockBox approver group to "approver@example.com", and forces the operation to run.
+
+    .NOTES
+    Ensure that the TenantLockBoxApproverGroup email address is valid and exists in your organization to avoid errors.
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
