@@ -1,19 +1,13 @@
 ﻿function Get-O365OrgBriefingEmail {
     <#
-    .SYNOPSIS
-    Gets status of Briefing emails.
-
-    .DESCRIPTION
-    Long description
-
-    .PARAMETER Headers
-    Parameter description
-
-    .EXAMPLE
-    An example
-
-    .NOTES
-    General notes
+        .SYNOPSIS
+        Retrieves the status of Briefing emails for the organization.
+        .DESCRIPTION
+        This function queries the Microsoft Graph API to retrieve the status of Briefing emails for the organization.
+        .PARAMETER Headers
+        A dictionary containing the necessary headers for the API request, typically including authorization information.
+        .EXAMPLE
+        Get-O365OrgBriefingEmail -Headers $headers
     #>
     [cmdletbinding()]
     param(
