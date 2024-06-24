@@ -1,11 +1,13 @@
 ﻿function Get-O365OrgUserConsentApps {
     <#
-        .SYNOPSIS
-        Retrieves organization user consent apps settings.
-        .DESCRIPTION
-        This function retrieves organization user consent apps settings from the specified URI using the provided headers.
-        .PARAMETER Headers
-        Authentication token and additional information for the API request.
+    .SYNOPSIS
+    Retrieves organization user consent apps settings.
+
+    .DESCRIPTION
+    This function retrieves organization user consent apps settings from the specified URI using the provided headers.
+
+    .PARAMETER Headers
+    Authentication token and additional information for the API request.
     #>
     [cmdletbinding()]
     param(
