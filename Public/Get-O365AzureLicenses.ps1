@@ -1,45 +1,38 @@
 ﻿function Get-O365AzureLicenses {
     <#
-    .SYNOPSIS
-    Short description
-
-    .DESCRIPTION
-    Long description
-
-    .PARAMETER Headers
-    Authorization header as created by Connect-O365Admin. If not provided the function will try to fetch it from the current execution context.
-
-    .PARAMETER LicenseName
-    Parameter description
-
-    .PARAMETER ServicePlans
-    Parameter description
-
-    .PARAMETER LicenseSKUID
-    Parameter description
-
-    .EXAMPLE
-    $Licenses = Get-O365AzureLicenses
-    $Licenses | Format-Table
-
-    .EXAMPLE
-    $ServicePlans = Get-O365AzureLicenses -ServicePlans -LicenseName 'Enterprise Mobility + Security E5' -Verbose
-    $ServicePlans | Format-Table
-
-    .EXAMPLE
-    $ServicePlans = Get-O365AzureLicenses -ServicePlans -LicenseSKUID 'EMSPREMIUM' -Verbose
-    $ServicePlans | Format-Table
-
-    .EXAMPLE
-    $ServicePlans = Get-O365AzureLicenses -ServicePlans -LicenseSKUID 'evotecpoland:EMSPREMIUM' -Verbose
-    $ServicePlans | Format-Table
-
-    .EXAMPLE
-    $ServicePlans = Get-O365AzureLicenses -ServicePlans -LicenseSKUID 'evotecpoland:EMSPREMIUM' -IncludeLicenseDetails -Verbose
-    $ServicePlans | Format-Table
-
-    .NOTES
-    General notes
+        .SYNOPSIS
+        Retrieves Azure licensing information based on provided parameters.
+        .DESCRIPTION
+        This function retrieves Azure licensing information based on the provided parameters such as LicenseName, LicenseSKUID, ServicePlans, and ServicePlansComplete.
+        .PARAMETER Headers
+        Authorization header as created by Connect-O365Admin. If not provided the function will try to fetch it from the current execution context.
+        .PARAMETER LicenseName
+        Specifies the name of the license to retrieve information for.
+        .PARAMETER ServicePlans
+        Switch parameter to indicate whether to retrieve detailed service plans information.
+        .PARAMETER ServicePlansComplete
+        Switch parameter to indicate whether to retrieve complete service plans information.
+        .PARAMETER LicenseSKUID
+        Specifies the SKU ID of the license to retrieve information for.
+        .PARAMETER IncludeLicenseDetails
+        Switch parameter to include detailed license information along with service plans.
+        .EXAMPLE
+        $Licenses = Get-O365AzureLicenses
+        $Licenses | Format-Table
+        .EXAMPLE
+        $ServicePlans = Get-O365AzureLicenses -ServicePlans -LicenseName 'Enterprise Mobility + Security E5' -Verbose
+        $ServicePlans | Format-Table
+        .EXAMPLE
+        $ServicePlans = Get-O365AzureLicenses -ServicePlans -LicenseSKUID 'EMSPREMIUM' -Verbose
+        $ServicePlans | Format-Table
+        .EXAMPLE
+        $ServicePlans = Get-O365AzureLicenses -ServicePlans -LicenseSKUID 'evotecpoland:EMSPREMIUM' -Verbose
+        $ServicePlans | Format-Table
+        .EXAMPLE
+        $ServicePlans = Get-O365AzureLicenses -ServicePlans -LicenseSKUID 'evotecpoland:EMSPREMIUM' -IncludeLicenseDetails -Verbose
+        $ServicePlans | Format-Table
+        .NOTES
+        Detailed information about the Get-O365AzureLicenses function and its usage scenarios.
     #>
     [cmdletbinding()]
     param(
