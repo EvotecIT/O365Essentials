@@ -1,4 +1,35 @@
 ﻿function Connect-O365Admin {
+    <#
+        .SYNOPSIS
+        Connects to Office 365 as an administrator.
+        .DESCRIPTION
+        This function establishes a connection to Office 365 using provided credentials or cached authorization tokens. 
+        It supports multiple authentication methods and handles token refreshes as needed.
+        .PARAMETER Credential
+        The PSCredential object containing the username and password for authentication.
+        .PARAMETER Headers
+        A dictionary containing authorization headers, including tokens and expiration information.
+        .PARAMETER ExpiresIn
+        The duration in seconds for which the token is valid. Default is 3600 seconds.
+        .PARAMETER ExpiresTimeout
+        The timeout in seconds before the token expires to initiate a refresh. Default is 30 seconds.
+        .PARAMETER ForceRefresh
+        A switch to force the refresh of the authorization token, even if it is not expired.
+        .PARAMETER Tenant
+        The tenant ID for the Office 365 subscription.
+        .PARAMETER DomainName
+        The domain name associated with the Office 365 tenant.
+        .PARAMETER Subscription
+        The subscription ID for the Office 365 service.
+        .EXAMPLE
+        Connect-O365Admin -Credential (Get-Credential) -Tenant "your-tenant-id"
+        This example connects to Office 365 using the provided credentials and tenant ID.
+        .EXAMPLE
+        Connect-O365Admin -Headers $headers -ForceRefresh
+        This example connects to Office 365 using the provided headers and forces a token refresh.
+        .NOTES
+        This function is useful for administrators who need to manage Office 365 services and require a reliable way to authenticate and maintain session tokens.
+    #>
     [cmdletbinding(DefaultParameterSetName = 'Credential')]
     param(
         [parameter(ParameterSetName = 'Credential')][PSCredential] $Credential,
