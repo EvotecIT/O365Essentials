@@ -1,16 +1,20 @@
 ﻿function Get-O365AzureUserSettings {
     <#
-        .SYNOPSIS
-        Retrieves Azure user settings from the specified URI.
-        .DESCRIPTION
-        This function retrieves Azure user settings from the specified URI using the provided headers.
-        .PARAMETER Headers
-        Specifies the headers required for the API request.
-        .EXAMPLE
-        Get-O365AzureUserSettings -Headers $Headers
-        An example of how to retrieve Azure user settings using specified headers.
-        .NOTES
-        Based on: https://main.iam.ad.ext.azure.com/api/Directories/Properties
+    .SYNOPSIS
+    Retrieves Azure user settings from the specified URI.
+
+    .DESCRIPTION
+    This function retrieves Azure user settings from the specified URI using the provided headers.
+
+    .PARAMETER Headers
+    Specifies the headers required for the API request.
+
+    .EXAMPLE
+    Get-O365AzureUserSettings -Headers $Headers
+    An example of how to retrieve Azure user settings using specified headers.
+
+    .NOTES
+    Based on: https://main.iam.ad.ext.azure.com/api/Directories/Properties
     #>
     [cmdletbinding()]
     param(
