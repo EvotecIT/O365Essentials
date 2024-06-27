@@ -20,7 +20,7 @@
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
     )
-    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/PassThroughAuthConnectorGroups"
+    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/PassThroughAuthConnectorGroups"
     $Output1 = Invoke-O365Admin -Uri $Uri -Headers $Headers
     $Output1
 }

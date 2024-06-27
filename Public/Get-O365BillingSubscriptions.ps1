@@ -26,7 +26,7 @@
     )
 
     #$Uri = "https://admin.microsoft.com/fd/commerceapi/my-org/subscriptions?`$filter=parentId%20eq%20null&`$expand=subscribedsku&optional=cspsubscriptions,price,actions,transitiondetails,quickstarttag"
-    $Uri = "https://admin.microsoft.com/fd/commerceapi/my-org/subscriptions"
+    $Uri = "https://admin.microsoft.com/fd/commerceapi/my-org/subscriptions"
 
     $QueryParameter = @{
         '$Select'  = $Property -join ','

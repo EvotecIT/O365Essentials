@@ -27,7 +27,7 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [Parameter(Mandatory)][bool] $Enabled
     )
-    $Uri = "https://admin.microsoft.com/admin/api/services/apps/cortana"
+    $Uri = "https://admin.microsoft.com/admin/api/services/apps/cortana"
 
     $Body = @{
         Enabled = $Enabled

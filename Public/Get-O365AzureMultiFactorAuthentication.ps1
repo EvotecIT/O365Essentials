@@ -21,7 +21,7 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers
     )
     #$Uri = "https://main.iam.ad.ext.azure.com/api/MultiFactorAuthentication/GetOrCreateExpandedTenantModel?tenantName=Evotec"
-    $Uri = "https://main.iam.ad.ext.azure.com/api/MultiFactorAuthentication/GetOrCreateExpandedTenantModel"
+    $Uri = "https://main.iam.ad.ext.azure.com/api/MultiFactorAuthentication/GetOrCreateExpandedTenantModel"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
     $Output
 }

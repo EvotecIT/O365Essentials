@@ -24,7 +24,7 @@
         [parameter(Mandatory)][string] $DomainName,
         [string][ValidateSet('All', 'Users', 'TeamsAndGroups', 'Apps')] $Type = 'All'
     )
-    $Uri = "https://admin.microsoft.com/admin/api/Domains/Dependencies"
+    $Uri = "https://admin.microsoft.com/admin/api/Domains/Dependencies"
 
     $Types = @{
         'All'    = 0

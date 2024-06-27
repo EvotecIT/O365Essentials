@@ -20,7 +20,7 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [parameter(Mandatory)][string] $DomainName
     )
-    $Uri = "https://admin.microsoft.com/admin/api/Domains/CheckIsTroubleshootingAllowed"
+    $Uri = "https://admin.microsoft.com/admin/api/Domains/CheckIsTroubleshootingAllowed"
 
     $QueryParameter = @{
         'domainName'      = $DomainName

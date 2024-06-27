@@ -27,7 +27,7 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [Parameter(Mandatory)][bool] $ServiceEnabled
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/EndUserCommunications"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/EndUserCommunications"
 
     $Body = @{
         ServiceEnabled = $ServiceEnabled

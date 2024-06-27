@@ -31,7 +31,7 @@
         [Parameter(Mandatory)][bool] $ServiceEnabled,
         [string] $ConnectionGraphUsersExclusionGroup
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/dcg"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/dcg"
 
     $Body = @{
         ServiceEnabled                     = $ServiceEnabled

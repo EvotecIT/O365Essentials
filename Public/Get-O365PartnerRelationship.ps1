@@ -25,7 +25,7 @@
         }
     }
     if ($TenantID) {
-        $Uri = "https://admin.microsoft.com/fd/commerceMgmt/partnermanage/partners?customerTenantId=$TenantID&api-version=2.1"
+        $Uri = "https://admin.microsoft.com/fd/commerceMgmt/partnermanage/partners?customerTenantId=$TenantID&api-version=2.1"
         $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
 
         if ($Output.partners) {

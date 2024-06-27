@@ -39,7 +39,7 @@
         }
     }
     if ($Group) {
-        $Uri = "https://main.iam.ad.ext.azure.com/api/AccountSkus/Group/$Group"
+        $Uri = "https://main.iam.ad.ext.azure.com/api/AccountSkus/Group/$Group"
         $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
         if ($Output) {
             if ($NoTranslation) {

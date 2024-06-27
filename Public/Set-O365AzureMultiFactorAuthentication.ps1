@@ -104,7 +104,7 @@
 
     # Whatever I do, doesn't work!
 
-    $Uri = "https://main.iam.ad.ext.azure.com/api/MultiFactorAuthentication/TenantModel?licenseKey="
+    $Uri = "https://main.iam.ad.ext.azure.com/api/MultiFactorAuthentication/TenantModel?licenseKey="
     $Body = [ordered] @{}
     <#
         #tenantId                        = $CurrentSettings #: ceb371f6

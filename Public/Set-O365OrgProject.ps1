@@ -27,7 +27,7 @@
         [nullable[bool]] $RoadmapEnabled,
         [nullable[bool]] $ProjectForTheWebEnabled
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/projectonline"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/projectonline"
 
     $CurrentSettings = Get-O365OrgProject -Headers $Headers -NoTranslation
     if ($CurrentSettings) {

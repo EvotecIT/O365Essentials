@@ -23,7 +23,7 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [Parameter(Mandatory)][bool] $AllowCalendarSharing
     )
-    $Uri = "https://admin.microsoft.com/admin/api/services/apps/planner"
+    $Uri = "https://admin.microsoft.com/admin/api/services/apps/planner"
 
     $Body = @{
         allowCalendarSharing = $AllowCalendarSharing

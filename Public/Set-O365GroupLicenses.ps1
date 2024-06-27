@@ -31,7 +31,7 @@
         [parameter()][alias('GroupName')][string] $GroupDisplayName,
         [Array] $Licenses
     )
-    $Uri = "https://main.iam.ad.ext.azure.com/api/AccountSkus/assignUpdateRemove"
+    $Uri = "https://main.iam.ad.ext.azure.com/api/AccountSkus/assignUpdateRemove"
 
     if ($GroupID) {
         $Group = $GroupID

@@ -27,7 +27,7 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [Parameter(Mandatory)][bool] $AllowCalendarSharing
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/skypeteams"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/skypeteams"
 
     $Body = Get-O365OrgMicrosoftTeams -Headers $Headers
 

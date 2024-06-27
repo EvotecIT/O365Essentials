@@ -48,7 +48,7 @@
         [string] $LinkedInSelectedGroupObjectId,
         [string] $LinkedInSelectedGroupDisplayName
     )
-    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/PropertiesV2"
+    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/PropertiesV2"
 
     $Body = @{
         usersCanRegisterApps  = $UsersCanRegisterApps

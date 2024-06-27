@@ -20,9 +20,9 @@
 
     if ($ID) {
         # $Uri = "https://admin.microsoft.com/fd/commerceapi/my-org/paymentInstruments($ID)/unsettledCharges"
-        $Uri = "https://admin.microsoft.com/fd/commerceapi/my-org/paymentInstruments($ID)"
+        $Uri = "https://admin.microsoft.com/fd/commerceapi/my-org/paymentInstruments($ID)"
     } else {
-        $Uri = "https://admin.microsoft.com/fd/commerceapi/my-org/paymentInstruments"
+        $Uri = "https://admin.microsoft.com/fd/commerceapi/my-org/paymentInstruments"
     }
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
     $Output

@@ -31,7 +31,7 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [Parameter(Mandatory)][ValidateSet('OnlyPeopleInYourOrganization', 'ExistingGuestsOnly', 'NewAndExistingGuestsOnly', 'Anyone')][string] $CollaborationType
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/sitessharing"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/sitessharing"
 
     $ReverseTranslateCollaboration = @{
         'NewAndExistingGuestsOnly'     = 2

@@ -19,7 +19,7 @@
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
     )
-    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/GetSeamlessSingleSignOnDomains"
+    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/GetSeamlessSingleSignOnDomains"
     $Output2 = Invoke-O365Admin -Uri $Uri -Headers $Headers
     $Output2
 }

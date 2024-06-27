@@ -23,7 +23,7 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [nullable[bool]] $IsBingDataCollectionConsented
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/security/bingdatacollection"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/security/bingdatacollection"
 
     $Body = [ordered] @{
         IsBingDataCollectionConsented = $IsBingDataCollectionConsented

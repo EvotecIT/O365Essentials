@@ -27,7 +27,7 @@
         "2" = 'SemiAnnualEnterpriseChannel'
     }
 
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/usersoftware"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/usersoftware"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
     if ($NoTranslation) {
         $Output.UserSoftwareSettings

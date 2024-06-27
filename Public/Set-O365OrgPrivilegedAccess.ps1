@@ -27,7 +27,7 @@
         [nullable[bool]] $TenantLockBoxEnabled,
         [string] $AdminGroup
     )
-    $Uri = "https://admin.microsoft.com/admin/api/Settings/security/tenantLockbox"
+    $Uri = "https://admin.microsoft.com/admin/api/Settings/security/tenantLockbox"
 
     $Body = @{
         EnabledTenantLockbox = $TenantLockBoxEnabled

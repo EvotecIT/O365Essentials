@@ -93,7 +93,7 @@
         } else {
             Write-Verbose -Message "Connect-O365Admin - Connecting to Office 365 using Connect-AzAccount"
         }
-        $AzConnect = (Connect-AzAccount @connectAzAccountSplat -WarningVariable warningAzAccount -WarningAction SilentlyContinue )
+        $AzConnect = (Connect-AzAccount @connectAzAccountSplat -WarningVariable warningAzAccount -WarningAction SilentlyContinue )
     } catch {
         if ($_.CategoryInfo.Reason -eq 'AzPSAuthenticationFailedException') {
             if ($Credential) {
@@ -158,7 +158,7 @@
     }
 
     Write-Verbose -Message "Connect-O365Admin - Disconnecting from O365 using Disconnect-AzAccount"
-    $null = Disconnect-AzAccount -AzureContext $Context
+    $null = Disconnect-AzAccount -AzureContext $Context
 
     $Script:AuthorizationO365Cache = [ordered] @{
         'Credential'          = $Credential
@@ -171,8 +171,8 @@
         'AuthenticationO365'  = $AuthenticationO365
         'AccessTokenO365'     = $AuthenticationO365.AccessToken
         'HeadersO365'         = [ordered] @{
-            "Content-Type"           = "application/json; charset=UTF-8"
-            "Authorization"          = "Bearer $($AuthenticationO365.AccessToken)"
+            "Content-Type"           = "application/json; charset=UTF-8"
+            "Authorization"          = "Bearer $($AuthenticationO365.AccessToken)"
             'X-Requested-With'       = 'XMLHttpRequest'
             'x-ms-client-request-id' = [guid]::NewGuid()
             'x-ms-correlation-id'    = [guid]::NewGuid()
@@ -181,8 +181,8 @@
         'AuthenticationAzure' = $AuthenticationAzure
         'AccessTokenAzure'    = $AuthenticationAzure.AccessToken
         'HeadersAzure'        = [ordered] @{
-            "Content-Type"           = "application/json; charset=UTF-8"
-            "Authorization"          = "Bearer $($AuthenticationAzure.AccessToken)"
+            "Content-Type"           = "application/json; charset=UTF-8"
+            "Authorization"          = "Bearer $($AuthenticationAzure.AccessToken)"
             'X-Requested-With'       = 'XMLHttpRequest'
             'x-ms-client-request-id' = [guid]::NewGuid()
             'x-ms-correlation-id'    = [guid]::NewGuid()
@@ -190,8 +190,8 @@
         'AuthenticationGraph' = $AuthenticationGraph
         'AccessTokenGraph'    = $AuthenticationGraph.AccessToken
         'HeadersGraph'        = [ordered] @{
-            "Content-Type"           = "application/json; charset=UTF-8" ; 
-            "Authorization"          = "Bearer $($AuthenticationGraph.AccessToken)"
+            "Content-Type"           = "application/json; charset=UTF-8" ; 
+            "Authorization"          = "Bearer $($AuthenticationGraph.AccessToken)"
             'X-Requested-With'       = 'XMLHttpRequest'
             'x-ms-client-request-id' = [guid]::NewGuid()
             'x-ms-correlation-id'    = [guid]::NewGuid()

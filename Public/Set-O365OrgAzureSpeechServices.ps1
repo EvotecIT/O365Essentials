@@ -23,7 +23,7 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [bool] $AllowTheOrganizationWideLanguageModel
     )
-    $Uri = "https://admin.microsoft.com/admin/api/services/apps/azurespeechservices"
+    $Uri = "https://admin.microsoft.com/admin/api/services/apps/azurespeechservices"
 
     $Body = @{
         isTenantEnabled = $AllowTheOrganizationWideLanguageModel

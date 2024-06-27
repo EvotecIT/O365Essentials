@@ -30,14 +30,14 @@
     New-O365License -LicenseName 'Enterprise Mobility + Security E5' -Verbose
     ) -Verbose -WhatIf
 
-   .EXAMPLE
-   Set-O365GroupLicenses -GroupDisplayName 'Test-Group-TestEVOTECPL' -Licenses @(
-   New-O365License -LicenseName 'Office 365 E3' -Verbose -DisabledServicesDisplayName 'Microsoft Kaizala Pro', 'Whiteboard (Plan 2)'
-   New-O365License -LicenseName 'Enterprise Mobility + Security E5' -Verbose -EnabledServicesDisplayName 'Azure Information Protection Premium P2', 'Microsoft Defender for Identity'
-   ) -Verbose -WhatIf
+    .EXAMPLE
+    Set-O365GroupLicenses -GroupDisplayName 'Test-Group-TestEVOTECPL' -Licenses @(
+    New-O365License -LicenseName 'Office 365 E3' -Verbose -DisabledServicesDisplayName 'Microsoft Kaizala Pro', 'Whiteboard (Plan 2)'
+    New-O365License -LicenseName 'Enterprise Mobility + Security E5' -Verbose -EnabledServicesDisplayName 'Azure Information Protection Premium P2', 'Microsoft Defender for Identity'
+    ) -Verbose -WhatIf
 
-   .NOTES
-   General notes
+    .NOTES
+    General notes
     #>
     [cmdletbinding(DefaultParameterSetName = 'ServiceDisplayNameEnable')]
     param(

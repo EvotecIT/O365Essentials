@@ -23,7 +23,7 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [switch] $NoTranslation
     )
-    $Uri = "https://admin.microsoft.com/admin/api/searchadminapi/news/options/Bing"
+    $Uri = "https://admin.microsoft.com/admin/api/searchadminapi/news/options/Bing"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
     if ($NoTranslation) {
         $Output

@@ -33,7 +33,7 @@
         [nullable[bool]] $AllowGuestAccess,
         [nullable[bool]] $AllowGuestsAsMembers
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/security/o365guestuser"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/security/o365guestuser"
 
     $CurrentSettings = Get-O365OrgM365Groups -Headers $Headers
     $Body = [ordered] @{

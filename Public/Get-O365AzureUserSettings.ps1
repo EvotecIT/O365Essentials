@@ -22,7 +22,7 @@
         [switch] $NoTranslation
     )
 
-    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/Properties"
+    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/Properties"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET
     if ($Output) {
         if ($NoTranslation) {

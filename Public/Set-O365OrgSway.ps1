@@ -44,7 +44,7 @@
         [nullable[bool]] $YouTubeEnabled
 
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/Sway"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/Sway"
 
     $CurrentSettings = Get-O365OrgSway -Headers $Headers
     if ($CurrentSettings) {

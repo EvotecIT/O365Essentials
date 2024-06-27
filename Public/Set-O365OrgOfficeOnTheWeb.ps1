@@ -29,7 +29,7 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [parameter(Mandatory)][bool] $Enabled
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/officeonline"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/officeonline"
 
     $Body = @{
         Enabled = $Enabled

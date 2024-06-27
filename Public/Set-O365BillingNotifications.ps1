@@ -23,7 +23,7 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [parameter(Mandatory)][bool] $SendInvoiceEmails
     )
-    $Uri = "https://admin.microsoft.com/fd/commerceMgmt/mgmtsettings/invoicePreference?api-version=1.0"
+    $Uri = "https://admin.microsoft.com/fd/commerceMgmt/mgmtsettings/invoicePreference?api-version=1.0"
 
     $Body = @{
         sendInvoiceEmails = $SendInvoiceEmails

@@ -1,4 +1,23 @@
 ﻿function Get-O365AzureExternalCollaborationRestrictions {
+    <#
+    .SYNOPSIS
+    Retrieves Azure external collaboration restrictions based on the provided headers.
+
+    .DESCRIPTION
+    This function retrieves Azure external collaboration restrictions from the specified API endpoint using the provided headers. It can also translate the output into a more readable format if the -NoTranslation switch is not used.
+
+    .PARAMETER Headers
+    A dictionary containing the necessary headers for the API request, typically including authorization information.
+
+    .PARAMETER NoTranslation
+    A switch parameter to indicate whether to skip translation of the output. If used, the raw output will be returned without any additional processing.
+
+    .EXAMPLE
+    Get-O365AzureExternalCollaborationRestrictions -Headers $headers -NoTranslation
+
+    .NOTES
+    This function is designed to work in conjunction with Connect-O365Admin to fetch the necessary headers for authentication. It retrieves the Azure external collaboration restrictions, which include settings and configurations related to external collaboration.
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,

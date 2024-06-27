@@ -32,7 +32,7 @@
         [Parameter()][nullable[int]] $DaysBeforePasswordExpires,
         [Parameter()][nullable[int]] $DaysBeforeUserNotified
     )
-    $Uri = "https://admin.microsoft.com/admin/api/Settings/security/passwordpolicy"
+    $Uri = "https://admin.microsoft.com/admin/api/Settings/security/passwordpolicy"
 
     $CurrentSettings = Get-O365OrgPasswordExpirationPolicy -Headers $Headers -NoTranslation
     if ($CurrentSettings) {

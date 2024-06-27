@@ -27,7 +27,7 @@
         [nullable[bool]] $ContentOnNewTabEnabled,
         [nullable[bool]] $CompanyInformationAndIndustryEnabled
     )
-    $Uri = "https://admin.microsoft.com/admin/api/searchadminapi/news/options"
+    $Uri = "https://admin.microsoft.com/admin/api/searchadminapi/news/options"
 
     $CurrentSettings = Get-O365OrgNews -Headers $Headers -NoTranslation
     if ($CurrentSettings) {

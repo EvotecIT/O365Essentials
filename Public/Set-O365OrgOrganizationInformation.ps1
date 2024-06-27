@@ -54,7 +54,7 @@
         [string] $PhoneNumber,
         [string] $TechnicalContactEmail
     )
-    $Uri = "https://admin.microsoft.com/admin/api/Settings/company/profile"
+    $Uri = "https://admin.microsoft.com/admin/api/Settings/company/profile"
 
     $CurrentSettings = Get-O365OrgOrganizationInformation -Headers $Headers
     if ($CurrentSettings) {

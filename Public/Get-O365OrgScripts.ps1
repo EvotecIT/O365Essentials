@@ -24,7 +24,7 @@
         '1' = 'Everyone'
         '2' = 'SpecificGroup'
     }
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/officescripts"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/officescripts"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
     if ($Output) {
         [PSCustomObject] @{

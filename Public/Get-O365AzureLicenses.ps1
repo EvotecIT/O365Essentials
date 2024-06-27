@@ -61,7 +61,7 @@
     # Or maybe not because it doesn't contain exactly same data missing displayName from service plans
     # $Uri = "https://graph.microsoft.com/v1.0/subscribedSkus"
 
-    $Uri = "https://main.iam.ad.ext.azure.com/api/AccountSkus"
+    $Uri = "https://main.iam.ad.ext.azure.com/api/AccountSkus"
 
     $QueryParameter = @{
         backfillTenants = $false

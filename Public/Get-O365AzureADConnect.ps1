@@ -20,11 +20,11 @@
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
     )
-    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/GetPasswordSyncStatus"
+    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/GetPasswordSyncStatus"
     $Output3 = Invoke-O365Admin -Uri $Uri -Headers $Headers
     #$Output3 | Format-Table
 
-    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/ADConnectStatus"
+    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/ADConnectStatus"
     $Output4 = Invoke-O365Admin -Uri $Uri -Headers $Headers
 
     [PSCustomObject] @{

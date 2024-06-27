@@ -83,7 +83,7 @@
         [nullable[bool]] $AllowBasicAuthSmtp, #: True
         [nullable[bool]] $AllowOutlookClient                #:
     )
-    $Uri = "https://admin.microsoft.com/admin/api/services/apps/modernAuth"
+    $Uri = "https://admin.microsoft.com/admin/api/services/apps/modernAuth"
     $CurrentSettings = Get-O365OrgModernAuthentication -Headers $Headers
     if (-not $CurrentSettings) {
         Write-Warning -Message "Set-O365ModernAuthentication - Couldn't gather current settings. Skipping setting anything."

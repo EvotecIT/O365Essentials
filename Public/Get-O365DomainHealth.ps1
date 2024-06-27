@@ -2,7 +2,7 @@
     <#
     .SYNOPSIS
     Provides functionality to check the DNS health of a specified domain in Office 365.
- 
+
     .DESCRIPTION
     This function allows you to query and check the DNS health of a specific domain in Office 365 using the provided headers.
 
@@ -20,7 +20,7 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [parameter(Mandatory)][string] $DomainName
     )
-    $Uri = "https://admin.microsoft.com/admin/api/Domains/CheckDnsHealth"
+    $Uri = "https://admin.microsoft.com/admin/api/Domains/CheckDnsHealth"
 
     $QueryParameter = @{
         'domainName'             = $DomainName

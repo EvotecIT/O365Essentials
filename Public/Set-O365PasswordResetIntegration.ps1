@@ -28,7 +28,7 @@
         [nullable[bool]] $PasswordWritebackSupported,
         [alias('AccountUnlockSupported')][nullable[bool]] $AllowUsersTounlockWithoutReset
     )
-    $Uri = "https://main.iam.ad.ext.azure.com/api/PasswordReset/OnPremisesPasswordResetPolicies"
+    $Uri = "https://main.iam.ad.ext.azure.com/api/PasswordReset/OnPremisesPasswordResetPolicies"
 
     # It seems you need to set this separatly for AccountUnlockEnabled to be picked up properly.
     # So we do it..

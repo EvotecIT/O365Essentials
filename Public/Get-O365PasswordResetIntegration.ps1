@@ -15,7 +15,7 @@
     )
 
     #$Uri = "https://main.iam.ad.ext.azure.com/api/PasswordReset/IsOnPremisesPasswordResetAvailable"
-    $Uri = "https://main.iam.ad.ext.azure.com/api/PasswordReset/OnPremisesPasswordResetPolicies"
+    $Uri = "https://main.iam.ad.ext.azure.com/api/PasswordReset/OnPremisesPasswordResetPolicies"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
     if ($Output) {
         [PSCustomObject] @{

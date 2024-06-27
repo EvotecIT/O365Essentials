@@ -35,7 +35,7 @@
     }
     $StartDateText = $StartDate.ToString("yyyy-MM-dd")
     $EndDateText = $EndDate.ToString("yyyy-MM-dd")
-    $Uri = "https://admin.microsoft.com/fd/commerceapi/my-org/legacyInvoices(startDate=$StartDateText,endDate=$EndDateText)"
+    $Uri = "https://admin.microsoft.com/fd/commerceapi/my-org/legacyInvoices(startDate=$StartDateText,endDate=$EndDateText)"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
     $Output
 }

@@ -13,12 +13,12 @@
     .EXAMPLE
     Convert-CompanyType -CompanyType '5', '4'
     # Returns 'Indirect reseller', 'Reseller'
-        
+
     .EXAMPLE
     Convert-CompanyType -CompanyType '5', '1'
     # Returns 'Indirect reseller', '1'
     # Note: '1' is returned as is because it does not have a corresponding name in the mapping.
-        
+
     .NOTES
     Current mappings include:
     '5' for 'Indirect reseller'

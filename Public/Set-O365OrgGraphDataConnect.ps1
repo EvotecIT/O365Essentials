@@ -35,7 +35,7 @@
         [string] $TenantLockBoxApproverGroup,
         [switch] $Force
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/o365dataplan"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/o365dataplan"
 
     if ($TenantLockBoxApproverGroup -and $TenantLockBoxApproverGroup -notlike "*@*") {
         Write-Warning -Message "Set-O365OrgGraphDataConnect - TenantLockBoxApproverGroup must be given in email format, and it must exists."

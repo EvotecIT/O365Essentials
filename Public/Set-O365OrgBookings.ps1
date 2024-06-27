@@ -95,7 +95,7 @@
         [nullable[bool]] $ShowStaffApprovalsToggle,
         [nullable[bool]] $StaffMembershipApprovalRequired
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/bookings"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/bookings"
 
     $CurrentSettings = Get-O365OrgBookings -Headers $Headers
     if ($CurrentSettings) {

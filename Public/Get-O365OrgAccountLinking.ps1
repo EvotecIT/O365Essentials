@@ -19,7 +19,7 @@
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
     )
-    $Uri = "https://admin.microsoft.com/fd/bfb/api/v3/office/switch/feature"
+    $Uri = "https://admin.microsoft.com/fd/bfb/api/v3/office/switch/feature"
     $OutputSettings = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method POST
     if ($OutputSettings) {
         [PSCustomObject] @{

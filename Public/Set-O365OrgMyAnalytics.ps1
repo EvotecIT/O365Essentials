@@ -32,7 +32,7 @@
         [nullable[bool]] $EnableWeeklyDigest,
         [nullable[bool]] $EnableInsightsOutlookAddIn
     )
-    $Uri = "https://admin.microsoft.com/admin/api/services/apps/myanalytics"
+    $Uri = "https://admin.microsoft.com/admin/api/services/apps/myanalytics"
 
     $CurrentSettings = Get-O365OrgMyAnalytics -Headers $Headers
     if ($CurrentSettings) {

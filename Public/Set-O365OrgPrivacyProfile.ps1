@@ -27,7 +27,7 @@
         [parameter()][uri] $PrivacyUrl,
         [parameter()][string] $PrivacyContact
     )
-    $Uri = "https://admin.microsoft.com/admin/api/Settings/security/privacypolicy"
+    $Uri = "https://admin.microsoft.com/admin/api/Settings/security/privacypolicy"
     $Body = @{
         PrivacyStatement = $PrivacyUrl
         PrivacyContact   = $PrivacyContact

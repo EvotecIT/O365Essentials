@@ -27,7 +27,7 @@
         [Parameter()][nullable[bool]] $PrivacyEnabled,
         [Parameter()][nullable[bool]] $PowerBiEnabled
     )
-    $Uri = "https://admin.microsoft.com/admin/api/reports/config/SetTenantConfiguration"
+    $Uri = "https://admin.microsoft.com/admin/api/reports/config/SetTenantConfiguration"
 
     $Body = @{
         PrivacyEnabled = $PrivacyEnabled

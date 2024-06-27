@@ -13,10 +13,10 @@
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/store"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/store"
     $Output1 = Invoke-O365Admin -Uri $Uri -Headers $Headers
 
-    $Uri = "https://admin.microsoft.com/admin/api/storesettings/iwpurchaseallowed"
+    $Uri = "https://admin.microsoft.com/admin/api/storesettings/iwpurchaseallowed"
     $Output2 = Invoke-O365Admin -Uri $Uri -Headers $Headers
 
     $Uri = 'https://admin.microsoft.com/fd/m365licensing/v1/policies/autoclaim'

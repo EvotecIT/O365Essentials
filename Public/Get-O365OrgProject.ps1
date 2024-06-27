@@ -24,7 +24,7 @@
         [switch] $NoTranslation
     )
 
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/projectonline"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/projectonline"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
     if ($NoTranslation) {
         $Output

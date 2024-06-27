@@ -1,4 +1,29 @@
 ﻿function Set-O365AzureExternalCollaborationRestrictions {
+    <#
+    .SYNOPSIS
+    Configures external collaboration restrictions for Office 365 Azure.
+
+    .DESCRIPTION
+    This function allows administrators to configure various restrictions related to external collaboration in Office 365 Azure. It includes options for managing collaboration domains and settings.
+
+    .PARAMETER Headers
+    Specifies the headers for the API request. Typically includes authorization tokens.
+
+    .PARAMETER CollaborationRestrictions
+    Specifies the type of collaboration restrictions to be applied. Valid values are 'AllowAnyDomains', 'AllowSpecifiedDomains', 'DisallowSpecifiedDomains'.
+
+    .PARAMETER TargetedDomains
+    Specifies the domains to be targeted. This parameter is used when CollaborationRestrictions is set to 'AllowSpecifiedDomains' or 'DisallowSpecifiedDomains'.
+
+    .EXAMPLE
+    $headers = @{Authorization = "Bearer your_token"}
+    Set-O365AzureExternalCollaborationRestrictions -Headers $headers -CollaborationRestrictions "AllowAnyDomains"
+
+    This example allows any domains for external collaboration.
+
+    .LINK
+    https://main.iam.ad.ext.azure.com/api/B2B/b2bPolicy
+    #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,

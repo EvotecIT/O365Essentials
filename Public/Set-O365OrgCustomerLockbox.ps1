@@ -27,7 +27,7 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [Parameter(Mandatory)][bool] $RequireApproval
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/security/dataaccess"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/security/dataaccess"
     $Body = @{
         RequireApproval = $RequireApproval
     }

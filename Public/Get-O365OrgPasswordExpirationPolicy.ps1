@@ -24,7 +24,7 @@
         [switch] $NoTranslation
     )
 
-    $Uri = "https://admin.microsoft.com/admin/api/Settings/security/passwordpolicy"
+    $Uri = "https://admin.microsoft.com/admin/api/Settings/security/passwordpolicy"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
     if ($NoTranslation) {
         $Output

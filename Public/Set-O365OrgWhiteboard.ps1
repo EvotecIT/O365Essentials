@@ -39,7 +39,7 @@
         [nullable[bool]] $BoardSharingEnabled,
         [nullable[bool]] $OneDriveStorageEnabled
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/whiteboard"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/whiteboard"
 
     $CurrentSettings = Get-O365OrgWhiteboard -Headers $Headers -NoTranslation
 

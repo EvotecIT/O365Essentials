@@ -100,7 +100,7 @@
         $Body.RecordIdentityByDefaultEnabled = $RecordIdentityByDefaultEnabled
     }
 
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/officeforms"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/officeforms"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method POST -Body $Body
     $Output
 }

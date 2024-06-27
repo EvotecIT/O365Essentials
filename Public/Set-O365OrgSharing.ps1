@@ -23,7 +23,7 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [Parameter(Mandatory)][bool] $LetUsersAddNewGuests
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/security/guestUserPolicy"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/security/guestUserPolicy"
     $Body = @{
         AllowGuestInvitations = $LetUsersAddNewGuests
     }

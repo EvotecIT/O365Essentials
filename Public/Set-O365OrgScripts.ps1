@@ -64,7 +64,7 @@
         [Parameter()][string] $LetUsersRunScriptPowerAutomateGroup,
         [Parameter()][string] $LetUsersRunScriptPowerAutomateGroupID
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/officescripts"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/officescripts"
 
     $Body = [ordered] @{}
     if ($LetUsersAutomateTheirTasks -eq 'Disabled') {

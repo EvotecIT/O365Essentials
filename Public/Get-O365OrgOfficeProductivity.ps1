@@ -19,7 +19,7 @@
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
     )
-    $Uri = "https://admin.microsoft.com/admin/api/reports/productivityScoreCustomerOption"
+    $Uri = "https://admin.microsoft.com/admin/api/reports/productivityScoreCustomerOption"
     $Output1 = Invoke-O365Admin -Uri $Uri -Headers $Headers
 
     #$Uri = "https://admin.microsoft.com/admin/api/reports/productivityScoreConfig/GetProductivityScoreConfig"

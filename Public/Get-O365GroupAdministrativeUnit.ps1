@@ -27,7 +27,7 @@
         $Group = $GroupDisplayName
     }
     #$Uri = "https://graph.microsoft.com/beta/groups/$Group/memberOf/microsoft.graph.administrativeUnit"
-    $Uri = "https://graph.microsoft.com/v1.0/groups/$Group/memberOf/microsoft.graph.administrativeUnit"
+    $Uri = "https://graph.microsoft.com/v1.0/groups/$Group/memberOf/microsoft.graph.administrativeUnit"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
     $Output
 }

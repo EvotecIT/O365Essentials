@@ -17,7 +17,7 @@
 
     .NOTES
     Based on https://www.michev.info/Blog/Post/2140/decode-jwt-access-and-id-tokens-via-powershell
- 
+
     Basically does what: https://jwt.ms/ and https://jwt.io/ do for you online
     #>
     [cmdletbinding()]

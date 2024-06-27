@@ -20,7 +20,7 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [parameter(Mandatory)][string] $DomainName
     )
-    $Uri = "https://admin.microsoft.com/admin/api/Domains/Records"
+    $Uri = "https://admin.microsoft.com/admin/api/Domains/Records"
 
     $QueryParameter = @{
         'domainName' = $DomainName
