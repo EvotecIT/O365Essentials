@@ -1,4 +1,21 @@
 ﻿function Get-O365AzureConditionalAccessTerms {
+    <#
+    .SYNOPSIS
+    Retrieves Azure Conditional Access Terms.
+
+    .DESCRIPTION
+    This function retrieves Azure Conditional Access Terms based on the provided headers.
+    It returns information about the terms of use agreements for Azure Conditional Access.
+
+    .PARAMETER Headers
+    A dictionary containing the headers for the API request, typically including authorization information.
+
+    .EXAMPLE
+    Get-O365AzureConditionalAccessTerms -Headers $headers
+
+    .NOTES
+    For more information, visit: https://docs.microsoft.com/en-us/azure/active-directory/conditional-access/overview
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers

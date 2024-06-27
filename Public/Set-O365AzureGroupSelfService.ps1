@@ -27,7 +27,7 @@
         [parameter()][bool] $OwnersCanManageGroupMembershipRequests,
         [parameter()][bool] $RestrictUserAbilityToAccessGroupsFeatures
     )
-    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/SsgmProperties/"
+    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/SsgmProperties/"
 
     $Body = @{}
     if ($PSBoundParameters.ContainsKey("OwnersCanManageGroupMembershipRequests")) {

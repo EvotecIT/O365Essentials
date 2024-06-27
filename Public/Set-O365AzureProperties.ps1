@@ -39,7 +39,7 @@
         [string] $GlobalPrivacyContact,
         [string] $PrivacyStatementURL
     )
-    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories"
+    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories"
 
     $CurrentSettings = Get-O365AzureProperties -Headers $Headers -NoTranslation
     if ($CurrentSettings) {

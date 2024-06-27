@@ -1,4 +1,29 @@
 ﻿function Invoke-O365Admin {
+    <#
+    .SYNOPSIS
+    This function is used to make administrative calls to the Office 365 API.
+
+    .DESCRIPTION
+    This function is responsible for sending requests to the Office 365 API for administrative tasks.
+
+    .PARAMETER Uri
+    The URI endpoint for the API request.
+
+    .PARAMETER Headers
+    A dictionary containing the necessary headers for the API request, typically including authorization information.
+
+    .PARAMETER Method
+    The HTTP method to be used for the request (GET, DELETE, POST, PATCH, PUT).
+
+    .PARAMETER ContentType
+    The content type of the request body.
+
+    .PARAMETER Body
+    The body of the request, if applicable.
+
+    .PARAMETER QueryParameter
+    The query parameters for the request.
+    #>
     [cmdletBinding(SupportsShouldProcess)]
     param(
         [uri] $Uri,

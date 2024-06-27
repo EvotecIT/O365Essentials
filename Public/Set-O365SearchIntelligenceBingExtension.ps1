@@ -1,4 +1,38 @@
 ﻿function Set-O365SearchIntelligenceBingExtension {
+    <#
+    .SYNOPSIS
+    Configures the Bing Extension feature for Office 365 Search Intelligence.
+
+    .DESCRIPTION
+    This function enables or disables the Bing Extension feature for Office 365 Search Intelligence. The Bing Extension enhances search results with Bing's web search capabilities. Additionally, it allows for limiting the extension to specific groups.
+
+    .PARAMETER Headers
+    A dictionary containing the authorization headers required for the request. This includes tokens and expiration information. You can obtain these headers by using the Connect-O365Admin function.
+
+    .PARAMETER EnableExtension
+    A boolean value indicating whether to enable or disable the Bing Extension feature. Set to $true to enable or $false to disable.
+
+    .PARAMETER LimitGroupId
+    An array of group IDs for which the Bing Extension should be limited. This parameter is used in conjunction with EnableExtension set to $true.
+
+    .PARAMETER LimitGroupName
+    An array of group display names for which the Bing Extension should be limited. This parameter is used in conjunction with EnableExtension set to $true.
+
+    .EXAMPLE
+    Set-O365SearchIntelligenceBingExtension -Headers $headers -EnableExtension $true
+    This example enables the Bing Extension feature for Office 365 Search Intelligence using the provided headers.
+
+    .EXAMPLE
+    Set-O365SearchIntelligenceBingExtension -Headers $headers -EnableExtension $true -LimitGroupId "12345678-1234-1234-1234-123456789012"
+    This example enables the Bing Extension feature and limits it to the specified group ID using the provided headers.
+
+    .EXAMPLE
+    Set-O365SearchIntelligenceBingExtension -Headers $headers -EnableExtension $true -LimitGroupName "Marketing Team"
+    This example enables the Bing Extension feature and limits it to the group with the specified display name using the provided headers.
+
+    .NOTES
+    This function requires a valid connection to Office 365 and the necessary permissions to manage Search Intelligence settings. Ensure you have the appropriate credentials and authorization before running this function.
+    #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
@@ -6,7 +40,7 @@
         [Array] $LimitGroupId,
         [Array] $LimitGroupName
     )
-    $Uri = "https://admin.microsoft.com/fd/bfb/api/v3/office/switch/feature"
+    $Uri = "https://admin.microsoft.com/fd/bfb/api/v3/office/switch/feature"
 
     if ($EnableExtension -eq $false) {
         $Body = @{

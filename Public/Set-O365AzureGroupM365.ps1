@@ -25,7 +25,7 @@
     )
     $CurrentSettings = Get-O365AzureGroupNamingPolicy -NoTranslation -Headers $Headers
     if ($CurrentSettings.id) {
-        $Uri = "https://graph.microsoft.com/beta/settings/$($CurrentSettings.id)"
+        $Uri = "https://graph.microsoft.com/beta/settings/$($CurrentSettings.id)"
         [Array] $Values = foreach ($Policy in $CurrentSettings.values) {
             if ($Policy.Name -eq 'EnableGroupCreation') {
                 [PSCustomObject] @{

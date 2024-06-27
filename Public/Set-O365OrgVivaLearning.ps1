@@ -106,7 +106,7 @@
         $Body.IsOptionalDiagnosticDataEnabled = $IsOptionalDiagnosticDataEnabled
     }
 
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/learning"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/learning"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method POST -Body $Body
     $Output
 }

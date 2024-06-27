@@ -1,4 +1,35 @@
 ﻿function Get-O365Group {
+    <#
+    .SYNOPSIS
+    Provides functionality to retrieve Office 365 group information based on various parameters.
+
+    .DESCRIPTION
+    This function allows you to query and retrieve group information from Office 365 based on different criteria such as ID, display name, email address, and more.
+
+    .PARAMETER Headers
+    A dictionary containing the necessary headers for the API request, typically including authorization information.
+
+    .PARAMETER Id
+    The ID of the group to query.
+
+    .PARAMETER DisplayName
+    The display name of the group to query.
+
+    .PARAMETER EmailAddress
+    The email address of the group to query.
+
+    .PARAMETER Property
+    An array of properties to include in the query response.
+
+    .PARAMETER Filter
+    The filter to apply to the query.
+
+    .PARAMETER OrderBy
+    The property to order the query results by.
+
+    .EXAMPLE
+    Get-O365Group -Headers $headers -DisplayName 'MyGroup' -Property @('displayName', 'mail')
+    #>
     [cmdletBinding(DefaultParameterSetName = 'Default')]
     param(
         [parameter(ParameterSetName = 'UnifiedGroupsOnly')]

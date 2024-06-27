@@ -1,19 +1,19 @@
 ﻿function Set-O365AzureMultiFactorAuthentication {
     <#
     .SYNOPSIS
-    Short description
+    Configures Multi-Factor Authentication (MFA) settings for an Office 365 tenant.
 
     .DESCRIPTION
-    Long description
+    This function allows administrators to modify various settings related to Multi-Factor Authentication (MFA) for their Office 365 tenant. It includes options such as account lockout policies, fraud alert configurations, and bypass settings.
 
     .PARAMETER Headers
-    Parameter description
+    Specifies the headers for the API request, typically including authorization details.
 
     .PARAMETER AccountLockoutDurationMinutes
-    Minutes until account is automatically unblocked
+    Specifies the duration in minutes that an account remains locked after reaching the threshold of failed MFA attempts.
 
     .PARAMETER AccountLockoutResetMinutes
-    Minutes until account lockout counter is reset
+    Defines the time period in minutes after which the count of failed MFA attempts is reset.
 
     .PARAMETER AccountLockoutThreshold
     Number of MFA denials to trigger account lockout
@@ -40,7 +40,7 @@
     Recipient's Email Address
 
     .PARAMETER OneTimeBypassEmailAddresses
-    Parameter description
+    Recipient's One-Time Email Addresses for Bypass
 
     .PARAMETER PinAttempts
     Number of PIN attempts allowed per call
@@ -74,7 +74,6 @@
 
     .NOTES
     Based on: https://portal.azure.com/#blade/Microsoft_AAD_IAM/MultifactorAuthenticationMenuBlade/GettingStarted/fromProviders/
-
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
@@ -105,7 +104,7 @@
 
     # Whatever I do, doesn't work!
 
-    $Uri = "https://main.iam.ad.ext.azure.com/api/MultiFactorAuthentication/TenantModel?licenseKey="
+    $Uri = "https://main.iam.ad.ext.azure.com/api/MultiFactorAuthentication/TenantModel?licenseKey="
     $Body = [ordered] @{}
     <#
         #tenantId                        = $CurrentSettings #: ceb371f6

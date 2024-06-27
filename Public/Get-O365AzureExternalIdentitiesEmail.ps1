@@ -1,4 +1,20 @@
 ﻿function Get-O365AzureExternalIdentitiesEmail {
+    <#
+    .SYNOPSIS
+    Provides functionality to retrieve email authentication method configurations for external identities in Office 365.
+
+    .DESCRIPTION
+    This function retrieves email authentication method configurations for external identities in Office 365 from the specified API endpoint using the provided headers.
+
+    .PARAMETER Headers
+    A dictionary containing the necessary headers for the API request, typically including authorization information.
+
+    .PARAMETER NoTranslation
+    A switch parameter to indicate whether to skip translation of the output.
+
+    .EXAMPLE
+    Get-O365AzureExternalIdentitiesEmail -Headers $headers -NoTranslation
+    #>
     # https://portal.azure.com/#blade/Microsoft_AAD_IAM/CompanyRelationshipsMenuBlade/IdentityProviders
     [cmdletbinding()]
     param(

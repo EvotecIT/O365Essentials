@@ -1,4 +1,21 @@
 ﻿function Get-O365AzureConditionalAccessLocation {
+    <#
+    .SYNOPSIS
+    Retrieves Azure Conditional Access Locations.
+
+    .DESCRIPTION
+    This function retrieves Azure Conditional Access Locations based on the provided headers.
+    It returns information about the named locations defined for Azure Conditional Access policies.
+
+    .PARAMETER Headers
+    A dictionary containing the headers for the API request, typically including authorization information.
+
+    .EXAMPLE
+    Get-O365AzureConditionalAccessLocation -Headers $headers
+
+    .NOTES
+    For more information, visit: https://docs.microsoft.com/en-us/azure/active-directory/conditional-access/overview
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers

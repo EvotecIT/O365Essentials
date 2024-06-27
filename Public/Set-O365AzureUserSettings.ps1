@@ -1,28 +1,28 @@
 ﻿function Set-O365AzureUserSettings {
     <#
     .SYNOPSIS
-    Short description
+    Configures user settings for Azure AD.
 
     .DESCRIPTION
-    Long description
+    This function allows you to set various user settings for Azure AD.
 
     .PARAMETER Headers
-    Parameter description
+    A dictionary containing the necessary headers for the API request, typically including authorization information.
 
     .PARAMETER UsersCanRegisterApps
-    Parameter description
+    Specifies whether users can register apps.
 
     .PARAMETER RestrictNonAdminUsers
-    Parameter description
+    Specifies whether to restrict non-admin users.
 
     .PARAMETER LinkedInAccountConnection
-    Parameter description
+    Specifies whether to enable LinkedIn account connection.
 
     .PARAMETER LinkedInSelectedGroupObjectId
-    Parameter description
+    The object ID of the selected LinkedIn group.
 
     .PARAMETER LinkedInSelectedGroupDisplayName
-    Parameter description
+    The display name of the selected LinkedIn group.
 
     .EXAMPLE
     Set-O365UserSettings -RestrictNonAdminUsers $true -LinkedInAccountConnection $true -LinkedInSelectedGroupObjectId 'b6cdb9c3-d660-4558-bcfd-82c14a986b56'
@@ -37,7 +37,7 @@
     Set-O365UserSettings -RestrictNonAdminUsers $true
 
     .NOTES
-    https://portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/UserSettings
+    For more information, visit: https://portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/UserSettings
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
@@ -48,7 +48,7 @@
         [string] $LinkedInSelectedGroupObjectId,
         [string] $LinkedInSelectedGroupDisplayName
     )
-    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/PropertiesV2"
+    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/PropertiesV2"
 
     $Body = @{
         usersCanRegisterApps  = $UsersCanRegisterApps

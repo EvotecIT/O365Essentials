@@ -1,22 +1,28 @@
 ﻿function Get-O365AzureLicenses {
     <#
     .SYNOPSIS
-    Short description
+    Retrieves Azure licensing information based on provided parameters.
 
     .DESCRIPTION
-    Long description
+    This function retrieves Azure licensing information based on the provided parameters such as LicenseName, LicenseSKUID, ServicePlans, and ServicePlansComplete.
 
     .PARAMETER Headers
     Authorization header as created by Connect-O365Admin. If not provided the function will try to fetch it from the current execution context.
 
     .PARAMETER LicenseName
-    Parameter description
+    Specifies the name of the license to retrieve information for.
 
     .PARAMETER ServicePlans
-    Parameter description
+    Switch parameter to indicate whether to retrieve detailed service plans information.
+
+    .PARAMETER ServicePlansComplete
+    Switch parameter to indicate whether to retrieve complete service plans information.
 
     .PARAMETER LicenseSKUID
-    Parameter description
+    Specifies the SKU ID of the license to retrieve information for.
+
+    .PARAMETER IncludeLicenseDetails
+    Switch parameter to include detailed license information along with service plans.
 
     .EXAMPLE
     $Licenses = Get-O365AzureLicenses
@@ -39,7 +45,7 @@
     $ServicePlans | Format-Table
 
     .NOTES
-    General notes
+    Detailed information about the Get-O365AzureLicenses function and its usage scenarios.
     #>
     [cmdletbinding()]
     param(
@@ -55,7 +61,7 @@
     # Or maybe not because it doesn't contain exactly same data missing displayName from service plans
     # $Uri = "https://graph.microsoft.com/v1.0/subscribedSkus"
 
-    $Uri = "https://main.iam.ad.ext.azure.com/api/AccountSkus"
+    $Uri = "https://main.iam.ad.ext.azure.com/api/AccountSkus"
 
     $QueryParameter = @{
         backfillTenants = $false

@@ -1,28 +1,32 @@
 ﻿function Set-O365OrgGraphDataConnect {
     <#
     .SYNOPSIS
-    Short description
+    Configures the settings for Office 365 Organizational Graph Data Connect.
 
     .DESCRIPTION
-    Long description
+    This function allows you to configure the settings for Office 365 Organizational Graph Data Connect. 
+    It sends a POST request to the Office 365 admin API with the specified settings.
 
     .PARAMETER Headers
-    Parameter description
+    Specifies the headers for the API request. Typically includes authorization tokens.
 
     .PARAMETER ServiceEnabled
-    Parameter description
+    Specifies whether the Organizational Graph Data Connect service should be enabled or disabled.
 
     .PARAMETER TenantLockBoxApproverGroup
-    Group provided in form of email address. The email address must exists! Otherwise the api will break cmdlet
+    Specifies the email address of the group that will act as the Tenant LockBox approver. The email address must exist; otherwise, the API will break the cmdlet.
 
     .PARAMETER Force
-    Forces the operation to run ignoring current settings. Useful to overwrite settings after breaking tenant :-)
+    Forces the operation to run, ignoring current settings. Useful to overwrite settings after breaking tenant.
 
     .EXAMPLE
-    An example
+    $headers = @{Authorization = "Bearer your_token"}
+    Set-O365OrgGraphDataConnect -Headers $headers -ServiceEnabled $true -TenantLockBoxApproverGroup "approver@example.com" -Force
+
+    This example enables the Organizational Graph Data Connect service, sets the Tenant LockBox approver group to "approver@example.com", and forces the operation to run.
 
     .NOTES
-    General notes
+    Ensure that the TenantLockBoxApproverGroup email address is valid and exists in your organization to avoid errors.
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
@@ -31,7 +35,7 @@
         [string] $TenantLockBoxApproverGroup,
         [switch] $Force
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/o365dataplan"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/o365dataplan"
 
     if ($TenantLockBoxApproverGroup -and $TenantLockBoxApproverGroup -notlike "*@*") {
         Write-Warning -Message "Set-O365OrgGraphDataConnect - TenantLockBoxApproverGroup must be given in email format, and it must exists."

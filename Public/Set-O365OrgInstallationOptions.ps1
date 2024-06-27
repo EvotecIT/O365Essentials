@@ -1,35 +1,38 @@
 ﻿function Set-O365OrgInstallationOptions {
     <#
     .SYNOPSIS
-    Choose how often users get feature updates and the Microsoft apps that users can install on their own devices.
+    Configures the installation options for Microsoft Office 365 applications on user devices.
 
     .DESCRIPTION
-    Choose how often users get feature updates and the Microsoft apps that users can install on their own devices.
+    This function allows you to configure how often users receive feature updates and which Microsoft applications they can install on their devices. 
+    You can specify the update channel for Windows, and enable or disable the installation of Office and Skype for Business on both Windows and Mac devices.
 
     .PARAMETER Headers
-    Parameter description
+    Specifies the headers for the API request. Typically includes authorization tokens.
 
     .PARAMETER WindowsBranch
-    Enable/Disable Windows
+    Specifies the update channel for Windows. Valid values are 'CurrentChannel', 'MonthlyEnterpriseChannel', and 'SemiAnnualEnterpriseChannel'.
 
     .PARAMETER WindowsOffice
-    Parameter description
+    Specifies whether the Office suite should be enabled or disabled for Windows devices.
 
     .PARAMETER WindowsSkypeForBusiness
-    Parameter description
+    Specifies whether Skype for Business should be enabled or disabled for Windows devices.
 
     .PARAMETER MacOffice
-    Parameter description
+    Specifies whether the Office suite should be enabled or disabled for Mac devices.
 
     .PARAMETER MacSkypeForBusiness
-    Parameter description
+    Specifies whether Skype for Business should be enabled or disabled for Mac devices.
 
     .EXAMPLE
-    An example
+    $headers = @{Authorization = "Bearer your_token"}
+    Set-O365OrgInstallationOptions -Headers $headers -WindowsBranch 'CurrentChannel' -WindowsOffice $true -WindowsSkypeForBusiness $false -MacOffice $true -MacSkypeForBusiness $false
+
+    This example sets the update channel for Windows to 'CurrentChannel', enables Office for both Windows and Mac devices, disables Skype for Business for both Windows and Mac devices.
 
     .NOTES
     It takes a while for GUI to report these changes. Be patient.
-
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
@@ -46,7 +49,7 @@
         "SemiAnnualEnterpriseChannel" = 2
     }
 
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/usersoftware"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/usersoftware"
 
     $CurrentSettings = Get-O365OrgInstallationOptions -NoTranslation -Headers $Headers
     if ($CurrentSettings) {

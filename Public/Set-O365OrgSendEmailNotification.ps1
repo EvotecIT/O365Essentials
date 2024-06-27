@@ -35,7 +35,7 @@
         [switch] $Remove
     )
 
-    $Uri = "https://admin.microsoft.com/admin/api/Settings/company/sendfromaddress"
+    $Uri = "https://admin.microsoft.com/admin/api/Settings/company/sendfromaddress"
     if ($Remove) {
         $Body = @{
             ServiceEnabled        = $false

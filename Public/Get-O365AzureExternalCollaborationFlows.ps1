@@ -1,16 +1,16 @@
 ﻿function Get-O365AzureExternalCollaborationFlows {
     <#
     .SYNOPSIS
-    Short description
+    Provides information about Azure external collaboration flows.
 
     .DESCRIPTION
-    Long description
+    This function retrieves details about Azure external collaboration flows based on the provided headers.
 
     .PARAMETER Headers
-    Parameter description
+    A dictionary containing the necessary headers for the API request, typically including authorization information.
 
     .EXAMPLE
-    An example
+    Get-O365AzureExternalCollaborationFlows -Headers $headers
 
     .NOTES
     WARNING: Invoke-O365Admin - Error JSON: Response status code does not indicate success:

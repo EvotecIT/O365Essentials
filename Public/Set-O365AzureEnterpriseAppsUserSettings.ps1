@@ -1,25 +1,26 @@
 ﻿function Set-O365AzureEnterpriseAppsUserSettings {
     <#
     .SYNOPSIS
-    Short description
+    Configures user settings for Azure enterprise applications.
 
     .DESCRIPTION
-    Long description
+    This function allows administrators to configure user settings for Azure enterprise applications.
 
     .PARAMETER Headers
-    Parameter description
+    Specifies the headers for the API request, typically including authorization tokens.
 
     .PARAMETER UsersCanConsentAppsAccessingData
-    Parameter description
+    Specifies whether users can consent to apps accessing company data.
 
     .PARAMETER UsersCanAddGalleryAppsToMyApp
-    Parameter description
+    Specifies whether users can add gallery apps to their applications.
 
     .PARAMETER UsersCanOnlySeeO365AppsInPortal
-    Parameter description
+    Specifies whether users can only see Office 365 apps in the portal.
 
     .EXAMPLE
-    An example
+    An example of how to use this function:
+    Set-O365AzureEnterpriseAppsUserSettings -Headers $headers -UsersCanConsentAppsAccessingData $true -UsersCanAddGalleryAppsToMyApp $false -UsersCanOnlySeeO365AppsInPortal $true
 
     .NOTES
     Please keep in mind that:

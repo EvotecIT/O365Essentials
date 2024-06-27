@@ -1,4 +1,20 @@
 ﻿function Get-O365AzureGroupExpiration {
+    <#
+    .SYNOPSIS
+    Retrieves Azure group expiration information from the specified endpoint.
+
+    .DESCRIPTION
+    This function retrieves Azure group expiration information from the specified API endpoint using the provided headers.
+
+    .PARAMETER Headers
+    A dictionary containing the necessary headers for the API request, typically including authorization information.
+
+    .PARAMETER NoTranslation
+    A switch parameter to indicate whether to skip translation of the output.
+
+    .EXAMPLE
+    Get-O365AzureGroupExpiration -Headers $headers -NoTranslation
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,

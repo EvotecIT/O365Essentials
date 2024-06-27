@@ -1,19 +1,19 @@
 ﻿function Get-O365AzureFeaturePortal {
     <#
     .SYNOPSIS
-    Short description
+    Retrieves the Azure feature portal information.
 
     .DESCRIPTION
-    Long description
+    This function fetches the Azure feature portal information using the provided headers or attempts to fetch them from the current execution context if not provided.
 
     .PARAMETER Headers
-    Authorization header as created by Connect-O365Admin. If not provided the function will try to fetch it from the current execution context.
+    A dictionary containing the necessary headers for the API request, typically including authorization information. If not provided, the function will attempt to fetch it from the current execution context.
 
     .EXAMPLE
-    An example
+    Get-O365AzureFeaturePortal -Headers $headers
 
     .NOTES
-    General notes
+    This function is designed to work in conjunction with Connect-O365Admin to fetch the necessary headers for authentication. It retrieves the Azure feature portal information, which includes various settings and configurations.
     #>
     [cmdletbinding()]
     param(

@@ -1,12 +1,22 @@
 ﻿function Get-O365OrgUserOwnedApps {
+    <#
+    .SYNOPSIS
+    Retrieves organization user owned apps settings.
+
+    .DESCRIPTION
+    This function retrieves organization user owned apps settings from the specified URIs using the provided headers.
+
+    .PARAMETER Headers
+    Authentication token and additional information for the API request.
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/store"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/store"
     $Output1 = Invoke-O365Admin -Uri $Uri -Headers $Headers
 
-    $Uri = "https://admin.microsoft.com/admin/api/storesettings/iwpurchaseallowed"
+    $Uri = "https://admin.microsoft.com/admin/api/storesettings/iwpurchaseallowed"
     $Output2 = Invoke-O365Admin -Uri $Uri -Headers $Headers
 
     $Uri = 'https://admin.microsoft.com/fd/m365licensing/v1/policies/autoclaim'

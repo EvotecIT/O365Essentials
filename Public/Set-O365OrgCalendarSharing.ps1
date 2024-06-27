@@ -52,7 +52,7 @@
     if ($SharingOption) {
         $Body.SharingOption = $SharingOption
     }
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/calendarsharing"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/calendarsharing"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method POST -Body $Body
     $Output
 }

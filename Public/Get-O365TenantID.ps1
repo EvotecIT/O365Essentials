@@ -1,19 +1,19 @@
 ﻿function Get-O365TenantID {
     <#
     .SYNOPSIS
-    Quick way to find Office 365 Tenant ID by using domain name
+    Provides the tenant ID for a given domain.
 
     .DESCRIPTION
-    Quick way to find Office 365 Tenant ID by using domain name
+    This function retrieves the tenant ID associated with a specific domain by querying the OpenID configuration endpoint.
 
     .PARAMETER Domain
-    Domain name to check
+    Specifies the domain for which to retrieve the tenant ID.
 
     .EXAMPLE
     Get-O365TenantID -Domain 'evotec.pl'
 
     .NOTES
-    General notes
+    For more information, refer to the OpenID Connect Discovery documentation.
     #>
     [cmdletbinding()]
     param(
