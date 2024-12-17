@@ -1,18 +1,19 @@
 ﻿function Get-O365OrgM365Groups {
     <#
     .SYNOPSIS
-    Choose how guests from outside your organization can collaborate with your users in Microsoft 365 Groups. Learn more about guest access to Microsoft 365 Groups
+    Provides information on how guests from outside the organization can collaborate with users in Microsoft 365 Groups.
+
     .DESCRIPTION
-    Long description
+    This function retrieves settings related to guest access in Microsoft 365 Groups.
 
     .PARAMETER Headers
-    Parameter description
+    A dictionary containing the necessary headers for the API request, typically including authorization information.
 
     .EXAMPLE
-    An example
+    Get-O365OrgM365Groups -Headers $headers
 
     .NOTES
-    General notes
+    This function provides details on guest access settings in Microsoft 365 Groups.
     #>
     [cmdletbinding()]
     param(
@@ -21,7 +22,7 @@
     #$Uri = "https://admin.microsoft.com/admin/api/settings/security/guestUserPolicy"
     #$Output1 = Invoke-O365Admin -Uri $Uri -Headers $Headers
 
-    $Uri = "https://admin.microsoft.com/admin/api/settings/security/o365guestuser"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/security/o365guestuser"
     $Output2 = Invoke-O365Admin -Uri $Uri -Headers $Headers
 
     [PSCustomObject] @{

@@ -1,4 +1,98 @@
 ﻿function Set-O365PasswordReset {
+    <#
+    .SYNOPSIS
+    Configures password reset settings for Office 365.
+
+    .DESCRIPTION
+    This function updates the settings for password reset policies in Office 365. It allows configuring various options such as authentication methods, notification settings, and security questions.
+
+    .PARAMETER Headers
+    Specifies the headers for the API request. Typically includes authorization tokens.
+
+    .PARAMETER EnablementType
+    Specifies the type of enablement for the password reset policy.
+
+    .PARAMETER NumberOfAuthenticationMethodsRequired
+    Specifies the number of authentication methods required for password reset.
+
+    .PARAMETER EmailOptionEnabled
+    Indicates whether the email option is enabled for password reset.
+
+    .PARAMETER MobilePhoneOptionEnabled
+    Indicates whether the mobile phone option is enabled for password reset.
+
+    .PARAMETER OfficePhoneOptionEnabled
+    Indicates whether the office phone option is enabled for password reset.
+
+    .PARAMETER SecurityQuestionsOptionEnabled
+    Indicates whether the security questions option is enabled for password reset.
+
+    .PARAMETER MobileAppNotificationEnabled
+    Indicates whether the mobile app notification option is enabled for password reset.
+
+    .PARAMETER MobileAppCodeEnabled
+    Indicates whether the mobile app code option is enabled for password reset.
+
+    .PARAMETER NumberOfQuestionsToRegister
+    Specifies the number of security questions required to register for password reset.
+
+    .PARAMETER NumberOfQuestionsToReset
+    Specifies the number of security questions required to reset the password.
+
+    .PARAMETER RegistrationRequiredOnSignIn
+    Indicates whether registration is required on sign-in.
+
+    .PARAMETER RegistrationReconfirmIntevalInDays
+    Specifies the interval in days for reconfirming registration.
+
+    .PARAMETER SkipRegistrationAllowed
+    Indicates whether skipping registration is allowed.
+
+    .PARAMETER SkipRegistrationMaxAllowedDays
+    Specifies the maximum number of days allowed for skipping registration.
+
+    .PARAMETER CustomizeHelpdeskLink
+    Indicates whether the helpdesk link is customized.
+
+    .PARAMETER CustomHelpdeskEmailOrUrl
+    Specifies the custom helpdesk email or URL.
+
+    .PARAMETER NotifyUsersOnPasswordReset
+    Indicates whether users are notified on password reset.
+
+    .PARAMETER NotifyOnAdminPasswordReset
+    Indicates whether administrators are notified on password reset.
+
+    .PARAMETER PasswordResetEnabledGroupIds
+    Specifies the group IDs for which password reset is enabled.
+
+    .PARAMETER PasswordResetEnabledGroupName
+    Specifies the group name for which password reset is enabled.
+
+    .PARAMETER EmailOptionAllowed
+    Indicates whether the email option is allowed for password reset.
+
+    .PARAMETER MobilePhoneOptionAllowed
+    Indicates whether the mobile phone option is allowed for password reset.
+
+    .PARAMETER OfficePhoneOptionAllowed
+    Indicates whether the office phone option is allowed for password reset.
+
+    .PARAMETER SecurityQuestionsOptionAllowed
+    Indicates whether the security questions option is allowed for password reset.
+
+    .PARAMETER MobileAppNotificationOptionAllowed
+    Indicates whether the mobile app notification option is allowed for password reset.
+
+    .PARAMETER MobileAppCodeOptionAllowed
+    Indicates whether the mobile app code option is allowed for password reset.
+
+    .EXAMPLE
+    $headers = @{Authorization = "Bearer your_token"}
+    Set-O365PasswordReset -Headers $headers -EnablementType 1 -NumberOfAuthenticationMethodsRequired 2 -EmailOptionEnabled $true
+    
+    This example configures the password reset policy with the specified settings.
+    #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,

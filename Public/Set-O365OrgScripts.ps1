@@ -1,4 +1,56 @@
 ﻿function Set-O365OrgScripts {
+    <#
+    .SYNOPSIS
+    Configures the Office Scripts settings for an Office 365 organization.
+
+    .DESCRIPTION
+    This function updates the settings for Office Scripts in an Office 365 organization. It allows setting the permissions for users to automate their tasks, share their scripts, and run scripts in Power Automate.
+
+    .PARAMETER Headers
+    Specifies the headers for the API request. Typically includes authorization tokens.
+
+    .PARAMETER LetUsersAutomateTheirTasks
+    Specifies whether users are allowed to automate their tasks. Must be one of the following values:
+    - Disabled
+    - Everyone
+    - SpecificGroup
+
+    .PARAMETER LetUsersAutomateTheirTasksGroup
+    Specifies the name of the group allowed to automate their tasks. This parameter is used if LetUsersAutomateTheirTasks is set to 'SpecificGroup'.
+
+    .PARAMETER LetUsersAutomateTheirTasksGroupID
+    Specifies the ID of the group allowed to automate their tasks. This parameter is used if LetUsersAutomateTheirTasks is set to 'SpecificGroup'.
+
+    .PARAMETER LetUsersShareTheirScripts
+    Specifies whether users are allowed to share their scripts. Must be one of the following values:
+    - Disabled
+    - Everyone
+    - SpecificGroup
+
+    .PARAMETER LetUsersShareTheirScriptsGroup
+    Specifies the name of the group allowed to share their scripts. This parameter is used if LetUsersShareTheirScripts is set to 'SpecificGroup'.
+
+    .PARAMETER LetUsersShareTheirScriptsGroupID
+    Specifies the ID of the group allowed to share their scripts. This parameter is used if LetUsersShareTheirScripts is set to 'SpecificGroup'.
+
+    .PARAMETER LetUsersRunScriptPowerAutomate
+    Specifies whether users are allowed to run scripts in Power Automate. Must be one of the following values:
+    - Disabled
+    - Everyone
+    - SpecificGroup
+
+    .PARAMETER LetUsersRunScriptPowerAutomateGroup
+    Specifies the name of the group allowed to run scripts in Power Automate. This parameter is used if LetUsersRunScriptPowerAutomate is set to 'SpecificGroup'.
+
+    .PARAMETER LetUsersRunScriptPowerAutomateGroupID
+    Specifies the ID of the group allowed to run scripts in Power Automate. This parameter is used if LetUsersRunScriptPowerAutomate is set to 'SpecificGroup'.
+
+    .EXAMPLE
+    $headers = @{Authorization = "Bearer your_token"}
+    Set-O365OrgScripts -Headers $headers -LetUsersAutomateTheirTasks 'Everyone' -LetUsersShareTheirScripts 'SpecificGroup' -LetUsersShareTheirScriptsGroup 'GroupName' -LetUsersRunScriptPowerAutomate 'Disabled'
+
+    This example sets the Office Scripts settings to allow everyone to automate their tasks, a specific group to share their scripts, and disables running scripts in Power Automate.
+    #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
@@ -12,7 +64,7 @@
         [Parameter()][string] $LetUsersRunScriptPowerAutomateGroup,
         [Parameter()][string] $LetUsersRunScriptPowerAutomateGroupID
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/officescripts"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/officescripts"
 
     $Body = [ordered] @{}
     if ($LetUsersAutomateTheirTasks -eq 'Disabled') {

@@ -20,7 +20,6 @@
 
     Basically does what: https://jwt.ms/ and https://jwt.io/ do for you online
     #>
-
     [cmdletbinding()]
     param(
         [Parameter(Mandatory = $true)][string]$Token,

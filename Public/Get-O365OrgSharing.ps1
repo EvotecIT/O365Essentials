@@ -1,11 +1,30 @@
 ﻿function Get-O365OrgSharing {
+    <#
+    .SYNOPSIS
+    Retrieves organization sharing settings.
+
+    .DESCRIPTION
+    This function retrieves organization sharing settings from the specified URI using the provided headers.
+
+    .PARAMETER Headers
+    Authentication token and additional information for the API request.
+
+    .PARAMETER NoTranslation
+    Switch to bypass translation.
+
+    .EXAMPLE
+    Get-O365OrgSharing -Headers $headers
+
+    .NOTES
+    This function retrieves organization sharing settings from the specified URI.
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [switch] $NoTranslation
     )
 
-    $Uri = "https://admin.microsoft.com/admin/api/settings/security/guestUserPolicy"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/security/guestUserPolicy"
     $Output1 = Invoke-O365Admin -Uri $Uri -Headers $Headers
     if ($NoTranslation) {
         $Output1

@@ -1,4 +1,50 @@
 ﻿function Set-O365OrgForms {
+    <#
+    .SYNOPSIS
+    Configures the settings for Office 365 Forms.
+
+    .DESCRIPTION
+    This function allows you to configure various settings for Office 365 Forms. It retrieves the current settings, updates them based on the provided parameters, and then sends the updated settings back to the Office 365 admin API.
+
+    .PARAMETER Headers
+    Specifies the headers for the API request. Typically includes authorization tokens.
+
+    .PARAMETER BingImageSearchEnabled
+    Specifies whether Bing Image Search should be enabled in Office 365 Forms.
+
+    .PARAMETER ExternalCollaborationEnabled
+    Specifies whether external collaboration should be enabled in Office 365 Forms.
+
+    .PARAMETER ExternalSendFormEnabled
+    Specifies whether sending forms externally should be enabled in Office 365 Forms.
+
+    .PARAMETER ExternalShareCollaborationEnabled
+    Specifies whether external share collaboration should be enabled in Office 365 Forms.
+
+    .PARAMETER ExternalShareTemplateEnabled
+    Specifies whether external share template should be enabled in Office 365 Forms.
+
+    .PARAMETER ExternalShareResultEnabled
+    Specifies whether external share result should be enabled in Office 365 Forms.
+
+    .PARAMETER InOrgFormsPhishingScanEnabled
+    Specifies whether phishing scan for in-organization forms should be enabled in Office 365 Forms.
+
+    .PARAMETER InOrgSurveyIncentiveEnabled
+    Specifies whether survey incentive for in-organization forms should be enabled in Office 365 Forms.
+
+    .PARAMETER RecordIdentityByDefaultEnabled
+    Specifies whether recording identity by default should be enabled in Office 365 Forms.
+
+    .EXAMPLE
+    $headers = @{Authorization = "Bearer your_token"}
+    Set-O365OrgForms -Headers $headers -BingImageSearchEnabled $true -ExternalCollaborationEnabled $false
+
+    This example enables Bing Image Search and disables external collaboration in Office 365 Forms.
+
+    .NOTES
+    This function sends a POST request to the Office 365 admin API with the specified settings. It retrieves the current settings, updates them based on the provided parameters, and then sends the updated settings back to the API.
+    #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
@@ -59,7 +105,7 @@
         $Body.ResponderEditResponse = $ResponderEditResponse
     }
 
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/officeforms"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/officeforms"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method POST -Body $Body
     $Output
 }

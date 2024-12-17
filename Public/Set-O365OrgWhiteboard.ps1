@@ -1,4 +1,35 @@
 ﻿function Set-O365OrgWhiteboard {
+    <#
+    .SYNOPSIS
+    Configures settings for the Office 365 Whiteboard application.
+
+    .DESCRIPTION
+    This function updates the configuration settings for the Office 365 Whiteboard application. It allows enabling or disabling the Whiteboard, setting diagnostic data sharing preferences, and configuring related features like connected experiences, board sharing, and OneDrive storage.
+
+    .PARAMETER Headers
+    Specifies the headers for the API request. Typically includes authorization tokens.
+
+    .PARAMETER WhiteboardEnabled
+    Specifies whether the Whiteboard is enabled or disabled.
+
+    .PARAMETER DiagnosticData
+    Specifies the level of diagnostic data allowed. Valid values are 'Neither', 'Required', 'Optional'.
+
+    .PARAMETER OptionalConnectedExperiences
+    Specifies whether optional connected experiences are enabled.
+
+    .PARAMETER BoardSharingEnabled
+    Specifies whether board sharing is enabled.
+
+    .PARAMETER OneDriveStorageEnabled
+    Specifies whether OneDrive storage is enabled for Whiteboard.
+
+    .EXAMPLE
+    $headers = @{Authorization = "Bearer your_token"}
+    Set-O365OrgWhiteboard -Headers $headers -WhiteboardEnabled $true -DiagnosticData 'Optional' -OptionalConnectedExperiences $true -BoardSharingEnabled $true -OneDriveStorageEnabled $true
+
+    This example enables the Whiteboard with optional diagnostic data, connected experiences, board sharing, and OneDrive storage.
+    #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
@@ -8,7 +39,7 @@
         [nullable[bool]] $BoardSharingEnabled,
         [nullable[bool]] $OneDriveStorageEnabled
     )
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/whiteboard"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/whiteboard"
 
     $CurrentSettings = Get-O365OrgWhiteboard -Headers $Headers -NoTranslation
 

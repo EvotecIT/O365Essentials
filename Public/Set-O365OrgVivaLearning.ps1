@@ -1,4 +1,32 @@
 ﻿function Set-O365OrgVivaLearning {
+    <#
+    .SYNOPSIS
+    Configures the Viva Learning feature for Office 365.
+
+    .DESCRIPTION
+    This function updates the settings for the Viva Learning feature in Office 365. It allows configuring various options such as learning sources, diagnostic data sharing preferences, and enabling or disabling specific learning platforms.
+
+    .PARAMETER Headers
+    Specifies the headers for the API request. Typically includes authorization tokens.
+
+    .PARAMETER LinkedInLearningEnabled
+    Indicates whether LinkedIn Learning is enabled. Accepts $true or $false.
+
+    .PARAMETER MicrosoftLearnEnabled
+    Indicates whether Microsoft Learn is enabled. Accepts $true or $false.
+
+    .PARAMETER Microsoft365TrainingEnabled
+    Indicates whether Microsoft 365 Training is enabled. Accepts $true or $false.
+
+    .PARAMETER IsOptionalDiagnosticDataEnabled
+    Indicates whether optional diagnostic data sharing is enabled. Accepts $true or $false.
+
+    .EXAMPLE
+    $headers = @{Authorization = "Bearer your_token"}
+    Set-O365OrgVivaLearning -Headers $headers -LinkedInLearningEnabled $true -MicrosoftLearnEnabled $true -Microsoft365TrainingEnabled $true -IsOptionalDiagnosticDataEnabled $true
+
+    This example enables all learning platforms and optional diagnostic data sharing.
+    #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
@@ -106,7 +134,7 @@
         $Body.IsOptionalDiagnosticDataEnabled = $IsOptionalDiagnosticDataEnabled
     }
 
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/learning"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/learning"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method POST -Body $Body
     $Output
 }

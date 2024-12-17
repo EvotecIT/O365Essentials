@@ -1,4 +1,20 @@
 ﻿function Get-O365OrgScripts {
+    <#
+    .SYNOPSIS
+    Retrieves organization scripts configuration.
+
+    .DESCRIPTION
+    This function retrieves the organization's scripts configuration from the specified URI using the provided headers.
+
+    .PARAMETER Headers
+    Authentication token and additional information for the API request.
+
+    .EXAMPLE
+    Get-O365OrgScripts -Headers $headers
+
+    .NOTES
+    This function retrieves organization scripts configuration from the specified URI.
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
@@ -8,7 +24,7 @@
         '1' = 'Everyone'
         '2' = 'SpecificGroup'
     }
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/officescripts"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/officescripts"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
     if ($Output) {
         [PSCustomObject] @{

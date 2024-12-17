@@ -1,4 +1,57 @@
 ﻿function Set-O365AzureExternalCollaborationSettings {
+    <#
+    .SYNOPSIS
+    Configures external collaboration settings for Office 365 Azure.
+
+    .DESCRIPTION
+    This function allows administrators to configure various settings related to external collaboration in Office 365 Azure. It includes options for managing invitations, subscription sign-ups, self-service password reset (SSPR), and more.
+
+    .PARAMETER Headers
+    Specifies the headers for the API request. Typically includes authorization tokens.
+
+    .PARAMETER AllowInvitesFrom
+    Specifies who can send invitations to external users. Valid values are 'none', 'adminsAndGuestInviters', 'adminsGuestInvitersAndAllMembers', 'everyone'.
+
+    .PARAMETER AllowedToSignUpEmailBasedSubscriptions
+    Indicates whether users are allowed to sign up for email-based subscriptions.
+
+    .PARAMETER AllowedToUseSSPR
+    Indicates whether users are allowed to use Self-Service Password Reset.
+
+    .PARAMETER AllowEmailVerifiedUsersToJoinOrganization
+    Indicates whether email verified users are allowed to join the organization.
+
+    .PARAMETER BlockMsolPowerShell
+    Indicates whether to block the use of MSOnline PowerShell module.
+
+    .PARAMETER DisplayName
+    The display name for the settings.
+
+    .PARAMETER Description
+    A description of the settings.
+
+    .PARAMETER GuestUserRole
+    Specifies the role of a guest user. Valid values are 'User', 'GuestUser', 'RestrictedUser'.
+
+    .PARAMETER AllowedToCreateApps
+    Indicates whether users are allowed to create applications.
+
+    .PARAMETER AllowedToCreateSecurityGroups
+    Indicates whether users are allowed to create security groups.
+
+    .PARAMETER AllowedToReadOtherUsers
+    Indicates whether users are allowed to read other users' profiles.
+
+    .PARAMETER PermissionGrantPoliciesAssigned
+    Specifies the permission grant policies assigned to the user.
+
+    .EXAMPLE
+    $headers = @{Authorization = "Bearer your_token"}
+    Set-O365AzureExternalCollaborationSettings -Headers $headers -AllowInvitesFrom "everyone" -AllowedToSignUpEmailBasedSubscriptions $true -AllowedToUseSSPR $true -AllowEmailVerifiedUsersToJoinOrganization $false -BlockMsolPowerShell $false -DisplayName "External Collaboration Policy" -Description "Policy for managing external collaboration." -GuestUserRole "GuestUser" -AllowedToCreateApps $true -AllowedToCreateSecurityGroups $true -AllowedToReadOtherUsers $false -PermissionGrantPoliciesAssigned @("Policy1", "Policy2")
+
+    .NOTES
+    Ensure that you have the necessary permissions to invoke this command.
+    #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,

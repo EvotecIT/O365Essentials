@@ -1,10 +1,11 @@
 ﻿function Get-O365AzureADConnect {
     <#
     .SYNOPSIS
-    Short description
+    Retrieves the status of Azure AD Connect for Office 365.
 
     .DESCRIPTION
-    Long description
+    This function calls the Azure AD API to get the status of password synchronization and AD Connect status.
+    It returns a custom PowerShell object containing various synchronization and configuration details.
 
     .PARAMETER Headers
     Authorization header as created by Connect-O365Admin. If not provided the function will try to fetch it from the current execution context.
@@ -19,11 +20,11 @@
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
     )
-    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/GetPasswordSyncStatus"
+    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/GetPasswordSyncStatus"
     $Output3 = Invoke-O365Admin -Uri $Uri -Headers $Headers
     #$Output3 | Format-Table
 
-    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/ADConnectStatus"
+    $Uri = "https://main.iam.ad.ext.azure.com/api/Directories/ADConnectStatus"
     $Output4 = Invoke-O365Admin -Uri $Uri -Headers $Headers
 
     [PSCustomObject] @{

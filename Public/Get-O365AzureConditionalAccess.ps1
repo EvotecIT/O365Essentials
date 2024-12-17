@@ -1,4 +1,24 @@
 ﻿function Get-O365AzureConditionalAccess {
+    <#
+    .SYNOPSIS
+    Retrieves Azure Conditional Access policies.
+
+    .DESCRIPTION
+    This function retrieves Azure Conditional Access policies based on the provided headers. It returns a list of policies with their details, including policy ID, name, apply rule, state, use policy state, baseline type, creation date, and modification date. If the -Details switch is used, it retrieves detailed information about each policy.
+
+    .PARAMETER Headers
+    A dictionary containing the headers for the API request, typically including authorization information.
+
+    .PARAMETER Details
+    A switch parameter to indicate if detailed information about each policy is required.
+
+    .EXAMPLE
+    Get-O365AzureConditionalAccess -Headers $headers
+    Get-O365AzureConditionalAccess -Headers $headers -Details
+
+    .NOTES
+    For more information, visit: https://docs.microsoft.com/en-us/azure/active-directory/conditional-access/overview
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,

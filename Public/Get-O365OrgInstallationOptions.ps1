@@ -1,4 +1,20 @@
 ﻿function Get-O365OrgInstallationOptions {
+    <#
+    .SYNOPSIS
+    Retrieves installation options for Microsoft 365 software.
+
+    .DESCRIPTION
+    This function retrieves installation options for Microsoft 365 software from the specified API endpoint using the provided headers. It provides details on Windows and Mac installation settings.
+
+    .PARAMETER Headers
+    A dictionary containing the necessary headers for the API request, typically including authorization information.
+
+    .PARAMETER NoTranslation
+    Indicates whether to include translation for the installation options.
+
+    .EXAMPLE
+    Get-O365OrgInstallationOptions -Headers $headers -NoTranslation
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
@@ -11,7 +27,7 @@
         "2" = 'SemiAnnualEnterpriseChannel'
     }
 
-    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/usersoftware"
+    $Uri = "https://admin.microsoft.com/admin/api/settings/apps/usersoftware"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
     if ($NoTranslation) {
         $Output.UserSoftwareSettings

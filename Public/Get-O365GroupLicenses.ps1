@@ -1,4 +1,26 @@
 ﻿function Get-O365GroupLicenses {
+    <#
+    .SYNOPSIS
+    Retrieves the licenses information for a specified Office 365 group.
+
+    .DESCRIPTION
+    This function retrieves the licenses information for an Office 365 group based on the provided GroupID or GroupDisplayName. It can also include detailed service plans information if specified.
+
+    .PARAMETER Headers
+    A dictionary containing the necessary headers for the API request, typically including authorization information.
+
+    .PARAMETER GroupID
+    The ID of the group to query.
+
+    .PARAMETER GroupDisplayName
+    The display name of the group to query.
+
+    .PARAMETER ServicePlans
+    Switch parameter to indicate whether to retrieve detailed service plans information.
+
+    .PARAMETER NoTranslation
+    Switch parameter to skip translation of the output.
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
@@ -17,7 +39,7 @@
         }
     }
     if ($Group) {
-        $Uri = "https://main.iam.ad.ext.azure.com/api/AccountSkus/Group/$Group"
+        $Uri = "https://main.iam.ad.ext.azure.com/api/AccountSkus/Group/$Group"
         $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
         if ($Output) {
             if ($NoTranslation) {

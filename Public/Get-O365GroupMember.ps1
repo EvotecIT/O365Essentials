@@ -1,4 +1,26 @@
 ﻿function Get-O365GroupMember {
+    <#
+    .SYNOPSIS
+    Retrieves members of an Office 365 group based on the provided group ID.
+
+    .DESCRIPTION
+    This function queries the Microsoft Graph API to retrieve members of an Office 365 group using the specified group ID.
+
+    .PARAMETER Headers
+    A dictionary containing the necessary headers for the API request, typically including authorization information.
+
+    .PARAMETER Id
+    The ID of the Office 365 group for which members are to be retrieved.
+
+    .PARAMETER Search
+    A search query to filter the members of the group.
+
+    .PARAMETER Property
+    An array of properties to include in the query results.
+
+    .EXAMPLE
+    Get-O365GroupMember -Headers $headers -Id 'groupID' -Search 'searchQuery' -Property @('property1', 'property2')
+    #>
     [cmdletBinding()]
     param(
         [parameter()][alias('Authorization')][System.Collections.IDictionary] $Headers,

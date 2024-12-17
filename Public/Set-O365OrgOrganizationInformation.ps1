@@ -1,4 +1,44 @@
 ﻿function Set-O365OrgOrganizationInformation {
+    <#
+    .SYNOPSIS
+    Updates the organization information for an Office 365 tenant.
+
+    .DESCRIPTION
+    This function allows you to update various details about your Office 365 organization, such as the name, address, city, state, postal code, phone number, and technical contact email. It retrieves the current settings and updates only the specified parameters.
+
+    .PARAMETER Headers
+    Specifies the headers for the API request. Typically includes authorization tokens.
+
+    .PARAMETER Name
+    Specifies the name of the organization.
+
+    .PARAMETER StreetAddress
+    Specifies the street address of the organization.
+
+    .PARAMETER ApartmentOrSuite
+    Specifies the apartment or suite number of the organization.
+
+    .PARAMETER City
+    Specifies the city where the organization is located.
+
+    .PARAMETER State
+    Specifies the state where the organization is located.
+
+    .PARAMETER PostalCode
+    Specifies the postal code of the organization.
+
+    .PARAMETER PhoneNumber
+    Specifies the phone number of the organization.
+
+    .PARAMETER TechnicalContactEmail
+    Specifies the technical contact email for the organization.
+
+    .EXAMPLE
+    $headers = @{Authorization = "Bearer your_token"}
+    Set-O365OrgOrganizationInformation -Headers $headers -Name "Contoso Ltd." -StreetAddress "123 Main St" -City "Redmond" -State "WA" -PostalCode "98052" -PhoneNumber "123-456-7890" -TechnicalContactEmail "admin@contoso.com"
+
+    This example updates the organization information for Contoso Ltd. with the specified address, city, state, postal code, phone number, and technical contact email.
+    #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
@@ -14,7 +54,7 @@
         [string] $PhoneNumber,
         [string] $TechnicalContactEmail
     )
-    $Uri = "https://admin.microsoft.com/admin/api/Settings/company/profile"
+    $Uri = "https://admin.microsoft.com/admin/api/Settings/company/profile"
 
     $CurrentSettings = Get-O365OrgOrganizationInformation -Headers $Headers
     if ($CurrentSettings) {

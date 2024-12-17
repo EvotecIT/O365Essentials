@@ -1,9 +1,25 @@
 ﻿function Get-O365OrgOfficeProductivity {
+    <#
+    .SYNOPSIS
+    Retrieves productivity score information for the organization.
+
+    .DESCRIPTION
+    This function retrieves productivity score information for the organization from the specified URIs.
+
+    .PARAMETER Headers
+    Authentication token and additional information created with Connect-O365Admin.
+
+    .EXAMPLE
+    Get-O365OrgOfficeProductivity -Headers $headers
+
+    .NOTES
+    This function retrieves productivity score information from the specified URIs.
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
     )
-    $Uri = "https://admin.microsoft.com/admin/api/reports/productivityScoreCustomerOption"
+    $Uri = "https://admin.microsoft.com/admin/api/reports/productivityScoreCustomerOption"
     $Output1 = Invoke-O365Admin -Uri $Uri -Headers $Headers
 
     #$Uri = "https://admin.microsoft.com/admin/api/reports/productivityScoreConfig/GetProductivityScoreConfig"

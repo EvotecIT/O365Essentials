@@ -16,10 +16,10 @@
     Provide EndDate for the invoices to be retrieved. If not specified, EndDate is set to current date.
 
     .EXAMPLE
-    An example
+    Get-O365BillingInvoices -Headers $headers -StartDate (Get-Date).AddMonths(-6) -EndDate (Get-Date)
 
     .NOTES
-    General notes
+    This function retrieves invoices from Office 365. If no specific StartDate and EndDate are provided, the function defaults to retrieving invoices from the last 6 months.
     #>
     [cmdletbinding()]
     param(
@@ -35,7 +35,7 @@
     }
     $StartDateText = $StartDate.ToString("yyyy-MM-dd")
     $EndDateText = $EndDate.ToString("yyyy-MM-dd")
-    $Uri = "https://admin.microsoft.com/fd/commerceapi/my-org/legacyInvoices(startDate=$StartDateText,endDate=$EndDateText)"
+    $Uri = "https://admin.microsoft.com/fd/commerceapi/my-org/legacyInvoices(startDate=$StartDateText,endDate=$EndDateText)"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
     $Output
 }

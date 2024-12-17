@@ -1,4 +1,20 @@
 ﻿function Get-O365SearchIntelligenceBingExtension {
+    <#
+    .SYNOPSIS
+    Retrieves Bing search intelligence extensions for Office 365.
+
+    .DESCRIPTION
+    This function retrieves Bing search intelligence extensions for Office 365 from the specified API endpoint using the provided headers. It checks if Bing is set as the default search engine and lists the groups for which Bing is enabled as the default search engine.
+
+    .PARAMETER Headers
+    A dictionary containing the necessary headers for the API request, typically including authorization information.
+
+    .EXAMPLE
+    Get-O365SearchIntelligenceBingExtension -Headers $headers
+
+    .NOTES
+    This function requires a valid set of headers for authentication and authorization to access the Office 365 API.
+    #>
     [cmdletbinding()]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers

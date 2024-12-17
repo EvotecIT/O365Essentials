@@ -1,4 +1,12 @@
 ﻿function Get-O365AzureADRoles {
+    <#
+    .SYNOPSIS
+    Retrieves Azure AD roles from Microsoft Graph API.
+
+    .DESCRIPTION
+    This function retrieves Azure AD roles from the Microsoft Graph API based on the provided URI.
+    It returns a list of Azure AD roles.
+    #>
     [cmdletBinding()]
     param(
 

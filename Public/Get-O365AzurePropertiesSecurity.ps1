@@ -1,19 +1,20 @@
 ﻿function Get-O365AzurePropertiesSecurity {
     <#
     .SYNOPSIS
-    Short description
+    Retrieves the security default status for the Office 365 tenant.
 
     .DESCRIPTION
-    Long description
+    This function retrieves the security default status for the Office 365 tenant using the provided headers.
 
     .PARAMETER Headers
-    Authorization header as created by Connect-O365Admin. If not provided the function will try to fetch it from the current execution context.
+    A dictionary containing the necessary headers for the API request, typically including authorization information.
 
     .EXAMPLE
-    Get-O365AzurePropertiesSecurity -Verbose
+    Get-O365AzurePropertiesSecurity -Headers $headers
+    An example of how to retrieve the security default status for the Office 365 tenant using specified headers.
 
     .NOTES
-    General notes
+    This function is designed to work with the Office 365 API to fetch the security default status for the tenant. It requires a valid set of headers, including authorization tokens, to authenticate the request.
     #>
     [cmdletbinding()]
     param(
