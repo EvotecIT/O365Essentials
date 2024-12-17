@@ -1,5 +1,16 @@
 ﻿# O365Essentials Release History
 
+## 0.0.15 - 2024.12.17
+* Update Set-O365OrgForms.ps1 added ResponderEditResponse parameter by @SaschaLac in https://github.com/EvotecIT/O365Essentials/pull/32
+* Added help to 146 functions by @neztach in https://github.com/EvotecIT/O365Essentials/pull/30
+* Added `Get-O365CopilotPin`
+
+### New Contributors
+* @SaschaLac made their first contribution in https://github.com/EvotecIT/O365Essentials/pull/32
+* @neztach made their first contribution in https://github.com/EvotecIT/O365Essentials/pull/30
+
+**Full Changelog**: https://github.com/EvotecIT/O365Essentials/compare/v0.0.14...v0.0.15
+
 ## 0.0.14 - 2024.05.28
 - Downgraded `Az.Accounts` to minimal `2.12.1`. `3.0.0` is kind of broken and PS 5 has issues, you can still use newest one
 - Added `Get-O365OrgSendEmailNotification` and `Set-O365OrgSendEmailNotification` which allows configuring [SenderFromAddressSettings](https://admin.microsoft.com/Adminportal/Home?#/Settings/OrganizationProfile/:/Settings/L1/SendFromAddressSettings) for email notifications
