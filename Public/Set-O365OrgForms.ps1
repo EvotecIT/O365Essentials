@@ -10,7 +10,8 @@
         [nullable[bool]] $ExternalShareResultEnabled,
         [nullable[bool]] $InOrgFormsPhishingScanEnabled,
         [nullable[bool]] $InOrgSurveyIncentiveEnabled,
-        [nullable[bool]] $RecordIdentityByDefaultEnabled
+        [nullable[bool]] $RecordIdentityByDefaultEnabled,
+        [nullable[bool]] $ResponderEditResponse
     )
     # We need to get current settings because it always requires all parameters
     # If we would just provide one parameter it would reset everything else
@@ -25,6 +26,7 @@
         InOrgFormsPhishingScanEnabled     = $CurrentSettings.InOrgFormsPhishingScanEnabled
         InOrgSurveyIncentiveEnabled       = $CurrentSettings.InOrgSurveyIncentiveEnabled
         RecordIdentityByDefaultEnabled    = $CurrentSettings.RecordIdentityByDefaultEnabled
+        ResponderEditResponse             = $CurrentSettings.ResponderEditResponse
     }
     if ($null -ne $BingImageSearchEnabled) {
         $Body.BingImageSearchEnabled = $BingImageSearchEnabled
@@ -52,6 +54,9 @@
     }
     if ($null -ne $RecordIdentityByDefaultEnabled) {
         $Body.RecordIdentityByDefaultEnabled = $RecordIdentityByDefaultEnabled
+    }
+    if ($null -ne $ResponderEditResponse) {
+        $Body.ResponderEditResponse = $ResponderEditResponse
     }
 
     $Uri = "https://admin.microsoft.com/admin/api/settings/apps/officeforms"
