@@ -36,6 +36,9 @@
     .PARAMETER RecordIdentityByDefaultEnabled
     Specifies whether recording identity by default should be enabled in Office 365 Forms.
 
+    .PARAMETER ResponderEditResponse
+    Specifies whether responders should be able to edit their responses in Office 365 Forms.
+
     .EXAMPLE
     $headers = @{Authorization = "Bearer your_token"}
     Set-O365OrgForms -Headers $headers -BingImageSearchEnabled $true -ExternalCollaborationEnabled $false
