@@ -1,5 +1,8 @@
 ﻿# O365Essentials Release History
 
+## 0.0.16 - 2024.12.22
+- Update docs `Set-O365OrgForms`
+
 ## 0.0.15 - 2024.12.17
 * Update Set-O365OrgForms.ps1 added ResponderEditResponse parameter by @SaschaLac in https://github.com/EvotecIT/O365Essentials/pull/32
 * Added help to 146 functions by @neztach in https://github.com/EvotecIT/O365Essentials/pull/30
