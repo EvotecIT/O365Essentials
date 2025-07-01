@@ -1,4 +1,7 @@
 ﻿# O365Essentials Release History
+## 0.0.22 - 2025.07.05
+- Fix token acquisition for Azure Resource Manager
+
 ## 0.0.21 - 2025.07.04
 - Fixed Azure authentication to use the same resource as Az.Accounts
 
