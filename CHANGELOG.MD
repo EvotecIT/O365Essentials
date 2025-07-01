@@ -1,36 +1,4 @@
 # O365Essentials Release History
-## 0.0.25 - 2025.07.08
-- Detect tenant ID from the Graph token when none is provided
-- Document the built-in Azure PowerShell client ID
-- Bump module version to 0.0.25
-## 0.0.24 - 2025.07.07
-- Fix browser launch failure on PowerShell 7 by using Start-Process
-- Bump module version to 0.0.24
-## 0.0.23 - 2025.07.06
-- Revert Azure token scope to use Azure PowerShell resource
-
-## 0.0.22 - 2025.07.05
-- Fix token acquisition for Azure Resource Manager
-
-## 0.0.21 - 2025.07.04
-- Fixed Azure authentication to use the same resource as Az.Accounts
-
-## 0.0.20 - 2025.07.03
-- Fixed username resolution when connecting without credentials
-- `Connect-O365Admin` now decodes the Graph token instead of parsing `id_token`
-
-## 0.0.19 - 2025.07.02
-- Reuse refresh tokens to avoid repeated sign-in prompts
-- `Connect-O365Admin` now acquires Graph token first and silently refreshes other scopes
-
-## 0.0.18 - 2025.07.01
-- Default authentication now opens an interactive browser window.
-- Added optional `-Device` switch to `Connect-O365Admin` for device code flow.
-- Changed OAuth client ID to use Azure PowerShell public application.
-
-## 0.0.17 - 2024.07.01
-- Removed dependency on `Az.Accounts` module.
-- New token acquisition now uses built in OAuth device flow.
 
 ## 0.0.16 - 2024.12.22
 - Update docs `Set-O365OrgForms`
