@@ -1,5 +1,10 @@
 # O365Essentials Release History
 
+## 0.0.17 - 2024.12.24
+- Added support for client secret and certificate authentication.
+- `Connect-O365Admin` now accepts `ClientId`, `ClientSecret` and `Certificate` parameters.
+- `Get-O365OAuthToken` supports app-only tokens via `client_credentials`.
+
 ## 0.0.16 - 2024.12.22
 - Update docs `Set-O365OrgForms`
 

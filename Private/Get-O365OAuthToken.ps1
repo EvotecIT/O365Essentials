@@ -7,9 +7,51 @@ function Get-O365OAuthToken {
         [string] $ClientId = '04b07795-8ddb-461a-bbee-02f9e1bf7b46',
         [PSCredential] $Credential,
         [string] $RefreshToken,
-        [switch] $Device
+        [switch] $Device,
+        [string] $ClientSecret,
+        $Certificate
     )
     $tokenEndpoint = "https://login.microsoftonline.com/$Tenant/oauth2/v2.0/token"
+
+    if ($ClientSecret -or $Certificate) {
+        if ($Certificate -and ($Certificate -isnot [System.Security.Cryptography.X509Certificates.X509Certificate2])) {
+            if (Test-Path $Certificate) {
+                $Certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new((Resolve-Path $Certificate))
+            } else {
+                throw "Certificate path '$Certificate' not found"
+            }
+        }
+
+        function ConvertTo-Base64Url([byte[]] $bytes) {
+            [Convert]::ToBase64String($bytes).TrimEnd('=')
+            | ForEach-Object { $_.Replace('+', '-').Replace('/', '_') }
+        }
+
+        $body = @{ client_id = $ClientId; scope = $Scope; grant_type = 'client_credentials' }
+        if ($ClientSecret) {
+            $body.client_secret = $ClientSecret
+        } elseif ($Certificate) {
+            $now = Get-Date
+            $header = @{ alg = 'RS256'; typ = 'JWT' }
+            $payload = @{
+                aud = $tokenEndpoint
+                iss = $ClientId
+                sub = $ClientId
+                jti = [guid]::NewGuid().Guid
+                nbf = [int][Math]::Floor(($now.AddMinutes(-5)  - (Get-Date '1970-01-01Z')).TotalSeconds)
+                exp = [int][Math]::Floor(($now.AddMinutes(10) - (Get-Date '1970-01-01Z')).TotalSeconds)
+            }
+            $headerEnc  = ConvertTo-Base64Url([System.Text.Encoding]::UTF8.GetBytes((ConvertTo-Json $header -Compress)))
+            $payloadEnc = ConvertTo-Base64Url([System.Text.Encoding]::UTF8.GetBytes((ConvertTo-Json $payload -Compress)))
+            $unsigned   = "$headerEnc.$payloadEnc"
+            $rsa = $Certificate.GetRSAPrivateKey()
+            $signature = $rsa.SignData([System.Text.Encoding]::UTF8.GetBytes($unsigned), [System.Security.Cryptography.HashAlgorithmName]::SHA256, [System.Security.Cryptography.RSASignaturePadding]::Pkcs1)
+            $signed = "$unsigned.$(ConvertTo-Base64Url($signature))"
+            $body.client_assertion_type = 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'
+            $body.client_assertion = $signed
+        }
+        return Invoke-RestMethod -Method Post -Uri $tokenEndpoint -Body $body -ContentType 'application/x-www-form-urlencoded'
+    }
 
     if ($RefreshToken) {
         $body = @{
