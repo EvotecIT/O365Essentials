@@ -6,7 +6,7 @@ function Connect-O365Admin {
         [parameter(ParameterSetName = 'App')][string] $ClientId,
         [parameter(ParameterSetName = 'App')][string] $ClientSecret,
         [parameter(ParameterSetName = 'App')] $Certificate,
-        [parameter(ParameterSetName = 'App')][string] $CertificatePassword,
+        [parameter(ParameterSetName = 'App')][securestring] $CertificatePassword,
         [int] $ExpiresIn = 3600,
         [int] $ExpiresTimeout = 30,
         [switch] $ForceRefresh,

@@ -97,6 +97,25 @@ When working with multiple tenants you can target a specific tenant using the `-
 $null = Connect-O365Admin -Tenant 'contoso.onmicrosoft.com' -Verbose
 ```
 
+### Required permissions
+
+The module uses Microsoft Graph, the Azure management API and several
+undocumented endpoints under `admin.microsoft.com`. When using a client
+secret or certificate, create an app registration in Azure AD and grant it
+the permissions below:
+
+* **Microsoft Graph** – at minimum `Directory.ReadWrite.All` and any other
+  scopes needed by the commands you plan to run.
+* **Azure management** (`74658136-14ec-4630-ad9b-26e160ff0fc6`) – delegate or
+  application access to `user_impersonation`.
+* **Admin portal API** – this API is not documented, so the easiest option is
+  to run the app as a user with the Global Administrator role or grant the app
+  the same administrative roles.
+
+Interactive connections require the signed‑in account to have the same
+permissions. When working non‑interactively remember to specify `-Tenant` or
+`-DomainName` to target the correct tenant.
+
 Once the connection is established we can use the module using any GET/SET commands.
 
 ```powershell

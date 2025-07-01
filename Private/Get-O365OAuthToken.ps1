@@ -10,7 +10,7 @@ function Get-O365OAuthToken {
         [switch] $Device,
         [string] $ClientSecret,
         $Certificate,
-        [string] $CertificatePassword
+        [securestring] $CertificatePassword
     )
     $tokenEndpoint = "https://login.microsoftonline.com/$Tenant/oauth2/v2.0/token"
 
