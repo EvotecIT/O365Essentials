@@ -6,6 +6,7 @@ function Connect-O365Admin {
         [int] $ExpiresIn = 3600,
         [int] $ExpiresTimeout = 30,
         [switch] $ForceRefresh,
+        [switch] $Device,
         [alias('TenantID')][string] $Tenant,
         [string] $DomainName,
         [string] $Subscription
@@ -43,21 +44,21 @@ function Connect-O365Admin {
 
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for admin.microsoft.com"
-        $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesO365 -Credential $Credential
+        $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesO365 -Credential $Credential -Device:$Device
     } catch {
         Write-Warning -Message "Connect-O365Admin - Authentication failure for admin.microsoft.com. Error: $($_.Exception.Message)"
         return
     }
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Azure"
-        $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesAzure -Credential $Credential
+        $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesAzure -Credential $Credential -Device:$Device
     } catch {
         Write-Warning -Message "Connect-O365Admin - Authentication failure for Azure. Error: $($_.Exception.Message)"
         return
     }
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Graph"
-        $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -Credential $Credential
+        $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -Credential $Credential -Device:$Device
     } catch {
         Write-Warning -Message "Connect-O365Admin - Authentication failure for Graph. Error: $($_.Exception.Message)"
         return

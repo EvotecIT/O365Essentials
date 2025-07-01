@@ -1,4 +1,8 @@
 ﻿# O365Essentials Release History
+## 0.0.18 - 2025.07.01
+- Default authentication now opens an interactive browser window.
+- Added optional `-Device` switch to `Connect-O365Admin` for device code flow.
+- Changed OAuth client ID to use Azure PowerShell public application.
 
 ## 0.0.17 - 2024.07.01
 - Removed dependency on `Az.Accounts` module.
