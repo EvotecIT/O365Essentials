@@ -1,4 +1,7 @@
 ﻿# O365Essentials Release History
+## 0.0.21 - 2025.07.04
+- Fixed Azure authentication to use the same resource as Az.Accounts
+
 ## 0.0.20 - 2025.07.03
 - Fixed username resolution when connecting without credentials
 - `Connect-O365Admin` now decodes the Graph token instead of parsing `id_token`
