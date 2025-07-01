@@ -1,0 +1,29 @@
+﻿Import-Module .\O365Essentials.psd1 -Force
+
+# This makes a connection to Office 365 tenant
+# since we don't want to save the data we null it out
+# keep in mind that if there's an MFA you would be better left without Credentials and just let it prompt you
+$null = Connect-O365Admin -Verbose
+
+$CA = Get-O365AzureAuthenticationMethodsPolicies
+$CA
+
+# $session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+# $session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36 Edg/95.0.1020.53"
+# Invoke-WebRequest -UseBasicParsing -Uri "https://graph.microsoft.com/beta/policies/authenticationmethodspolicy/authenticationMethodConfigurations/Fido2" `
+# -Method "PATCH" `
+# -WebSession $session `
+# -Headers @{
+# "x-ms-client-session-id"="5220dedead14444d9d28fc944e6ff889"
+#   "x-ms-command-name"="AuthenticationMethods%20-%20PatchFidoPolicy"
+#   "Accept-Language"="en"
+#   "Authorization"="Bearer eyJ0eXAiOiJKV1QiLCJub25jZSI6Ik1saWNKRFBrZGc2azhrYkhnbl9VaC1RS0lkZXhpaFNXUVprU2RiS0hRUFkiLCJhbGciOiJSUzI1NiIsIng1dCI6Imwzc1EtNTBjQ0g0eEJWWkxIVEd3blNSNzY4MCIsImtpZCI6Imwzc1EtNTBjQ0g0eEJWWkxIVEd3blNSNzY4MCJ9.eyJhdWQiOiJodHRwczovL2dyYXBoLm1pY3Jvc29mdC5jb20vIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvY2ViMzcxZjYtODc0NS00ODc2LWEwNDAtNjlmMmQxMGE5ZDFhLyIsImlhdCI6MTYzNzE2Mzk4NCwibmJmIjoxNjM3MTYzOTg0LCJleHAiOjE2MzcxNjkwODIsImFjY3QiOjAsImFjciI6IjEiLCJhaW8iOiJBVVFBdS84VEFBQUEyMHRtMVNlRHVYbUhhd2cvRzJiRnlKYzBYRHcra1JLK1ozVlNxSTNBRUQ0aDZNa0NzLzRtS3gzMUxCRWJ1dWIzZVE0U1BlQmh6TVJTTnpCRW95YTZVQT09IiwiYW1yIjpbInJzYSIsIm1mYSJdLCJhcHBfZGlzcGxheW5hbWUiOiJBREliaXphVVgiLCJhcHBpZCI6Ijc0NjU4MTM2LTE0ZWMtNDYzMC1hZDliLTI2ZTE2MGZmMGZjNiIsImFwcGlkYWNyIjoiMiIsImNvbnRyb2xzIjpbImNhX2VuZiJdLCJkZXZpY2VpZCI6IjNhZTIyNzI2LWRmZDktNGFkNy1hODY1LWFhMmI1MWM2ZTBmZiIsImZhbWlseV9uYW1lIjoiS8WCeXMiLCJnaXZlbl9uYW1lIjoiUHJ6ZW15c8WCYXciLCJpZHR5cCI6InVzZXIiLCJpcGFkZHIiOiI4OS43Ny4xMDIuMTciLCJuYW1lIjoiUHJ6ZW15c8WCYXcgS8WCeXMiLCJvaWQiOiJlNmE4ZjFjZi0wODc0LTQzMjMtYTEyZi0yYmY1MWJiNmRmZGQiLCJvbnByZW1fc2lkIjoiUy0xLTUtMjEtODUzNjE1OTg1LTI4NzA0NDUzMzktMzE2MzU5ODY1OS0xMTA1IiwicGxhdGYiOiIzIiwicHVpZCI6IjEwMDMwMDAwOTQ0REI4NEQiLCJyaCI6IjAuQVM4QTluR3p6a1dIZGtpZ1FHbnkwUXFkR2phQlpYVHNGREJHclpzbTRXRF9EOFl2QUM4LiIsInNjcCI6IkFjY2Vzc1Jldmlldy5SZWFkV3JpdGUuQWxsIEF1ZGl0TG9nLlJlYWQuQWxsIERpcmVjdG9yeS5BY2Nlc3NBc1VzZXIuQWxsIERpcmVjdG9yeS5SZWFkLkFsbCBEaXJlY3RvcnkuUmVhZFdyaXRlLkFsbCBlbWFpbCBFbnRpdGxlbWVudE1hbmFnZW1lbnQuUmVhZC5BbGwgR3JvdXAuUmVhZFdyaXRlLkFsbCBJZGVudGl0eVByb3ZpZGVyLlJlYWRXcml0ZS5BbGwgSWRlbnRpdHlSaXNrRXZlbnQuUmVhZFdyaXRlLkFsbCBJZGVudGl0eVVzZXJGbG93LlJlYWQuQWxsIG9wZW5pZCBQb2xpY3kuUmVhZC5BbGwgUG9saWN5LlJlYWRXcml0ZS5BdXRoZW50aWNhdGlvbkZsb3dzIFBvbGljeS5SZWFkV3JpdGUuQXV0aGVudGljYXRpb25NZXRob2QgUG9saWN5LlJlYWRXcml0ZS5Db25kaXRpb25hbEFjY2VzcyBwcm9maWxlIFJlcG9ydHMuUmVhZC5BbGwgUm9sZU1hbmFnZW1lbnQuUmVhZFdyaXRlLkRpcmVjdG9yeSBTZWN1cml0eUV2ZW50cy5SZWFkV3JpdGUuQWxsIFRydXN0RnJhbWV3b3JrS2V5U2V0LlJlYWQuQWxsIFVzZXIuRXhwb3J0LkFsbCBVc2VyLlJlYWRXcml0ZS5BbGwgVXNlckF1dGhlbnRpY2F0aW9uTWV0aG9kLlJlYWRXcml0ZS5BbGwiLCJzaWduaW5fc3RhdGUiOlsiZHZjX21uZ2QiLCJkdmNfY21wIiwiZHZjX2RtamQiXSwic3ViIjoiQ0VzQmE1TXJwYnM0bUU1UEx0RmxWaE03TjlndmVMZjNVbEp1OWl5NWZrOCIsInRlbmFudF9yZWdpb25fc2NvcGUiOiJFVSIsInRpZCI6ImNlYjM3MWY2LTg3NDUtNDg3Ni1hMDQwLTY5ZjJkMTBhOWQxYSIsInVuaXF1ZV9uYW1lIjoicHJ6ZW15c2xhdy5rbHlzQGV2b3RlYy5wbCIsInVwbiI6InByemVteXNsYXcua2x5c0Bldm90ZWMucGwiLCJ1dGkiOiI5dTVpMHI0MVhFeVppb3kwQTlOU0FBIiwidmVyIjoiMS4wIiwid2lkcyI6WyI2MmU5MDM5NC02OWY1LTQyMzctOTE5MC0wMTIxNzcxNDVlMTAiLCJiNzlmYmY0ZC0zZWY5LTQ2ODktODE0My03NmIxOTRlODU1MDkiXSwieG1zX3N0Ijp7InN1YiI6ImVvU3lzNXlDNmJvWmQ5a21YRXVNSWl5YUxhX1g1VTdmSWZJck1DV0hORjQifSwieG1zX3RjZHQiOjE0NDQ4NDU1NDR9.G3e40HT1JUNzmRNvyJr2QYdDKPo54TLDyQsPiASGC0wqWt3bvVry7F1IbX8_t-npN2PcI-NktQ_PIrunpHpfWtYOSZJ7V5nP_hGwViDlyGvYAAT7wsN2Ll7_wlagFSWD_WoLMYyGexBy_WjvZwiowliINVDjZqcHeqPzLGwS0msTtUlC74O-6w5Z-cHtijOA8YpfKYt2kXxPHUu5KK0Yfw3uoZGLGDV4cxvbNeS9fe1BA5g-pCcFIqYXx5UYGcThXG9aI6CRxVeCcwsjFm2MAxMSc1KLsjtTpf7XwAtaBYgvNQ3If_4o7rYcyeqc_o-R0KvWV-TKZYi0IhT32m_brA"
+#   "x-ms-effective-locale"="en.en-us"
+#   "Accept"="*/*"
+#   "Referer"=""
+#   "x-ms-client-request-id"="845975cd-39e4-4aad-aa71-c71e11df5014"
+# } `
+# -ContentType "application/json" `
+# -Body "{`"@odata.type`":`"#microsoft.graph.fido2AuthenticationMethodConfiguration`",`"id`":`"Fido2`",`"includeTargets`":[{`"id`":`"all_users`",`"isRegistrationRequired`":false,`"targetType`":`"group`",`"displayName`":`"All users`"}],`"isAttestationEnforced`":true,`"isSelfServiceRegistrationAllowed`":true,`"keyRestrictions`":{`"aaGuids`":[],`"enforcementType`":`"block`",`"isEnforced`":false},`"state`":`"enabled`"}"
+
+
