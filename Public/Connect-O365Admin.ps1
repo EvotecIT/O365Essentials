@@ -22,11 +22,11 @@ function Connect-O365Admin {
             Write-Verbose -Message "Connect-O365Admin - Using cache for connection $($Headers.UserName)"
             return $Headers
         } else {
-            $Credential   = $Headers.Credential
-            $ClientId     = $Headers.ClientId
+            $Credential = $Headers.Credential
+            $ClientId = $Headers.ClientId
             $ClientSecret = $Headers.ClientSecret
-            $Certificate  = $Headers.Certificate
-            $Tenant       = $Headers.Tenant
+            $Certificate = $Headers.Certificate
+            $Tenant = $Headers.Tenant
             $Subscription = $Headers.Subscription
             $RefreshToken = $Headers.RefreshToken
         }
@@ -35,11 +35,11 @@ function Connect-O365Admin {
             Write-Verbose -Message "Connect-O365Admin - Using cache for connection $($Script:AuthorizationO365Cache.UserName)"
             return $Script:AuthorizationO365Cache
         } else {
-            $Credential   = $Script:AuthorizationO365Cache.Credential
-            $ClientId     = $Script:AuthorizationO365Cache.ClientId
+            $Credential = $Script:AuthorizationO365Cache.Credential
+            $ClientId = $Script:AuthorizationO365Cache.ClientId
             $ClientSecret = $Script:AuthorizationO365Cache.ClientSecret
-            $Certificate  = $Script:AuthorizationO365Cache.Certificate
-            $Tenant       = $Script:AuthorizationO365Cache.Tenant
+            $Certificate = $Script:AuthorizationO365Cache.Certificate
+            $Tenant = $Script:AuthorizationO365Cache.Tenant
             $Subscription = $Script:AuthorizationO365Cache.Subscription
             $RefreshToken = $Script:AuthorizationO365Cache.RefreshToken
         }
@@ -51,7 +51,7 @@ function Connect-O365Admin {
     }
 
     $Tenant = if ($Tenant) { $Tenant } else { 'organizations' }
-    $ScopesO365  = 'https://admin.microsoft.com/.default offline_access'
+    $ScopesO365 = 'https://admin.microsoft.com/.default offline_access'
     $ScopesAzure = '74658136-14ec-4630-ad9b-26e160ff0fc6/.default offline_access'
     $ScopesGraph = 'https://graph.microsoft.com/.default offline_access'
 
@@ -110,18 +110,18 @@ function Connect-O365Admin {
     }
 
     $Script:AuthorizationO365Cache = [ordered] @{
-        'Credential'     = $Credential
-        'ClientId'       = $ClientId
-        'ClientSecret'   = $ClientSecret
-        'Certificate'    = $Certificate
-        'UserName'       = $userName
-        'Environment'    = 'AzureCloud'
-        'Subscription'   = $Subscription
-        'Tenant'         = $Tenant
-        'ExpiresOnUTC'   = ([datetime]::UtcNow).AddSeconds($ExpiresIn - $ExpiresTimeout)
-        'RefreshToken'   = $refresh
-        'AccessTokenO365' = $tokenO365.access_token
-        'HeadersO365'     = [ordered] @{
+        'Credential'       = $Credential
+        'ClientId'         = $ClientId
+        'ClientSecret'     = $ClientSecret
+        'Certificate'      = $Certificate
+        'UserName'         = $userName
+        'Environment'      = 'AzureCloud'
+        'Subscription'     = $Subscription
+        'Tenant'           = $Tenant
+        'ExpiresOnUTC'     = ([datetime]::UtcNow).AddSeconds($ExpiresIn - $ExpiresTimeout)
+        'RefreshToken'     = $refresh
+        'AccessTokenO365'  = $tokenO365.access_token
+        'HeadersO365'      = [ordered] @{
             'Content-Type'           = 'application/json; charset=UTF-8'
             'Authorization'          = "Bearer $($tokenO365.access_token)"
             'X-Requested-With'       = 'XMLHttpRequest'
