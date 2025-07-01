@@ -5,9 +5,20 @@ function Get-O365OAuthToken {
         [string] $Scope,
         [string] $ClientId = '04b07795-8ddb-461a-bbee-02f9e1bf7b46',
         [PSCredential] $Credential,
+        [string] $RefreshToken,
         [switch] $Device
     )
     $tokenEndpoint = "https://login.microsoftonline.com/$Tenant/oauth2/v2.0/token"
+
+    if ($RefreshToken) {
+        $body = @{
+            client_id     = $ClientId
+            scope         = $Scope
+            grant_type    = 'refresh_token'
+            refresh_token = $RefreshToken
+        }
+        return Invoke-RestMethod -Method Post -Uri $tokenEndpoint -Body $body -ContentType 'application/x-www-form-urlencoded'
+    }
 
     if ($Credential) {
         $body = @{

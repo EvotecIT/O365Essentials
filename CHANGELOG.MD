@@ -1,4 +1,8 @@
 ﻿# O365Essentials Release History
+## 0.0.19 - 2025.07.02
+- Reuse refresh tokens to avoid repeated sign-in prompts
+- `Connect-O365Admin` now acquires Graph token first and silently refreshes other scopes
+
 ## 0.0.18 - 2025.07.01
 - Default authentication now opens an interactive browser window.
 - Added optional `-Device` switch to `Connect-O365Admin` for device code flow.
