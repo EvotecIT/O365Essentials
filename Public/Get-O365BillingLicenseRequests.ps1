@@ -21,6 +21,7 @@
     } else {
         $TentantID = $Script:AuthorizationO365Cache.Tenant
     }
+    Write-Verbose "TentantID: $TentantID"
     $Uri = "https://admin.microsoft.com/fd/m365licensing/v1/tenants/$TentantID/self-service-requests"
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
     $Output.items
