@@ -38,7 +38,8 @@ function Get-O365OAuthToken {
     }
 
     $verifierBytes = New-Object byte[] 32
-    [System.Security.Cryptography.RandomNumberGenerator]::Fill($verifierBytes)
+    $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+    $rng.GetBytes($verifierBytes)
     $codeVerifier = [System.Convert]::ToBase64String($verifierBytes).TrimEnd('=')
     $codeVerifier = $codeVerifier.Replace('+', '-').Replace('/', '_')
     $sha = [System.Security.Cryptography.SHA256]::Create()
