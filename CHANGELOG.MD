@@ -1,4 +1,8 @@
 # O365Essentials Release History
+## 0.0.25 - 2025.07.08
+- Detect tenant ID from the Graph token when none is provided
+- Document the built-in Azure PowerShell client ID
+- Bump module version to 0.0.25
 ## 0.0.24 - 2025.07.07
 - Fix browser launch failure on PowerShell 7 by using Start-Process
 - Bump module version to 0.0.24

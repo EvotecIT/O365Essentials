@@ -7,6 +7,7 @@ function Connect-O365Admin {
         [int] $ExpiresTimeout = 30,
         [switch] $ForceRefresh,
         [switch] $Device,
+        # Tenant ID; defaults to 'organizations' and is replaced with the actual tenant after sign-in
         [alias('TenantID')][string] $Tenant,
         [string] $DomainName,
         [string] $Subscription
@@ -55,6 +56,13 @@ function Connect-O365Admin {
     } catch {
         Write-Warning -Message "Connect-O365Admin - Authentication failure for Graph. Error: $($_.Exception.Message)"
         return
+    }
+
+    # Read tenant information from the token so subsequent requests use the correct tenant
+    $jwtTenant = if ($tokenGraph.id_token) { $tokenGraph.id_token } else { $tokenGraph.access_token }
+    $tenantInfo = ConvertFrom-JSONWebToken -Token $jwtTenant
+    if (-not $PSBoundParameters.ContainsKey('Tenant') -or $Tenant -eq 'organizations') {
+        $Tenant = $tenantInfo.tid
     }
     $refresh = $tokenGraph.refresh_token
     try {

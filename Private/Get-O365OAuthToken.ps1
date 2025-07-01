@@ -3,6 +3,7 @@ function Get-O365OAuthToken {
     param(
         [string] $Tenant = 'organizations',
         [string] $Scope,
+        # Azure PowerShell public client ID - used for interactive sign in
         [string] $ClientId = '04b07795-8ddb-461a-bbee-02f9e1bf7b46',
         [PSCredential] $Credential,
         [string] $RefreshToken,
