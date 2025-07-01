@@ -1,4 +1,7 @@
-﻿# O365Essentials Release History
+# O365Essentials Release History
+## 0.0.23 - 2025.07.06
+- Revert Azure token scope to use Azure PowerShell resource
+
 ## 0.0.22 - 2025.07.05
 - Fix token acquisition for Azure Resource Manager
 
