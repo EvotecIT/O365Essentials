@@ -6,6 +6,7 @@ function Connect-O365Admin {
         [parameter(ParameterSetName = 'App')][string] $ClientId,
         [parameter(ParameterSetName = 'App')][string] $ClientSecret,
         [parameter(ParameterSetName = 'App')] $Certificate,
+        [parameter(ParameterSetName = 'App')][string] $CertificatePassword,
         [int] $ExpiresIn = 3600,
         [int] $ExpiresTimeout = 30,
         [switch] $ForceRefresh,
@@ -26,6 +27,7 @@ function Connect-O365Admin {
             $ClientId = $Headers.ClientId
             $ClientSecret = $Headers.ClientSecret
             $Certificate = $Headers.Certificate
+            $CertificatePassword = $Headers.CertificatePassword
             $Tenant = $Headers.Tenant
             $Subscription = $Headers.Subscription
             $RefreshToken = $Headers.RefreshToken
@@ -39,6 +41,7 @@ function Connect-O365Admin {
             $ClientId = $Script:AuthorizationO365Cache.ClientId
             $ClientSecret = $Script:AuthorizationO365Cache.ClientSecret
             $Certificate = $Script:AuthorizationO365Cache.Certificate
+            $CertificatePassword = $Script:AuthorizationO365Cache.CertificatePassword
             $Tenant = $Script:AuthorizationO365Cache.Tenant
             $Subscription = $Script:AuthorizationO365Cache.Subscription
             $RefreshToken = $Script:AuthorizationO365Cache.RefreshToken
@@ -58,7 +61,7 @@ function Connect-O365Admin {
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Graph"
         if ($PSCmdlet.ParameterSetName -eq 'App') {
-            $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate
+            $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } elseif ($RefreshToken -and -not $Credential -and -not $Device) {
             $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -RefreshToken $RefreshToken
         } else {
@@ -79,7 +82,7 @@ function Connect-O365Admin {
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for admin.microsoft.com"
         if ($PSCmdlet.ParameterSetName -eq 'App') {
-            $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesO365 -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate
+            $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesO365 -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } else {
             $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesO365 -RefreshToken $refresh
         }
@@ -90,7 +93,7 @@ function Connect-O365Admin {
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Azure"
         if ($PSCmdlet.ParameterSetName -eq 'App') {
-            $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesAzure -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate
+            $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesAzure -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } else {
             $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesAzure -RefreshToken $refresh
         }
@@ -114,6 +117,7 @@ function Connect-O365Admin {
         'ClientId'         = $ClientId
         'ClientSecret'     = $ClientSecret
         'Certificate'      = $Certificate
+        'CertificatePassword' = $CertificatePassword
         'UserName'         = $userName
         'Environment'      = 'AzureCloud'
         'Subscription'     = $Subscription

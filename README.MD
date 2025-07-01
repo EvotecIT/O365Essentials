@@ -84,6 +84,17 @@ $null = Connect-O365Admin -ClientId '00000000-0000-0000-0000-000000000000' -Clie
 # using a certificate
 $cert = 'C:\path\to\app.pfx'
 $null = Connect-O365Admin -ClientId '00000000-0000-0000-0000-000000000000' -Certificate $cert
+
+# using a certificate secured with a password
+$certPath = 'C:\path\to\app.pfx'
+$certPassword = ConvertTo-SecureString 'P@ssw0rd' -AsPlainText -Force
+$null = Connect-O365Admin -ClientId '00000000-0000-0000-0000-000000000000' -Certificate $certPath -CertificatePassword $certPassword
+```
+
+When working with multiple tenants you can target a specific tenant using the `-Tenant` or `-DomainName` parameters. This is required for non-interactive connections.
+
+```powershell
+$null = Connect-O365Admin -Tenant 'contoso.onmicrosoft.com' -Verbose
 ```
 
 Once the connection is established we can use the module using any GET/SET commands.
