@@ -1,5 +1,9 @@
 ﻿# O365Essentials Release History
 
+## 0.0.17 - 2024.07.01
+- Removed dependency on `Az.Accounts` module.
+- New token acquisition now uses built in OAuth device flow.
+
 ## 0.0.16 - 2024.12.22
 - Update docs `Set-O365OrgForms`
 

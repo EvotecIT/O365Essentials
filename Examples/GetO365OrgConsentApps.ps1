@@ -1,4 +1,3 @@
-﻿#Import-Module Az.Accounts -MaximumVersion 2.19.0 -Force
 Import-Module .\O365Essentials.psd1 -Force
 
 if (-not $Credentials) {
