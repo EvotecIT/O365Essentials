@@ -1,4 +1,8 @@
 ﻿# O365Essentials Release History
+## 0.0.20 - 2025.07.03
+- Fixed username resolution when connecting without credentials
+- `Connect-O365Admin` now decodes the Graph token instead of parsing `id_token`
+
 ## 0.0.19 - 2025.07.02
 - Reuse refresh tokens to avoid repeated sign-in prompts
 - `Connect-O365Admin` now acquires Graph token first and silently refreshes other scopes

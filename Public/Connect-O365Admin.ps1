@@ -72,7 +72,13 @@ function Connect-O365Admin {
         return
     }
 
-    $userName = if ($Credential) { $Credential.UserName } else { $tokenGraph.id_token | ConvertFrom-JSON | Select-Object -ExpandProperty preferred_username }
+    if ($Credential) {
+        $userName = $Credential.UserName
+    } else {
+        $jwt = if ($tokenGraph.id_token) { $tokenGraph.id_token } else { $tokenGraph.access_token }
+        $tokenInfo = ConvertFrom-JSONWebToken -Token $jwt
+        $userName = if ($tokenInfo.preferred_username) { $tokenInfo.preferred_username } else { $tokenInfo.upn }
+    }
 
     $Script:AuthorizationO365Cache = [ordered] @{
         'Credential'     = $Credential
