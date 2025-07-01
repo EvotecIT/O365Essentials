@@ -1,4 +1,4 @@
-﻿# O365Essentials Release History
+# O365Essentials Release History
 
 ## 0.0.16 - 2024.12.22
 - Update docs `Set-O365OrgForms`
