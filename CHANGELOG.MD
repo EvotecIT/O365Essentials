@@ -1,4 +1,7 @@
 # O365Essentials Release History
+## 0.0.24 - 2025.07.07
+- Fix browser launch failure on PowerShell 7 by using Start-Process
+- Bump module version to 0.0.24
 ## 0.0.23 - 2025.07.06
 - Revert Azure token scope to use Azure PowerShell resource
 

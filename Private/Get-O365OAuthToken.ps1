@@ -63,7 +63,20 @@ function Get-O365OAuthToken {
     $listener = [System.Net.HttpListener]::new()
     $listener.Prefixes.Add($redirectUri)
     $listener.Start()
-    [System.Diagnostics.Process]::Start($authorizeUrl) | Out-Null
+    try {
+        if ($IsWindows) {
+            Start-Process $authorizeUrl
+        } elseif ($IsMacOS) {
+            if (Get-Command open -ErrorAction SilentlyContinue) { open $authorizeUrl }
+        } elseif (Get-Command xdg-open -ErrorAction SilentlyContinue) {
+            xdg-open $authorizeUrl
+        } else {
+            Write-Host "Open $authorizeUrl in your browser to authenticate"
+        }
+    } catch {
+        Write-Verbose "Unable to automatically open browser: $($_.Exception.Message)"
+        Write-Host "Open $authorizeUrl in your browser to authenticate"
+    }
     $context = $listener.GetContext()
     $query = [System.Web.HttpUtility]::ParseQueryString($context.Request.Url.Query)
     $code = $query['code']
