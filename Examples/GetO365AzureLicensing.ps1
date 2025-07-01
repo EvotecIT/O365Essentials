@@ -8,14 +8,37 @@ if (-not $Credentials) {
 # keep in mind that if there's an MFA you would be better left without Credentials and just let it prompt you
 $null = Connect-O365Admin -Verbose -Credential $Credentials
 
-$Licenses = Get-O365AzureLicenses
-$Licenses | Format-Table
-
 $Licenses = Get-O365AzureLicenses -ServicePlansComplete
 $Licenses | Format-Table
 
+$List = @{}
+foreach ($L in $Licenses) {
+    foreach ($S in $Licenses.ServicePlan) {
+        if ($List.ContainsKey($S.ServiceName)) {
+
+        } else {
+            $List.Add($S.ServiceName, 1)
+            "`"$($S.ServiceName)`" = `"$($S.DisplayName)`""
+        }
+    }
+}
+
+return
 $Licenses = Get-O365AzureLicenses -ServicePlans
 $Licenses | Format-Table
+
+
+
+return
+
+$Licenses = Get-O365AzureLicenses
+$Licenses | Format-Table
+
+return
+
+
+
+
 
 $Licenses = Get-O365AzureLicenses -ServicePlans -IncludeLicenseDetails
 $Licenses | Format-Table
