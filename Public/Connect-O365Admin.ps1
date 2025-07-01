@@ -113,35 +113,35 @@ function Connect-O365Admin {
     }
 
     $Script:AuthorizationO365Cache = [ordered] @{
-        'Credential'       = $Credential
-        'ClientId'         = $ClientId
-        'ClientSecret'     = $ClientSecret
-        'Certificate'      = $Certificate
+        'Credential'          = $Credential
+        'ClientId'            = $ClientId
+        'ClientSecret'        = $ClientSecret
+        'Certificate'         = $Certificate
         'CertificatePassword' = $CertificatePassword
-        'UserName'         = $userName
-        'Environment'      = 'AzureCloud'
-        'Subscription'     = $Subscription
-        'Tenant'           = $Tenant
-        'ExpiresOnUTC'     = ([datetime]::UtcNow).AddSeconds($ExpiresIn - $ExpiresTimeout)
-        'RefreshToken'     = $refresh
-        'AccessTokenO365'  = $tokenO365.access_token
-        'HeadersO365'      = [ordered] @{
+        'UserName'            = $userName
+        'Environment'         = 'AzureCloud'
+        'Subscription'        = $Subscription
+        'Tenant'              = $Tenant
+        'ExpiresOnUTC'        = ([datetime]::UtcNow).AddSeconds($ExpiresIn - $ExpiresTimeout)
+        'RefreshToken'        = $refresh
+        'AccessTokenO365'     = $tokenO365.access_token
+        'HeadersO365'         = [ordered] @{
             'Content-Type'           = 'application/json; charset=UTF-8'
             'Authorization'          = "Bearer $($tokenO365.access_token)"
             'X-Requested-With'       = 'XMLHttpRequest'
             'x-ms-client-request-id' = [guid]::NewGuid()
             'x-ms-correlation-id'    = [guid]::NewGuid()
         }
-        'AccessTokenAzure' = $tokenAzure.access_token
-        'HeadersAzure'     = [ordered] @{
+        'AccessTokenAzure'    = $tokenAzure.access_token
+        'HeadersAzure'        = [ordered] @{
             'Content-Type'           = 'application/json; charset=UTF-8'
             'Authorization'          = "Bearer $($tokenAzure.access_token)"
             'X-Requested-With'       = 'XMLHttpRequest'
             'x-ms-client-request-id' = [guid]::NewGuid()
             'x-ms-correlation-id'    = [guid]::NewGuid()
         }
-        'AccessTokenGraph' = $tokenGraph.access_token
-        'HeadersGraph'     = [ordered] @{
+        'AccessTokenGraph'    = $tokenGraph.access_token
+        'HeadersGraph'        = [ordered] @{
             'Content-Type'           = 'application/json; charset=UTF-8'
             'Authorization'          = "Bearer $($tokenGraph.access_token)"
             'X-Requested-With'       = 'XMLHttpRequest'
