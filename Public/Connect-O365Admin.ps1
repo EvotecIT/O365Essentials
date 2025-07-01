@@ -3,6 +3,9 @@ function Connect-O365Admin {
     param(
         [parameter(ParameterSetName = 'Credential')][PSCredential] $Credential,
         [parameter(ParameterSetName = 'Headers', DontShow)][alias('Authorization')][System.Collections.IDictionary] $Headers,
+        [parameter(ParameterSetName = 'App')][string] $ClientId,
+        [parameter(ParameterSetName = 'App')][string] $ClientSecret,
+        [parameter(ParameterSetName = 'App')] $Certificate,
         [int] $ExpiresIn = 3600,
         [int] $ExpiresTimeout = 30,
         [switch] $ForceRefresh,
@@ -19,8 +22,11 @@ function Connect-O365Admin {
             Write-Verbose -Message "Connect-O365Admin - Using cache for connection $($Headers.UserName)"
             return $Headers
         } else {
-            $Credential   = $Headers.Credential
-            $Tenant       = $Headers.Tenant
+            $Credential = $Headers.Credential
+            $ClientId = $Headers.ClientId
+            $ClientSecret = $Headers.ClientSecret
+            $Certificate = $Headers.Certificate
+            $Tenant = $Headers.Tenant
             $Subscription = $Headers.Subscription
             $RefreshToken = $Headers.RefreshToken
         }
@@ -29,8 +35,11 @@ function Connect-O365Admin {
             Write-Verbose -Message "Connect-O365Admin - Using cache for connection $($Script:AuthorizationO365Cache.UserName)"
             return $Script:AuthorizationO365Cache
         } else {
-            $Credential   = $Script:AuthorizationO365Cache.Credential
-            $Tenant       = $Script:AuthorizationO365Cache.Tenant
+            $Credential = $Script:AuthorizationO365Cache.Credential
+            $ClientId = $Script:AuthorizationO365Cache.ClientId
+            $ClientSecret = $Script:AuthorizationO365Cache.ClientSecret
+            $Certificate = $Script:AuthorizationO365Cache.Certificate
+            $Tenant = $Script:AuthorizationO365Cache.Tenant
             $Subscription = $Script:AuthorizationO365Cache.Subscription
             $RefreshToken = $Script:AuthorizationO365Cache.RefreshToken
         }
@@ -42,13 +51,15 @@ function Connect-O365Admin {
     }
 
     $Tenant = if ($Tenant) { $Tenant } else { 'organizations' }
-    $ScopesO365  = 'https://admin.microsoft.com/.default offline_access'
+    $ScopesO365 = 'https://admin.microsoft.com/.default offline_access'
     $ScopesAzure = '74658136-14ec-4630-ad9b-26e160ff0fc6/.default offline_access'
     $ScopesGraph = 'https://graph.microsoft.com/.default offline_access'
 
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Graph"
-        if ($RefreshToken -and -not $Credential -and -not $Device) {
+        if ($PSCmdlet.ParameterSetName -eq 'App') {
+            $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate
+        } elseif ($RefreshToken -and -not $Credential -and -not $Device) {
             $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -RefreshToken $RefreshToken
         } else {
             $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -Credential $Credential -Device:$Device
@@ -67,20 +78,30 @@ function Connect-O365Admin {
     $refresh = $tokenGraph.refresh_token
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for admin.microsoft.com"
-        $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesO365 -RefreshToken $refresh
+        if ($PSCmdlet.ParameterSetName -eq 'App') {
+            $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesO365 -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate
+        } else {
+            $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesO365 -RefreshToken $refresh
+        }
     } catch {
         Write-Warning -Message "Connect-O365Admin - Authentication failure for admin.microsoft.com. Error: $($_.Exception.Message)"
         return
     }
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Azure"
-        $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesAzure -RefreshToken $refresh
+        if ($PSCmdlet.ParameterSetName -eq 'App') {
+            $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesAzure -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate
+        } else {
+            $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesAzure -RefreshToken $refresh
+        }
     } catch {
         Write-Warning -Message "Connect-O365Admin - Authentication failure for Azure. Error: $($_.Exception.Message)"
         return
     }
 
-    if ($Credential) {
+    if ($PSCmdlet.ParameterSetName -eq 'App') {
+        $userName = $ClientId
+    } elseif ($Credential) {
         $userName = $Credential.UserName
     } else {
         $jwt = if ($tokenGraph.id_token) { $tokenGraph.id_token } else { $tokenGraph.access_token }
@@ -89,15 +110,18 @@ function Connect-O365Admin {
     }
 
     $Script:AuthorizationO365Cache = [ordered] @{
-        'Credential'     = $Credential
-        'UserName'       = $userName
-        'Environment'    = 'AzureCloud'
-        'Subscription'   = $Subscription
-        'Tenant'         = $Tenant
-        'ExpiresOnUTC'   = ([datetime]::UtcNow).AddSeconds($ExpiresIn - $ExpiresTimeout)
-        'RefreshToken'   = $refresh
-        'AccessTokenO365' = $tokenO365.access_token
-        'HeadersO365'     = [ordered] @{
+        'Credential'       = $Credential
+        'ClientId'         = $ClientId
+        'ClientSecret'     = $ClientSecret
+        'Certificate'      = $Certificate
+        'UserName'         = $userName
+        'Environment'      = 'AzureCloud'
+        'Subscription'     = $Subscription
+        'Tenant'           = $Tenant
+        'ExpiresOnUTC'     = ([datetime]::UtcNow).AddSeconds($ExpiresIn - $ExpiresTimeout)
+        'RefreshToken'     = $refresh
+        'AccessTokenO365'  = $tokenO365.access_token
+        'HeadersO365'      = [ordered] @{
             'Content-Type'           = 'application/json; charset=UTF-8'
             'Authorization'          = "Bearer $($tokenO365.access_token)"
             'X-Requested-With'       = 'XMLHttpRequest'

@@ -75,6 +75,17 @@ If we have MFA we simply let it query you for MFA code.
 $null = Connect-O365Admin -Verbose
 ```
 
+We can also connect using an application registration with a client secret or certificate:
+
+```powershell
+# using client secret
+$null = Connect-O365Admin -ClientId '00000000-0000-0000-0000-000000000000' -ClientSecret 'mySecret'
+
+# using a certificate
+$cert = 'C:\path\to\app.pfx'
+$null = Connect-O365Admin -ClientId '00000000-0000-0000-0000-000000000000' -Certificate $cert
+```
+
 Once the connection is established we can use the module using any GET/SET commands.
 
 ```powershell
