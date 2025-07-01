@@ -1,11 +1,8 @@
 ﻿Import-Module .\O365Essentials.psd1 -Force
 
-if (-not $Credentials) {
-    $Credentials = Get-Credential
-}
 # This makes a connection to Office 365 tenant, using credentials
 # keep in mind that if there's an MFA you would be better left without Credentials and just let it prompt you
-$null = Connect-O365Admin -Verbose -Credential $Credentials
+$null = Connect-O365Admin -Verbose
 
 # We then used connection from above internally on module scope to get the tenant's information
 Get-O365OrgPlanner -Verbose
@@ -15,6 +12,7 @@ Get-O365OrgBookings -Verbose
 Get-O365OrgBriefingEmail -Verbose
 Get-O365OrgCalendarSharing -Verbose
 Get-O365OrgCortana -Verbose
+Set-O365OrgCortana -Enabled $false -Verbose
 Get-O365OrgDynamics365CustomerVoice -Verbose
 Get-O365OrgDynamics365SalesInsights -Verbose
 Get-O365OrgGraphDataConnect -Verbose
