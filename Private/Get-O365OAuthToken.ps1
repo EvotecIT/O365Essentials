@@ -9,14 +9,19 @@ function Get-O365OAuthToken {
         [string] $RefreshToken,
         [switch] $Device,
         [string] $ClientSecret,
-        $Certificate
+        $Certificate,
+        [securestring] $CertificatePassword
     )
     $tokenEndpoint = "https://login.microsoftonline.com/$Tenant/oauth2/v2.0/token"
 
     if ($ClientSecret -or $Certificate) {
         if ($Certificate -and ($Certificate -isnot [System.Security.Cryptography.X509Certificates.X509Certificate2])) {
             if (Test-Path $Certificate) {
-                $Certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new((Resolve-Path $Certificate))
+                if ($CertificatePassword) {
+                    $Certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new((Resolve-Path $Certificate), $CertificatePassword)
+                } else {
+                    $Certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new((Resolve-Path $Certificate))
+                }
             } else {
                 throw "Certificate path '$Certificate' not found"
             }

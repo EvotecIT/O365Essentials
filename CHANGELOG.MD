@@ -4,6 +4,9 @@
 - Added support for client secret and certificate authentication.
 - `Connect-O365Admin` now accepts `ClientId`, `ClientSecret` and `Certificate` parameters.
 - `Get-O365OAuthToken` supports app-only tokens via `client_credentials`.
+- Added `CertificatePassword` parameter for password-protected PFX files. The value
+  should be provided as a `SecureString`.
+- `Connect-O365Admin` can target a specific tenant using `-Tenant` or `-DomainName`.
 
 ## 0.0.16 - 2024.12.22
 - Update docs `Set-O365OrgForms`
