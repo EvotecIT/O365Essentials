@@ -12,18 +12,34 @@ function Remove-O365AzureElevatedAccess {
     .PARAMETER PrincipalId
     Object ID of the principal whose elevated access should be removed.
 
+    .PARAMETER UserPrincipalName
+    User principal name of the principal whose elevated access should be removed.
+
     .PARAMETER ApiVersion
     API version to use. Defaults to '2022-04-01'.
 
     .EXAMPLE
     Remove-O365AzureElevatedAccess -Headers $headers -PrincipalId $UserId
+
+    .EXAMPLE
+    Remove-O365AzureElevatedAccess -UserPrincipalName 'admin@contoso.com'
     #>
-    [cmdletbinding(SupportsShouldProcess)]
+    [cmdletbinding(SupportsShouldProcess, DefaultParameterSetName = 'Id')]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
-        [Parameter(Mandatory)][string] $PrincipalId,
+        [parameter(ParameterSetName='Id')][string] $PrincipalId,
+        [parameter(ParameterSetName='UPN')][string] $UserPrincipalName,
         [string] $ApiVersion = '2022-04-01'
     )
+    if ($UserPrincipalName) {
+        $user = Get-O365User -Headers $Headers -UserPrincipalName $UserPrincipalName -Property id -WarningAction SilentlyContinue
+        if ($user) {
+            $PrincipalId = if ($user.value) { $user.value[0].id } else { $user.id }
+        } else {
+            Write-Warning "Remove-O365AzureElevatedAccess - User '$UserPrincipalName' not found"
+            return
+        }
+    }
     $RoleDefUri = 'https://management.azure.com/providers/Microsoft.Authorization/roleDefinitions'
     $RoleDefQuery = @{ 'api-version' = $ApiVersion; '$filter' = "roleName eq 'User Access Administrator'" }
     $RoleDef = Invoke-O365Admin -Uri $RoleDefUri -Headers $Headers -QueryParameter $RoleDefQuery
