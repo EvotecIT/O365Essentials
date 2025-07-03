@@ -6,6 +6,9 @@ $null = Connect-O365Admin -Verbose
 # Elevate the permissions of the signed in user
 Set-O365AzureElevatedAccess -Verbose
 
+# Or elevate another user directly
+# Set-O365AzureElevatedAccess -UserPrincipalName 'another.admin@contoso.com' -Verbose
+
 # Review elevated role assignments for a specific user by UPN
 $roles = Get-O365AzureElevatedRoleAssignments -UserPrincipalName 'admin@contoso.com' -Verbose
 $roles.value | Format-Table
