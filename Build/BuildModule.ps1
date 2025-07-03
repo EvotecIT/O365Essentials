@@ -4,7 +4,7 @@ Build-Module -ModuleName 'O365Essentials' {
     # Usual defaults as per standard module
     $Manifest = [ordered] @{
         # Version number of this module.
-        ModuleVersion        = '0.0.X'
+        ModuleVersion        = '1.0.X'
         # Supported PSEditions
         CompatiblePSEditions = @('Desktop', 'Core')
         # ID used to uniquely identify this module
