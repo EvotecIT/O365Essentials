@@ -27,10 +27,6 @@ function Get-O365OAuthToken {
             }
         }
 
-        function ConvertTo-Base64Url([byte[]] $bytes) {
-            [Convert]::ToBase64String($bytes).TrimEnd('=')
-            | ForEach-Object { $_.Replace('+', '-').Replace('/', '_') }
-        }
 
         $body = @{ client_id = $ClientId; scope = $Scope; grant_type = 'client_credentials' }
         if ($ClientSecret) {
@@ -43,12 +39,12 @@ function Get-O365OAuthToken {
                 iss = $ClientId
                 sub = $ClientId
                 jti = [guid]::NewGuid().Guid
-                nbf = [int][Math]::Floor(($now.AddMinutes(-5)  - (Get-Date '1970-01-01Z')).TotalSeconds)
+                nbf = [int][Math]::Floor(($now.AddMinutes(-5) - (Get-Date '1970-01-01Z')).TotalSeconds)
                 exp = [int][Math]::Floor(($now.AddMinutes(10) - (Get-Date '1970-01-01Z')).TotalSeconds)
             }
-            $headerEnc  = ConvertTo-Base64Url([System.Text.Encoding]::UTF8.GetBytes((ConvertTo-Json $header -Compress)))
+            $headerEnc = ConvertTo-Base64Url([System.Text.Encoding]::UTF8.GetBytes((ConvertTo-Json $header -Compress)))
             $payloadEnc = ConvertTo-Base64Url([System.Text.Encoding]::UTF8.GetBytes((ConvertTo-Json $payload -Compress)))
-            $unsigned   = "$headerEnc.$payloadEnc"
+            $unsigned = "$headerEnc.$payloadEnc"
             $rsa = $Certificate.GetRSAPrivateKey()
             $signature = $rsa.SignData([System.Text.Encoding]::UTF8.GetBytes($unsigned), [System.Security.Cryptography.HashAlgorithmName]::SHA256, [System.Security.Cryptography.RSASignaturePadding]::Pkcs1)
             $signed = "$unsigned.$(ConvertTo-Base64Url($signature))"
@@ -70,8 +66,8 @@ function Get-O365OAuthToken {
 
     if ($Credential) {
         $body = @{
-            client_id = $ClientId
-            scope     = $Scope
+            client_id  = $ClientId
+            scope      = $Scope
             grant_type = 'password'
             username   = $Credential.UserName
             password   = $Credential.GetNetworkCredential().Password
@@ -114,12 +110,8 @@ function Get-O365OAuthToken {
     try {
         if ($IsWindows) {
             Start-Process $authorizeUrl
-        } elseif ($IsMacOS) {
-            if (Get-Command open -ErrorAction SilentlyContinue) { open $authorizeUrl }
-        } elseif (Get-Command xdg-open -ErrorAction SilentlyContinue) {
-            xdg-open $authorizeUrl
         } else {
-            Write-Host "Open $authorizeUrl in your browser to authenticate"
+            return
         }
     } catch {
         Write-Verbose "Unable to automatically open browser: $($_.Exception.Message)"
@@ -130,16 +122,16 @@ function Get-O365OAuthToken {
     $code = $query['code']
     $responseBytes = [System.Text.Encoding]::UTF8.GetBytes('<html><body>You may close this window.</body></html>')
     $context.Response.ContentLength64 = $responseBytes.Length
-    $context.Response.OutputStream.Write($responseBytes,0,$responseBytes.Length)
+    $context.Response.OutputStream.Write($responseBytes, 0, $responseBytes.Length)
     $context.Response.OutputStream.Close()
     $listener.Stop()
 
     $body = @{
-        client_id    = $ClientId
-        scope        = $Scope
-        grant_type   = 'authorization_code'
-        code         = $code
-        redirect_uri = $redirectUri
+        client_id     = $ClientId
+        scope         = $Scope
+        grant_type    = 'authorization_code'
+        code          = $code
+        redirect_uri  = $redirectUri
         code_verifier = $codeVerifier
     }
     Invoke-RestMethod -Method Post -Uri $tokenEndpoint -Body $body -ContentType 'application/x-www-form-urlencoded'
