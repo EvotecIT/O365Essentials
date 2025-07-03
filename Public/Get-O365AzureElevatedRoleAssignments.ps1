@@ -1,7 +1,8 @@
 function Get-O365AzureElevatedRoleAssignments {
     <#
     .SYNOPSIS
-    Lists role assignments for the specified principal at root scope.
+    Lists role assignments for the specified principal at root scope. If no
+    principal is provided the current user is used.
 
     .DESCRIPTION
     Retrieves role assignments for a principal after elevation using the Azure management API.
@@ -24,8 +25,12 @@ function Get-O365AzureElevatedRoleAssignments {
 
     .EXAMPLE
     Get-O365AzureElevatedRoleAssignments -UserPrincipalName 'admin@contoso.com'
+
+    .EXAMPLE
+    # Query assignments for the current user
+    Get-O365AzureElevatedRoleAssignments
     #>
-    [cmdletbinding(DefaultParameterSetName = 'Id')]
+    [cmdletbinding(DefaultParameterSetName = 'Self')]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [parameter(ParameterSetName='Id')][string] $PrincipalId,
@@ -40,6 +45,10 @@ function Get-O365AzureElevatedRoleAssignments {
             Write-Warning "Get-O365AzureElevatedRoleAssignments - User '$UserPrincipalName' not found"
             return
         }
+    }
+    if (-not $PrincipalId) {
+        $me = Invoke-O365Admin -Uri 'https://graph.microsoft.com/v1.0/me?$select=id' -Headers $Headers
+        $PrincipalId = $me.id
     }
     $Uri = 'https://management.azure.com/providers/Microsoft.Authorization/roleAssignments'
     $QueryParameter = @{ 'api-version' = $ApiVersion; '$filter' = "principalId eq '$PrincipalId'" }

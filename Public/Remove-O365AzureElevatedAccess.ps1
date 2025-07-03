@@ -1,7 +1,8 @@
 function Remove-O365AzureElevatedAccess {
     <#
     .SYNOPSIS
-    Removes the elevated access assignment for the specified principal.
+    Removes the elevated access assignment for the specified principal. When no
+    principal is specified the current user is used.
 
     .DESCRIPTION
     Finds and deletes the User Access Administrator role assignment created by elevation.
@@ -23,8 +24,12 @@ function Remove-O365AzureElevatedAccess {
 
     .EXAMPLE
     Remove-O365AzureElevatedAccess -UserPrincipalName 'admin@contoso.com'
+
+    .EXAMPLE
+    # Remove elevation for the currently connected user
+    Remove-O365AzureElevatedAccess
     #>
-    [cmdletbinding(SupportsShouldProcess, DefaultParameterSetName = 'Id')]
+    [cmdletbinding(SupportsShouldProcess, DefaultParameterSetName = 'Self')]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [parameter(ParameterSetName='Id')][string] $PrincipalId,
@@ -39,6 +44,10 @@ function Remove-O365AzureElevatedAccess {
             Write-Warning "Remove-O365AzureElevatedAccess - User '$UserPrincipalName' not found"
             return
         }
+    }
+    if (-not $PrincipalId) {
+        $me = Invoke-O365Admin -Uri 'https://graph.microsoft.com/v1.0/me?$select=id' -Headers $Headers
+        $PrincipalId = $me.id
     }
     $RoleDefUri = 'https://management.azure.com/providers/Microsoft.Authorization/roleDefinitions'
     $RoleDefQuery = @{ 'api-version' = $ApiVersion; '$filter' = "roleName eq 'User Access Administrator'" }

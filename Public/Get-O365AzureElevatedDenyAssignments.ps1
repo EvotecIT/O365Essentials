@@ -1,7 +1,8 @@
 function Get-O365AzureElevatedDenyAssignments {
     <#
     .SYNOPSIS
-    Lists deny assignments for the specified principal at root scope.
+    Lists deny assignments for the specified principal at root scope. If no
+    principal is provided the current user is used.
 
     .DESCRIPTION
     Retrieves deny assignments for a principal after elevation using the Azure management API.
@@ -24,8 +25,12 @@ function Get-O365AzureElevatedDenyAssignments {
 
     .EXAMPLE
     Get-O365AzureElevatedDenyAssignments -UserPrincipalName 'admin@contoso.com'
+
+    .EXAMPLE
+    # Query denies for the current user
+    Get-O365AzureElevatedDenyAssignments
     #>
-    [cmdletbinding(DefaultParameterSetName = 'Id')]
+    [cmdletbinding(DefaultParameterSetName = 'Self')]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [parameter(ParameterSetName='Id')][string] $PrincipalId,
@@ -40,6 +45,10 @@ function Get-O365AzureElevatedDenyAssignments {
             Write-Warning "Get-O365AzureElevatedDenyAssignments - User '$UserPrincipalName' not found"
             return
         }
+    }
+    if (-not $PrincipalId) {
+        $me = Invoke-O365Admin -Uri 'https://graph.microsoft.com/v1.0/me?$select=id' -Headers $Headers
+        $PrincipalId = $me.id
     }
     $Uri = 'https://management.azure.com/providers/Microsoft.Authorization/denyAssignments'
     $QueryParameter = @{ 'api-version' = $ApiVersion; '$filter' = "gdprExportPrincipalId eq '$PrincipalId'" }
