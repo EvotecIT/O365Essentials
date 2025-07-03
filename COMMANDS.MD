@@ -110,3 +110,5 @@
 | Get-O365ServicePrincipal                        |                                              |                                                             |
 | Get-O365TenantID                                |                                              |                                                             |
 | Get-O365User                                    |                                              |                                                             |
+| Get-O365AzureElevatedRoleAssignments             | Set-O365AzureElevatedAccess |                                                             |
+| Get-O365AzureElevatedDenyAssignments             | Remove-O365AzureElevatedAccess |                                                             |

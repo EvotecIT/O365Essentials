@@ -1,4 +1,7 @@
 # O365Essentials Release History
+## 0.0.17 - 2025.07.03
+- Added elevated access functions: Set-O365AzureElevatedAccess, Get-O365AzureElevatedRoleAssignments, Get-O365AzureElevatedDenyAssignments, Remove-O365AzureElevatedAccess
+
 
 ## 0.0.16 - 2024.12.22
 - Update docs `Set-O365OrgForms`
