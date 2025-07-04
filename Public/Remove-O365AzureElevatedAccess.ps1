@@ -58,7 +58,19 @@ function Remove-O365AzureElevatedAccess {
     $RoleDefQuery = @{ 'api-version' = $ApiVersion; '$filter' = "roleName eq 'User Access Administrator'" }
     $RoleDef = Invoke-O365Admin -Uri $RoleDefUri -Headers $Headers -QueryParameter $RoleDefQuery
     if (-not $RoleDef) { return }
-    $RoleDefinitionId = $RoleDef.value[0].name
+    if ($RoleDef.value) {
+        if ($RoleDef.value.Count -gt 0) {
+            $RoleDefinitionId = $RoleDef.value[0].name
+        } else {
+            Write-Verbose 'Remove-O365AzureElevatedAccess - Role definition not found.'
+            return
+        }
+    } elseif ($RoleDef.name) {
+        $RoleDefinitionId = $RoleDef.name
+    } else {
+        Write-Verbose 'Remove-O365AzureElevatedAccess - Role definition not found.'
+        return
+    }
 
     $AssignUri = 'https://management.azure.com/providers/Microsoft.Authorization/roleAssignments'
     $AssignQuery = @{ 'api-version' = $ApiVersion; '$filter' = "principalId eq '$PrincipalId'" }

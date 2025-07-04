@@ -6,6 +6,7 @@
 - Listing and removal cmdlets default to the current user when no principal is specified
 - Azure connections now request tokens for `https://management.azure.com` to ensure elevated access APIs work
 - Connect-O365Admin continues without an Azure token if acquisition fails, allowing non-Azure commands to run
+- Fix Remove-O365AzureElevatedAccess when the role definition cannot be found
 
 
 ## 0.0.16 - 2024.12.22
