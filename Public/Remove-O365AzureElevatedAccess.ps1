@@ -73,7 +73,7 @@ function Remove-O365AzureElevatedAccess {
     }
 
     $AssignUri = 'https://management.azure.com/providers/Microsoft.Authorization/roleAssignments'
-    $AssignQuery = @{ 'api-version' = $ApiVersion; '$filter' = "principalId eq '$PrincipalId'" }
+    $AssignQuery = @{ 'api-version' = $ApiVersion; '$filter' = "atScope() and principalId eq '$PrincipalId'" }
     $Assignments = Invoke-O365Admin -Uri $AssignUri -Headers $Headers -QueryParameter $AssignQuery
 
     $Assignment = $Assignments.value | Where-Object { $_.properties.scope -eq '/' -and $_.properties.roleDefinitionId -like "*/$RoleDefinitionId" }
@@ -82,7 +82,10 @@ function Remove-O365AzureElevatedAccess {
         $DeleteUri = "https://management.azure.com/providers/Microsoft.Authorization/roleAssignments/$AssignmentId"
         $DelQuery = @{ 'api-version' = $ApiVersion }
         if ($PSCmdlet.ShouldProcess($AssignmentId, 'Remove elevated access')) {
-            Invoke-O365Admin -Uri $DeleteUri -Headers $Headers -Method DELETE -QueryParameter $DelQuery
+            $result = Invoke-O365Admin -Uri $DeleteUri -Headers $Headers -Method DELETE -QueryParameter $DelQuery
+            if ($result) {
+                Write-Verbose "Remove-O365AzureElevatedAccess - Removed assignment $AssignmentId"
+            }
         }
     } else {
         Write-Verbose 'Elevated role assignment not found.'

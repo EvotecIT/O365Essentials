@@ -64,13 +64,19 @@ function Set-O365AzureElevatedAccess {
         $AssignQuery = @{ 'api-version' = $RoleApiVersion }
         $Body = @{ properties = @{ principalId = $PrincipalId; roleDefinitionId = $RoleDefinitionId; scope = '/' } } | ConvertTo-Json -Depth 5
         if ($PSCmdlet.ShouldProcess($PrincipalId, 'Elevate access for principal')) {
-            Invoke-O365Admin -Uri $AssignUri -Headers $Headers -Method PUT -Body $Body -QueryParameter $AssignQuery
+            $result = Invoke-O365Admin -Uri $AssignUri -Headers $Headers -Method PUT -Body $Body -QueryParameter $AssignQuery
+            if ($result) {
+                Write-Verbose "Set-O365AzureElevatedAccess - Created assignment $AssignmentId"
+            }
         }
     } else {
         $Uri = 'https://management.azure.com/providers/Microsoft.Authorization/elevateAccess'
         $QueryParameter = @{ 'api-version' = $ApiVersion }
         if ($PSCmdlet.ShouldProcess($Uri, 'Elevate access')) {
-            Invoke-O365Admin -Uri $Uri -Headers $Headers -Method POST -QueryParameter $QueryParameter
+            $result = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method POST -QueryParameter $QueryParameter
+            if (-not $result) {
+                Write-Verbose 'Set-O365AzureElevatedAccess - Elevation request submitted'
+            }
         }
     }
 }
