@@ -38,6 +38,11 @@ function Set-O365AzureElevatedAccess {
         [string] $ApiVersion = '2016-07-01',
         [string] $RoleApiVersion = '2022-04-01'
     )
+    $Headers = Connect-O365Admin -Headers $Headers
+    if (-not $Headers.HeadersAzure) {
+        Write-Warning 'Set-O365AzureElevatedAccess - Azure token not available. Ensure Connect-O365Admin has permission to access https://management.azure.com.'
+        return
+    }
     if ($UserPrincipalName) {
         $user = Get-O365User -Headers $Headers -UserPrincipalName $UserPrincipalName -Property id -WarningAction SilentlyContinue
         if ($user) {

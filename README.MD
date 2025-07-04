@@ -107,7 +107,9 @@ the permissions below:
 * **Microsoft Graph** – at minimum `Directory.ReadWrite.All` and any other
   scopes needed by the commands you plan to run.
 * **Azure management** (`https://management.azure.com/`) – delegate or
-  application access to `user_impersonation`.
+  application access to `user_impersonation`. If this token can't be acquired
+  the connection will still succeed but commands that call the management API
+  will warn and exit.
 * **Admin portal API** – this API is not documented, so the easiest option is
   to run the app as a user with the Global Administrator role or grant the app
   the same administrative roles.
@@ -137,3 +139,4 @@ Set-O365OrgNews -CompanyInformationAndIndustryEnabled $true -ContentOnNewTabEnab
 ```
 
 All commands are listed [here](COMMANDS.MD). You can check their usage going thru Examples section.
+The [SetO365AzureElevatedAccess.ps1](Examples/SetO365AzureElevatedAccess.ps1) script demonstrates how to obtain and remove elevated Azure access.

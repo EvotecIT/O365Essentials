@@ -37,6 +37,11 @@ function Get-O365AzureElevatedDenyAssignments {
         [parameter(ParameterSetName='UPN')][string] $UserPrincipalName,
         [string] $ApiVersion = '2022-04-01'
     )
+    $Headers = Connect-O365Admin -Headers $Headers
+    if (-not $Headers.HeadersAzure) {
+        Write-Warning 'Get-O365AzureElevatedDenyAssignments - Azure token not available. Ensure Connect-O365Admin has permission to access https://management.azure.com.'
+        return
+    }
     if ($UserPrincipalName) {
         $user = Get-O365User -Headers $Headers -UserPrincipalName $UserPrincipalName -Property id -WarningAction SilentlyContinue
         if ($user) {

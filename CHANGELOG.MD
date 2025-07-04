@@ -5,6 +5,7 @@
 - Set-O365AzureElevatedAccess can optionally elevate another user by UPN or principal ID
 - Listing and removal cmdlets default to the current user when no principal is specified
 - Azure connections now request tokens for `https://management.azure.com` to ensure elevated access APIs work
+- Connect-O365Admin continues without an Azure token if acquisition fails, allowing non-Azure commands to run
 
 
 ## 0.0.16 - 2024.12.22

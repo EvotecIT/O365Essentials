@@ -100,7 +100,7 @@ function Connect-O365Admin {
         }
     } catch {
         Write-Warning -Message "Connect-O365Admin - Authentication failure for Azure. Error: $($_.Exception.Message)"
-        return
+        $tokenAzure = $null
     }
 
     if ($PSCmdlet.ParameterSetName -eq 'App') {
@@ -133,13 +133,17 @@ function Connect-O365Admin {
             'x-ms-client-request-id' = [guid]::NewGuid()
             'x-ms-correlation-id'    = [guid]::NewGuid()
         }
-        'AccessTokenAzure'    = $tokenAzure.access_token
-        'HeadersAzure'        = [ordered] @{
-            'Content-Type'           = 'application/json; charset=UTF-8'
-            'Authorization'          = "Bearer $($tokenAzure.access_token)"
-            'X-Requested-With'       = 'XMLHttpRequest'
-            'x-ms-client-request-id' = [guid]::NewGuid()
-            'x-ms-correlation-id'    = [guid]::NewGuid()
+        'AccessTokenAzure'    = if ($tokenAzure) { $tokenAzure.access_token } else { $null }
+        'HeadersAzure'        = if ($tokenAzure) {
+            [ordered] @{
+                'Content-Type'           = 'application/json; charset=UTF-8'
+                'Authorization'          = "Bearer $($tokenAzure.access_token)"
+                'X-Requested-With'       = 'XMLHttpRequest'
+                'x-ms-client-request-id' = [guid]::NewGuid()
+                'x-ms-correlation-id'    = [guid]::NewGuid()
+            }
+        } else {
+            $null
         }
         'AccessTokenGraph'    = $tokenGraph.access_token
         'HeadersGraph'        = [ordered] @{
