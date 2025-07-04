@@ -57,5 +57,18 @@ function Get-O365AzureElevatedDenyAssignments {
     }
     $Uri = 'https://management.azure.com/providers/Microsoft.Authorization/denyAssignments'
     $QueryParameter = @{ 'api-version' = $ApiVersion; '$filter' = "gdprExportPrincipalId eq '$PrincipalId'" }
-    Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET -QueryParameter $QueryParameter
+    $Assignments = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET -QueryParameter $QueryParameter
+    if (-not $Assignments) { return }
+    $Assignments.value | ForEach-Object {
+        [pscustomobject]@{
+            Id            = $_.id
+            Scope         = $_.properties.scope
+            PrincipalId   = $_.properties.gdprExportPrincipalId
+            PrincipalType = $_.properties.principalType
+            Condition     = $_.properties.condition
+            CreatedOn     = $_.properties.createdOn
+            UpdatedOn     = $_.properties.updatedOn
+            Description   = $_.properties.description
+        }
+    }
 }
