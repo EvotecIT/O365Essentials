@@ -106,7 +106,7 @@ the permissions below:
 
 * **Microsoft Graph** – at minimum `Directory.ReadWrite.All` and any other
   scopes needed by the commands you plan to run.
-* **Azure management** (`74658136-14ec-4630-ad9b-26e160ff0fc6`) – delegate or
+* **Azure management** (`https://management.azure.com/`) – delegate or
   application access to `user_impersonation`.
 * **Admin portal API** – this API is not documented, so the easiest option is
   to run the app as a user with the Global Administrator role or grant the app

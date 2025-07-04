@@ -4,6 +4,7 @@
 - Added -UserPrincipalName support for elevated access commands and new example script
 - Set-O365AzureElevatedAccess can optionally elevate another user by UPN or principal ID
 - Listing and removal cmdlets default to the current user when no principal is specified
+- Azure connections now request tokens for `https://management.azure.com` to ensure elevated access APIs work
 
 
 ## 0.0.16 - 2024.12.22
