@@ -58,7 +58,15 @@ function Set-O365AzureElevatedAccess {
         $RoleDefQuery = @{ 'api-version' = $RoleApiVersion; '$filter' = "roleName eq 'User Access Administrator'" }
         $RoleDef = Invoke-O365Admin -Uri $RoleDefUri -Headers $Headers -QueryParameter $RoleDefQuery
         if (-not $RoleDef) { return }
-        $RoleDefinitionId = if ($RoleDef.value) { $RoleDef.value[0].id } else { $RoleDef.id }
+        if ($RoleDef.value) {
+            $RoleDefinitionId = if ($RoleDef.value.Count -gt 0) { $RoleDef.value[0].id } else { $null }
+        } else {
+            $RoleDefinitionId = $RoleDef.id
+        }
+        if (-not $RoleDefinitionId) {
+            Write-Verbose 'Set-O365AzureElevatedAccess - Role definition not found.'
+            return
+        }
         $AssignmentId = [guid]::NewGuid()
         $AssignUri = "https://management.azure.com/providers/Microsoft.Authorization/roleAssignments/$AssignmentId"
         $AssignQuery = @{ 'api-version' = $RoleApiVersion }
