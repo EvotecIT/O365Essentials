@@ -59,6 +59,10 @@ function Get-O365AzureElevatedDenyAssignments {
     $QueryParameter = @{ 'api-version' = $ApiVersion; '$filter' = "gdprExportPrincipalId eq '$PrincipalId'" }
     $Assignments = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET -QueryParameter $QueryParameter
     if (-not $Assignments) { return }
+    if (-not $Assignments.value) {
+        Write-Verbose 'Get-O365AzureElevatedDenyAssignments - No assignments returned.'
+        return
+    }
     $Assignments.value | Where-Object { $_.properties.scope -eq '/' } | ForEach-Object {
         [pscustomobject]@{
             Id            = $_.id

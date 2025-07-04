@@ -139,4 +139,4 @@ Set-O365OrgNews -CompanyInformationAndIndustryEnabled $true -ContentOnNewTabEnab
 ```
 
 All commands are listed [here](COMMANDS.MD). You can check their usage going thru Examples section.
-The [SetO365AzureElevatedAccess.ps1](Examples/SetO365AzureElevatedAccess.ps1) script demonstrates how to obtain and remove elevated Azure access.
+The [SetO365AzureElevatedAccess.ps1](Examples/SetO365AzureElevatedAccess.ps1) script demonstrates how to obtain and remove elevated Azure access using either the current user or a specified UPN.

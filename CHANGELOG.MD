@@ -9,6 +9,7 @@
 - Fix Remove-O365AzureElevatedAccess when the role definition cannot be found
 - Use principal filters only for elevated role and deny assignments and filter results to root scope
 - Example script uses default connection and shows verbose confirmation
+- Get commands emit a verbose message when no assignments are returned
 
 
 ## 0.0.16 - 2024.12.22
