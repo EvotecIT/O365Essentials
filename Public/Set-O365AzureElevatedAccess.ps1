@@ -46,7 +46,8 @@ function Set-O365AzureElevatedAccess {
     if ($UserPrincipalName) {
         $user = Get-O365User -Headers $Headers -UserPrincipalName $UserPrincipalName -Property id -WarningAction SilentlyContinue
         if ($user) {
-            $PrincipalId = if ($user.value) { $user.value[0].id } else { $user.id }
+            $userObj = if ($user.PSObject.Properties['value']) { $user.value[0] } elseif ($user -is [array]) { $user[0] } else { $user }
+            $PrincipalId = $userObj.id
         } else {
             Write-Warning "Set-O365AzureElevatedAccess - User '$UserPrincipalName' not found"
             return
@@ -58,11 +59,8 @@ function Set-O365AzureElevatedAccess {
         $RoleDefQuery = @{ 'api-version' = $RoleApiVersion; '$filter' = "roleName eq 'User Access Administrator'" }
         $RoleDef = Invoke-O365Admin -Uri $RoleDefUri -Headers $Headers -QueryParameter $RoleDefQuery
         if (-not $RoleDef) { return }
-        if ($RoleDef.value) {
-            $RoleDefinitionId = if ($RoleDef.value.Count -gt 0) { $RoleDef.value[0].id } else { $null }
-        } else {
-            $RoleDefinitionId = $RoleDef.id
-        }
+        $roleItems = if ($RoleDef.PSObject.Properties['value']) { $RoleDef.value } elseif ($RoleDef -is [array]) { $RoleDef } else { @($RoleDef) }
+        $RoleDefinitionId = if ($roleItems.Count -gt 0) { if ($roleItems[0].id) { $roleItems[0].id } else { $roleItems[0].name } } else { $null }
         if (-not $RoleDefinitionId) {
             Write-Verbose 'Set-O365AzureElevatedAccess - Role definition not found.'
             return

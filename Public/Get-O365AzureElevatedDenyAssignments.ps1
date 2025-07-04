@@ -45,7 +45,8 @@ function Get-O365AzureElevatedDenyAssignments {
     if ($UserPrincipalName) {
         $user = Get-O365User -Headers $Headers -UserPrincipalName $UserPrincipalName -Property id -WarningAction SilentlyContinue
         if ($user) {
-            $PrincipalId = if ($user.value) { $user.value[0].id } else { $user.id }
+            $userObj = if ($user.PSObject.Properties['value']) { $user.value[0] } elseif ($user -is [array]) { $user[0] } else { $user }
+            $PrincipalId = $userObj.id
         } else {
             Write-Warning "Get-O365AzureElevatedDenyAssignments - User '$UserPrincipalName' not found"
             return
@@ -59,7 +60,7 @@ function Get-O365AzureElevatedDenyAssignments {
     $QueryParameter = @{ 'api-version' = $ApiVersion; '$filter' = "gdprExportPrincipalId eq '$PrincipalId'" }
     $Assignments = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET -QueryParameter $QueryParameter
     if (-not $Assignments) { return }
-    $items = if ($Assignments.value) { $Assignments.value } else { $Assignments }
+    $items = if ($Assignments.PSObject.Properties['value']) { $Assignments.value } elseif ($Assignments -is [array]) { $Assignments } else { @($Assignments) }
     if (-not $items) {
         Write-Verbose 'Get-O365AzureElevatedDenyAssignments - No assignments returned.'
         return

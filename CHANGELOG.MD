@@ -10,6 +10,7 @@
 - Use principal filters only for elevated role and deny assignments and filter results to root scope
 - Example script uses default connection and shows verbose confirmation
 - Get commands emit a verbose message when no assignments are returned
+- Handle role and deny assignment responses returned as arrays without a `value` wrapper
 
 
 ## 0.0.16 - 2024.12.22

@@ -44,7 +44,8 @@ function Remove-O365AzureElevatedAccess {
     if ($UserPrincipalName) {
         $user = Get-O365User -Headers $Headers -UserPrincipalName $UserPrincipalName -Property id -WarningAction SilentlyContinue
         if ($user) {
-            $PrincipalId = if ($user.value) { $user.value[0].id } else { $user.id }
+            $userObj = if ($user.PSObject.Properties['value']) { $user.value[0] } elseif ($user -is [array]) { $user[0] } else { $user }
+            $PrincipalId = $userObj.id
         } else {
             Write-Warning "Remove-O365AzureElevatedAccess - User '$UserPrincipalName' not found"
             return
@@ -58,24 +59,17 @@ function Remove-O365AzureElevatedAccess {
     $RoleDefQuery = @{ 'api-version' = $ApiVersion; '$filter' = "roleName eq 'User Access Administrator'" }
     $RoleDef = Invoke-O365Admin -Uri $RoleDefUri -Headers $Headers -QueryParameter $RoleDefQuery
     if (-not $RoleDef) { return }
-    if ($RoleDef.value) {
-        if ($RoleDef.value.Count -gt 0) {
-            $RoleDefinitionId = $RoleDef.value[0].name
-        } else {
-            Write-Verbose 'Remove-O365AzureElevatedAccess - Role definition not found.'
-            return
-        }
-    } elseif ($RoleDef.name) {
-        $RoleDefinitionId = $RoleDef.name
-    } else {
+    $roleItems = if ($RoleDef.PSObject.Properties['value']) { $RoleDef.value } elseif ($RoleDef -is [array]) { $RoleDef } else { @($RoleDef) }
+    if (-not $roleItems -or $roleItems.Count -eq 0) {
         Write-Verbose 'Remove-O365AzureElevatedAccess - Role definition not found.'
         return
     }
+    $RoleDefinitionId = if ($roleItems[0].name) { $roleItems[0].name } else { $roleItems[0].id }
 
     $AssignUri = 'https://management.azure.com/providers/Microsoft.Authorization/roleAssignments'
     $AssignQuery = @{ 'api-version' = $ApiVersion; '$filter' = "principalId eq '$PrincipalId'" }
     $Assignments = Invoke-O365Admin -Uri $AssignUri -Headers $Headers -QueryParameter $AssignQuery
-    $items = if ($Assignments.value) { $Assignments.value } else { $Assignments }
+    $items = if ($Assignments.PSObject.Properties['value']) { $Assignments.value } elseif ($Assignments -is [array]) { $Assignments } else { @($Assignments) }
 
     $Assignment = $items | Where-Object { $_.properties.scope -eq '/' -and $_.properties.roleDefinitionId -like "*/$RoleDefinitionId" }
     if ($Assignment) {
