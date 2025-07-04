@@ -56,10 +56,10 @@ function Get-O365AzureElevatedRoleAssignments {
         $PrincipalId = $me.id
     }
     $Uri = 'https://management.azure.com/providers/Microsoft.Authorization/roleAssignments'
-    $QueryParameter = @{ 'api-version' = $ApiVersion; '$filter' = "atScope() and principalId eq '$PrincipalId'" }
+    $QueryParameter = @{ 'api-version' = $ApiVersion; '$filter' = "principalId eq '$PrincipalId'" }
     $Assignments = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET -QueryParameter $QueryParameter
     if (-not $Assignments) { return }
-    $Assignments.value | ForEach-Object {
+    $Assignments.value | Where-Object { $_.properties.scope -eq '/' } | ForEach-Object {
         [pscustomobject]@{
             Id               = $_.id
             Scope            = $_.properties.scope

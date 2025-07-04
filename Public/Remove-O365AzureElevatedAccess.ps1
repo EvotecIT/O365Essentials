@@ -73,7 +73,7 @@ function Remove-O365AzureElevatedAccess {
     }
 
     $AssignUri = 'https://management.azure.com/providers/Microsoft.Authorization/roleAssignments'
-    $AssignQuery = @{ 'api-version' = $ApiVersion; '$filter' = "atScope() and principalId eq '$PrincipalId'" }
+    $AssignQuery = @{ 'api-version' = $ApiVersion; '$filter' = "principalId eq '$PrincipalId'" }
     $Assignments = Invoke-O365Admin -Uri $AssignUri -Headers $Headers -QueryParameter $AssignQuery
 
     $Assignment = $Assignments.value | Where-Object { $_.properties.scope -eq '/' -and $_.properties.roleDefinitionId -like "*/$RoleDefinitionId" }

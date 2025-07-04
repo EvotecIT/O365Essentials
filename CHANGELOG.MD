@@ -7,7 +7,7 @@
 - Azure connections now request tokens for `https://management.azure.com` to ensure elevated access APIs work
 - Connect-O365Admin continues without an Azure token if acquisition fails, allowing non-Azure commands to run
 - Fix Remove-O365AzureElevatedAccess when the role definition cannot be found
-- Use `atScope()` filter when retrieving or removing elevated role assignments
+- Use principal filters only for elevated role and deny assignments and filter results to root scope
 - Example script uses default connection and shows verbose confirmation
 
 
