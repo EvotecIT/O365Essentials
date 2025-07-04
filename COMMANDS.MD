@@ -110,3 +110,5 @@
 | Get-O365ServicePrincipal                        |                                              |                                                             |
 | Get-O365TenantID                                |                                              |                                                             |
 | Get-O365User                                    |                                              |                                                             |
+| Get-O365AzureElevatedRoleAssignments             | Set-O365AzureElevatedAccess | Inspect elevated role assignments for a user |
+| Get-O365AzureElevatedDenyAssignments             | Remove-O365AzureElevatedAccess | Check deny assignments after elevation |

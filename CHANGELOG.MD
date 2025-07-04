@@ -1,4 +1,17 @@
 # O365Essentials Release History
+## 0.0.17 - 2025.07.03
+- Added elevated access functions: Set-O365AzureElevatedAccess, Get-O365AzureElevatedRoleAssignments, Get-O365AzureElevatedDenyAssignments, Remove-O365AzureElevatedAccess
+- Added -UserPrincipalName support for elevated access commands and new example script
+- Set-O365AzureElevatedAccess can optionally elevate another user by UPN or principal ID
+- Listing and removal cmdlets default to the current user when no principal is specified
+- Azure connections now request tokens for `https://management.azure.com` to ensure elevated access APIs work
+- Connect-O365Admin continues without an Azure token if acquisition fails, allowing non-Azure commands to run
+- Fix Remove-O365AzureElevatedAccess when the role definition cannot be found
+- Use principal filters only for elevated role and deny assignments and filter results to root scope
+- Example script uses default connection and shows verbose confirmation
+- Get commands emit a verbose message when no assignments are returned
+- Handle role and deny assignment responses returned as arrays without a `value` wrapper
+
 
 ## 0.0.16 - 2024.12.22
 - Update docs `Set-O365OrgForms`
