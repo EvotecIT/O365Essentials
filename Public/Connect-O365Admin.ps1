@@ -55,8 +55,10 @@ function Connect-O365Admin {
 
     $Tenant = if ($Tenant) { $Tenant } else { 'organizations' }
     $ScopesO365 = 'https://admin.microsoft.com/.default offline_access'
+    # main.iam.ad.ext.azure.com requires a portal token separate from ARM; use portal resource ID
+    $ResourceAzure = '74658136-14ec-4630-ad9b-26e160ff0fc6'
     # Use the management.azure.com resource for ARM token acquisition
-    $ScopesAzure = 'https://management.azure.com/.default offline_access'
+    $ScopesARM = 'https://management.azure.com/.default offline_access'
     $ScopesGraph = 'https://graph.microsoft.com/.default offline_access'
 
     try {
@@ -94,13 +96,24 @@ function Connect-O365Admin {
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Azure"
         if ($PSCmdlet.ParameterSetName -eq 'App') {
-            $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesAzure -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
+            $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } else {
-            $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesAzure -RefreshToken $refresh
+            $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -RefreshToken $refresh
         }
     } catch {
         Write-Warning -Message "Connect-O365Admin - Authentication failure for Azure. Error: $($_.Exception.Message)"
         $tokenAzure = $null
+    }
+    try {
+        Write-Verbose -Message "Connect-O365Admin - Acquiring token for Azure management"
+        if ($PSCmdlet.ParameterSetName -eq 'App') {
+            $tokenARM = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesARM -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
+        } else {
+            $tokenARM = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesARM -RefreshToken $refresh
+        }
+    } catch {
+        Write-Warning -Message "Connect-O365Admin - Authentication failure for Azure management. Error: $($_.Exception.Message)"
+        $tokenARM = $null
     }
 
     if ($PSCmdlet.ParameterSetName -eq 'App') {
@@ -138,6 +151,18 @@ function Connect-O365Admin {
             [ordered] @{
                 'Content-Type'           = 'application/json; charset=UTF-8'
                 'Authorization'          = "Bearer $($tokenAzure.access_token)"
+                'X-Requested-With'       = 'XMLHttpRequest'
+                'x-ms-client-request-id' = [guid]::NewGuid()
+                'x-ms-correlation-id'    = [guid]::NewGuid()
+            }
+        } else {
+            $null
+        }
+        'AccessTokenARM'      = if ($tokenARM) { $tokenARM.access_token } else { $null }
+        'HeadersARM'          = if ($tokenARM) {
+            [ordered] @{
+                'Content-Type'           = 'application/json; charset=UTF-8'
+                'Authorization'          = "Bearer $($tokenARM.access_token)"
                 'X-Requested-With'       = 'XMLHttpRequest'
                 'x-ms-client-request-id' = [guid]::NewGuid()
                 'x-ms-correlation-id'    = [guid]::NewGuid()

@@ -1,0 +1,89 @@
+name: Test PowerShell Module
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '*.md'
+      - 'Docs/**'
+      - 'Examples/**'
+      - '.gitignore'
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  refresh-psd1:
+    name: 'Refresh PSD1'
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PowerShell modules
+        shell: pwsh
+        run: |
+          Install-Module PSPublishModule -Force -Scope CurrentUser -AllowClobber
+            Install-Module PSSharedGoods -Force -Scope CurrentUser -AllowClobber
+
+      - name: Refresh module manifest
+        shell: pwsh
+        run: |
+          ./Build/BuildModule.ps1
+
+      - name: Upload refreshed manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: psd1
+          path: O365Essentials.psd1
+
+  test-windows-ps5:
+    name: 'Windows PowerShell 5.1'
+    runs-on: windows-latest
+    needs: refresh-psd1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download manifest
+        uses: actions/download-artifact@v4
+        with:
+          name: psd1
+          path: .
+
+      - name: Install PowerShell modules
+        shell: powershell
+        run: |
+          Write-Host "PowerShell Version: $($PSVersionTable.PSVersion)"
+          Install-Module -Name Pester -Repository PSGallery -Force -SkipPublisherCheck -AllowClobber
+          Install-Module -Name PSWriteColor -Repository PSGallery -Force -SkipPublisherCheck -AllowClobber
+
+      - name: Run PowerShell tests
+        shell: powershell
+        run: .\O365Essentials.Tests.ps1
+
+  test-windows-ps7:
+    name: 'Windows PowerShell 7'
+    runs-on: windows-latest
+    needs: refresh-psd1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download manifest
+        uses: actions/download-artifact@v4
+        with:
+          name: psd1
+          path: .
+
+      - name: Install PowerShell modules
+        shell: pwsh
+        run: |
+          Write-Host "PowerShell Version: $($PSVersionTable.PSVersion)"
+          Install-Module -Name Pester -Repository PSGallery -Force -SkipPublisherCheck -AllowClobber
+          Install-Module -Name PSWriteColor -Repository PSGallery -Force -SkipPublisherCheck -AllowClobber
+
+      - name: Run PowerShell tests
+        shell: pwsh
+        run: ./O365Essentials.Tests.ps1

@@ -1,6 +1,4 @@
-﻿Clear-Host
-
-Build-Module -ModuleName 'O365Essentials' {
+﻿Build-Module -ModuleName 'O365Essentials' {
     # Usual defaults as per standard module
     $Manifest = [ordered] @{
         # Version number of this module.
@@ -90,6 +88,7 @@ Build-Module -ModuleName 'O365Essentials' {
         CertificateThumbprint             = '483292C9E317AA13B07BB7A96AE9D1A5ED9E7703'
         DoNotAttemptToFixRelativePaths    = $true
         MergeFunctionsFromApprovedModules = $true
+        RefreshPSD1Only                   = $true
     }
     New-ConfigurationBuild @newConfigurationBuildSplat
 

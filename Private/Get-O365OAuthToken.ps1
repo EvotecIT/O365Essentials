@@ -3,6 +3,7 @@ function Get-O365OAuthToken {
     param(
         [string] $Tenant = 'organizations',
         [string] $Scope,
+        [string] $Resource,
         # Azure PowerShell public client ID - used for interactive sign in
         [string] $ClientId = '04b07795-8ddb-461a-bbee-02f9e1bf7b46',
         [PSCredential] $Credential,
@@ -12,7 +13,12 @@ function Get-O365OAuthToken {
         $Certificate,
         [securestring] $CertificatePassword
     )
-    $tokenEndpoint = "https://login.microsoftonline.com/$Tenant/oauth2/v2.0/token"
+    $useResource = $PSBoundParameters.ContainsKey('Resource') -and $Resource
+    if ($useResource) {
+        $tokenEndpoint = "https://login.microsoftonline.com/$Tenant/oauth2/token"
+    } else {
+        $tokenEndpoint = "https://login.microsoftonline.com/$Tenant/oauth2/v2.0/token"
+    }
 
     if ($ClientSecret -or $Certificate) {
         if ($Certificate -and ($Certificate -isnot [System.Security.Cryptography.X509Certificates.X509Certificate2])) {
@@ -28,7 +34,11 @@ function Get-O365OAuthToken {
         }
 
 
-        $body = @{ client_id = $ClientId; scope = $Scope; grant_type = 'client_credentials' }
+        if ($useResource) {
+            $body = @{ client_id = $ClientId; resource = $Resource; grant_type = 'client_credentials' }
+        } else {
+            $body = @{ client_id = $ClientId; scope = $Scope; grant_type = 'client_credentials' }
+        }
         if ($ClientSecret) {
             $body.client_secret = $ClientSecret
         } elseif ($Certificate) {
@@ -55,22 +65,41 @@ function Get-O365OAuthToken {
     }
 
     if ($RefreshToken) {
-        $body = @{
-            client_id     = $ClientId
-            scope         = $Scope
-            grant_type    = 'refresh_token'
-            refresh_token = $RefreshToken
+        if ($useResource) {
+            $body = @{
+                client_id     = $ClientId
+                resource      = $Resource
+                grant_type    = 'refresh_token'
+                refresh_token = $RefreshToken
+            }
+        } else {
+            $body = @{
+                client_id     = $ClientId
+                scope         = $Scope
+                grant_type    = 'refresh_token'
+                refresh_token = $RefreshToken
+            }
         }
         return Invoke-RestMethod -Method Post -Uri $tokenEndpoint -Body $body -ContentType 'application/x-www-form-urlencoded'
     }
 
     if ($Credential) {
-        $body = @{
-            client_id  = $ClientId
-            scope      = $Scope
-            grant_type = 'password'
-            username   = $Credential.UserName
-            password   = $Credential.GetNetworkCredential().Password
+        if ($useResource) {
+            $body = @{
+                client_id  = $ClientId
+                resource   = $Resource
+                grant_type = 'password'
+                username   = $Credential.UserName
+                password   = $Credential.GetNetworkCredential().Password
+            }
+        } else {
+            $body = @{
+                client_id  = $ClientId
+                scope      = $Scope
+                grant_type = 'password'
+                username   = $Credential.UserName
+                password   = $Credential.GetNetworkCredential().Password
+            }
         }
         return Invoke-RestMethod -Method Post -Uri $tokenEndpoint -Body $body -ContentType 'application/x-www-form-urlencoded'
     }

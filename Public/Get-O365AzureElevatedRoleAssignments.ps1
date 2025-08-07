@@ -38,8 +38,8 @@ function Get-O365AzureElevatedRoleAssignments {
         [string] $ApiVersion = '2022-04-01'
     )
     $Headers = Connect-O365Admin -Headers $Headers
-    if (-not $Headers.HeadersAzure) {
-        Write-Warning 'Get-O365AzureElevatedRoleAssignments - Azure token not available. Ensure Connect-O365Admin has permission to access https://management.azure.com.'
+    if (-not $Headers.HeadersARM) {
+        Write-Warning 'Get-O365AzureElevatedRoleAssignments - Azure management token not available. Ensure Connect-O365Admin has permission to access https://management.azure.com.'
         return
     }
     if ($UserPrincipalName) {
