@@ -1,6 +1,4 @@
-﻿Clear-Host
-
-Build-Module -ModuleName 'O365Essentials' {
+﻿Build-Module -ModuleName 'O365Essentials' {
     # Usual defaults as per standard module
     $Manifest = [ordered] @{
         # Version number of this module.
