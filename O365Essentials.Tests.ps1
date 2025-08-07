@@ -10,6 +10,7 @@ $PSDInformation = Import-PowerShellDataFile -Path $PrimaryModule.FullName
 $RequiredModules = @(
     'Pester'
     'PSWriteColor'
+    'PSSharedGoods'
     if ($PSDInformation.RequiredModules) {
         $PSDInformation.RequiredModules
     }
