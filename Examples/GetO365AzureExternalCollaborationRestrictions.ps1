@@ -7,6 +7,7 @@
 $null = Connect-O365Admin -Verbose
 
 Get-O365AzureExternalCollaborationRestrictions
-Set-O365AzureExternalCollaborationRestrictions -CollaborationRestrictions AllowAnyDomains -Verbose
+#Set-O365AzureExternalCollaborationRestrictions -CollaborationRestrictions AllowAnyDomains -Verbose
 #Set-O365AzureExternalCollaborationRestrictions -CollaborationRestrictions DisallowSpecifiedDomains -TargetedDomains 'test.com' -Verbose
 #Set-O365AzureExternalCollaborationRestrictions -CollaborationRestrictions AllowSpecifiedDomains -TargetedDomains 'test.com' -Verbose
+Get-O365AzureExternalCollaborationSettings
