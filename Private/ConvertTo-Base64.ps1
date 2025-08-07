@@ -3,6 +3,5 @@
     param(
         [byte[]] $bytes
     )
-    [Convert]::ToBase64String($bytes).TrimEnd('=')
-    | ForEach-Object { $_.Replace('+', '-').Replace('/', '_') }
+    [Convert]::ToBase64String($bytes).TrimEnd('=') | ForEach-Object { $_.Replace('+', '-').Replace('/', '_') }
 }
