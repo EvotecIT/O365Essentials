@@ -55,7 +55,8 @@ function Connect-O365Admin {
 
     $Tenant = if ($Tenant) { $Tenant } else { 'organizations' }
     $ScopesO365 = 'https://admin.microsoft.com/.default offline_access'
-    $ScopesAzure = 'api://74658136-14ec-4630-ad9b-26e160ff0fc6/.default offline_access'
+    # main.iam.ad.ext.azure.com requires a portal token separate from ARM
+    $ScopesAzure = 'https://main.iam.ad.ext.azure.com/.default offline_access'
     # Use the management.azure.com resource for ARM token acquisition
     $ScopesARM = 'https://management.azure.com/.default offline_access'
     $ScopesGraph = 'https://graph.microsoft.com/.default offline_access'

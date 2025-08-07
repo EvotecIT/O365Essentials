@@ -13,6 +13,18 @@ Describe 'Invoke-O365Admin header selection' {
         Invoke-O365Admin -Uri 'https://main.iam.ad.ext.azure.com/api/test' -Headers $headers
         Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer portal' } -Exactly 1
     }
+    It 'falls back to ARM headers when portal token is missing' {
+        $headers = [ordered]@{
+            HeadersO365  = @{ Authorization = 'Bearer o365' }
+            HeadersGraph = @{ Authorization = 'Bearer graph' }
+            HeadersAzure = $null
+            HeadersARM   = @{ Authorization = 'Bearer arm' }
+        }
+        Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { param($Headers) $Headers }
+        Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith { }
+        Invoke-O365Admin -Uri 'https://main.iam.ad.ext.azure.com/api/test' -Headers $headers
+        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer arm' } -Exactly 1
+    }
     It 'uses ARM headers for management endpoints' {
         $headers = [ordered]@{
             HeadersO365  = @{ Authorization = 'Bearer o365' }
