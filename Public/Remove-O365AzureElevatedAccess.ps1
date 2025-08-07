@@ -37,8 +37,8 @@ function Remove-O365AzureElevatedAccess {
         [string] $ApiVersion = '2022-04-01'
     )
     $Headers = Connect-O365Admin -Headers $Headers
-    if (-not $Headers.HeadersAzure) {
-        Write-Warning 'Remove-O365AzureElevatedAccess - Azure token not available. Ensure Connect-O365Admin has permission to access https://management.azure.com.'
+    if (-not $Headers.HeadersARM) {
+        Write-Warning 'Remove-O365AzureElevatedAccess - Azure management token not available. Ensure Connect-O365Admin has permission to access https://management.azure.com.'
         return
     }
     if ($UserPrincipalName) {
