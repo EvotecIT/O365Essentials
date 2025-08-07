@@ -9,6 +9,6 @@ Describe 'Connect-O365Admin portal token' {
             [pscustomobject]@{access_token='tok'; refresh_token='ref'}
         }
         Connect-O365Admin -Credential $cred | Out-Null
-        Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -ParameterFilter { $Resource -eq 'https://main.iam.ad.ext.azure.com' } -Exactly 1
+        Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -ParameterFilter { $Resource -eq '74658136-14ec-4630-ad9b-26e160ff0fc6' } -Exactly 1
     }
 }
