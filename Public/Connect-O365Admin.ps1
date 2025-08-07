@@ -56,7 +56,7 @@ function Connect-O365Admin {
     $Tenant = if ($Tenant) { $Tenant } else { 'organizations' }
     $ScopesO365 = 'https://admin.microsoft.com/.default offline_access'
     # main.iam.ad.ext.azure.com requires a portal token separate from ARM
-    $ScopesAzure = 'https://main.iam.ad.ext.azure.com/.default offline_access'
+    $ResourceAzure = 'https://main.iam.ad.ext.azure.com'
     # Use the management.azure.com resource for ARM token acquisition
     $ScopesARM = 'https://management.azure.com/.default offline_access'
     $ScopesGraph = 'https://graph.microsoft.com/.default offline_access'
@@ -96,9 +96,9 @@ function Connect-O365Admin {
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Azure"
         if ($PSCmdlet.ParameterSetName -eq 'App') {
-            $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesAzure -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
+            $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } else {
-            $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesAzure -RefreshToken $refresh
+            $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -RefreshToken $refresh
         }
     } catch {
         Write-Warning -Message "Connect-O365Admin - Authentication failure for Azure. Error: $($_.Exception.Message)"
