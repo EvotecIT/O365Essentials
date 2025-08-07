@@ -25,6 +25,7 @@ jobs:
         shell: pwsh
         run: |
           Install-Module PSPublishModule -Force -Scope CurrentUser -AllowClobber
+            Install-Module PSSharedGoods -Force -Scope CurrentUser -AllowClobber
 
       - name: Refresh module manifest
         shell: pwsh
