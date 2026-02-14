@@ -1,7 +1,7 @@
 ﻿<p align="center">
   <a href="https://dev.azure.com/evotecpl/O365Essentials/_build/results?buildId=latest"><img src="https://dev.azure.com/evotecpl/O365Essentials/_apis/build/status/EvotecIT.O365Essentials"></a>
   <a href="https://www.powershellgallery.com/packages/O365Essentials"><img src="https://img.shields.io/powershellgallery/v/O365Essentials.svg"></a>
-  <a href="https://www.powershellgallery.com/packages/O365Essentials"><img src="https://img.shields.io/powershellgallery/vpre/O365Essentials.svg?label=powershell%20gallery%20preview&colorB=yellow"></a>
+  <a href="https://www.powershellgallery.com/packages/O365Essentials"><img src="https://img.shields.io/powershellgallery/v/O365Essentials.svg?label=powershell%20gallery%20preview&colorB=yellow&include_prereleases"></a>
   <a href="https://github.com/EvotecIT/O365Essentials"><img src="https://img.shields.io/github/license/EvotecIT/O365Essentials.svg"></a>
 </p>
 
