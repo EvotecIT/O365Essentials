@@ -30,7 +30,7 @@ function Get-O365CopilotConnectors {
         [ValidateSet('AdminUxOptions', 'All', 'Connections', 'Gallery', 'GallerySettings', 'Statistics', 'Summary', 'YourConnections')][string] $Name = 'All'
     )
 
-    $AdditionalHeaders = Get-O365PortalContextHeaders -Context MicrosoftSearch -PortalHost 'https://admin.cloud.microsoft' -AjaxSessionKey $Headers.AjaxSessionKey -PortalRouteKey $Headers.PortalRouteKey
+    $AdditionalHeaders = Get-O365PortalContextHeaders -Context CopilotConnectors -PortalHost 'https://admin.cloud.microsoft' -AjaxSessionKey $Headers.AjaxSessionKey -PortalRouteKey $Headers.PortalRouteKey
     $HasPortalSessionContext = $false
     if ($Headers) {
         if ($Headers.Contains('AjaxSessionKey') -and -not [string]::IsNullOrWhiteSpace($Headers['AjaxSessionKey'])) {
@@ -43,14 +43,15 @@ function Get-O365CopilotConnectors {
     function Get-CopilotConnectorLeaf {
         [cmdletbinding()]
         param(
-            [Parameter(Mandatory)][string] $Uri
+            [Parameter(Mandatory)][string] $Uri,
+            [System.Collections.IDictionary] $AdditionalLeafHeaders = $AdditionalHeaders
         )
 
         $Splat = @{
             Uri               = $Uri
             Headers           = $Headers
             Method            = 'GET'
-            AdditionalHeaders = $AdditionalHeaders
+            AdditionalHeaders = $AdditionalLeafHeaders
         }
         if ($HasPortalSessionContext -and $Uri -like 'https://admin.cloud.microsoft/*') {
             $Splat['UsePortalSession'] = $true
@@ -123,7 +124,16 @@ function Get-O365CopilotConnectors {
             return
         }
         'GallerySettings' {
-            Get-CopilotConnectorSafeResult -ResultName 'GallerySettings' -ScriptBlock { Get-CopilotConnectorLeaf -Uri "https://admin.cloud.microsoft/fd/ssms/api/v1.0/'MSS'/Collection('VT')/Settings(Path='',LogicalId='all')" }
+            $GalleryHeaders = [ordered] @{}
+            foreach ($Key in $AdditionalHeaders.Keys) {
+                $GalleryHeaders[$Key] = $AdditionalHeaders[$Key]
+            }
+            if ($Headers -and $Headers.Contains('Tenant') -and -not [string]::IsNullOrWhiteSpace($Headers['Tenant'])) {
+                $GalleryHeaders['x-anchormailbox'] = "APP:TenantSetting_AC9A8876-0461-47EA-9d4C-FE8D02AEF7D5@$($Headers['Tenant'])"
+            } elseif ($Headers -and $Headers.Contains('TenantId') -and -not [string]::IsNullOrWhiteSpace($Headers['TenantId'])) {
+                $GalleryHeaders['x-anchormailbox'] = "APP:TenantSetting_AC9A8876-0461-47EA-9d4C-FE8D02AEF7D5@$($Headers['TenantId'])"
+            }
+            Get-CopilotConnectorSafeResult -ResultName 'GallerySettings' -ScriptBlock { Get-CopilotConnectorLeaf -Uri "https://admin.cloud.microsoft/fd/ssms/api/v1.0/'FSS'/Collection('Staging')/Settings/?`$filter=Path%20eq%20'%3A'" -AdditionalLeafHeaders $GalleryHeaders }
             return
         }
         'YourConnections' {

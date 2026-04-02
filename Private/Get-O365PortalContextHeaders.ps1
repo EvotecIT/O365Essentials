@@ -26,7 +26,7 @@ function Get-O365PortalContextHeaders {
     #>
     [cmdletbinding()]
     param(
-        [Parameter(Mandatory)][ValidateSet('Agents', 'Backup', 'BrandCenter', 'Copilot', 'DataLocation', 'Homepage', 'IntegratedApps', 'MicrosoftEdge', 'MicrosoftSearch', 'PayAsYouGo', 'People', 'Viva')][string] $Context,
+        [Parameter(Mandatory)][ValidateSet('Agents', 'Backup', 'BrandCenter', 'Copilot', 'CopilotConnectors', 'DataLocation', 'Homepage', 'IntegratedApps', 'MicrosoftEdge', 'MicrosoftSearch', 'PayAsYouGo', 'People', 'Viva')][string] $Context,
         [string] $AjaxSessionKey,
         [string] $PortalRouteKey,
         [string] $PortalHost = 'https://admin.microsoft.com'
@@ -73,8 +73,14 @@ function Get-O365PortalContextHeaders {
             $Headers['x-adminapp-request'] = '/Settings/enhancedRestore'
         }
         'Copilot' {
+            $MacAppId = 'e103e082-0998-4474-af03-186c96afc209'
             $Headers['Referer'] = "$PortalHost/"
             $Headers['x-adminapp-request'] = '/Copilot'
+        }
+        'CopilotConnectors' {
+            $MacAppId = 'e103e082-0998-4474-af03-186c96afc209'
+            $Headers['Referer'] = "$PortalHost/"
+            $Headers['x-adminapp-request'] = '/copilot/connectors'
         }
         'IntegratedApps' {
             $Headers['Referer'] = "$PortalHost/"
@@ -102,5 +108,6 @@ function Get-O365PortalContextHeaders {
     if ($PortalRouteKey) {
         $Headers['x-portal-routekey'] = $PortalRouteKey
     }
+    $Headers['x-ms-mac-appid'] = $MacAppId
     $Headers
 }

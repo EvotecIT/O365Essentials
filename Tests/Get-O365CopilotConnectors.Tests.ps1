@@ -37,6 +37,20 @@ Describe 'Get-O365CopilotConnectors' {
         } -Exactly 1
     }
 
+    It 'uses the live gallery settings route and anchor mailbox shape' {
+        Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.cloud.microsoft/'; 'x-adminapp-request' = '/copilot/connectors'; 'x-ms-mac-appid' = 'e103e082-0998-4474-af03-186c96afc209' } }
+        Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { }
+
+        Get-O365CopilotConnectors -Headers @{ Tenant = 'ceb371f6-8745-4876-a040-69f2d10a9d1a' } -Name GallerySettings
+
+        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+            $Uri -eq "https://admin.cloud.microsoft/fd/ssms/api/v1.0/'FSS'/Collection('Staging')/Settings/?`$filter=Path%20eq%20'%3A'" -and
+            $AdditionalHeaders['x-adminapp-request'] -eq '/copilot/connectors' -and
+            $AdditionalHeaders['x-ms-mac-appid'] -eq 'e103e082-0998-4474-af03-186c96afc209' -and
+            $AdditionalHeaders['x-anchormailbox'] -eq 'APP:TenantSetting_AC9A8876-0461-47EA-9d4C-FE8D02AEF7D5@ceb371f6-8745-4876-a040-69f2d10a9d1a'
+        } -Exactly 1
+    }
+
     It 'returns a placeholder when summary data is unavailable' {
         Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.cloud.microsoft/?' } }
         Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { $null }
