@@ -37,6 +37,22 @@ Describe 'Get-O365PortalContextHeaders' {
         $Headers['x-ms-mac-version'] | Should -Be 'host-mac_2026.3.26.4'
     }
 
+    It 'builds CopilotSettings context headers using the live portal shape' {
+        $Headers = Get-O365PortalContextHeaders -Context CopilotSettings -PortalHost 'https://admin.cloud.microsoft'
+        $Headers['Referer'] | Should -Be 'https://admin.cloud.microsoft/'
+        $Headers['x-adminapp-request'] | Should -Be '/copilot/settings/Optimize'
+        $Headers['x-ms-mac-appid'] | Should -Be 'e103e082-0998-4474-af03-186c96afc209'
+        $Headers['x-ms-mac-version'] | Should -Be 'host-mac_2026.3.26.4'
+    }
+
+    It 'builds CopilotBilling context headers using the live portal shape' {
+        $Headers = Get-O365PortalContextHeaders -Context CopilotBilling -PortalHost 'https://admin.cloud.microsoft'
+        $Headers['Referer'] | Should -Be 'https://admin.cloud.microsoft/'
+        $Headers['x-adminapp-request'] | Should -Be '/copilot/billing'
+        $Headers['x-ms-mac-appid'] | Should -Be 'e103e082-0998-4474-af03-186c96afc209'
+        $Headers['x-ms-mac-version'] | Should -Be 'host-mac_2026.3.26.4'
+    }
+
     It 'builds Backup context headers' {
         $Headers = Get-O365PortalContextHeaders -Context Backup
         $Headers['x-adminapp-request'] | Should -Be '/Settings/enhancedRestore'

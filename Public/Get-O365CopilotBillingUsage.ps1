@@ -31,7 +31,7 @@ function Get-O365CopilotBillingUsage {
     )
 
     $RequestHeaders = if ($Headers) { $Headers } else { Connect-O365Admin }
-    $AdditionalHeaders = Get-O365PortalContextHeaders -Context Copilot -PortalHost 'https://admin.cloud.microsoft' -AjaxSessionKey $RequestHeaders.AjaxSessionKey -PortalRouteKey $RequestHeaders.PortalRouteKey
+    $AdditionalHeaders = Get-O365PortalContextHeaders -Context CopilotBilling -PortalHost 'https://admin.cloud.microsoft' -AjaxSessionKey $RequestHeaders.AjaxSessionKey -PortalRouteKey $RequestHeaders.PortalRouteKey
     $HasPortalSessionContext = $false
     if ($RequestHeaders) {
         if ($RequestHeaders.Contains('AjaxSessionKey') -and -not [string]::IsNullOrWhiteSpace($RequestHeaders['AjaxSessionKey'])) {
@@ -41,17 +41,32 @@ function Get-O365CopilotBillingUsage {
         }
     }
 
+    function Get-CopilotSPOHeaders {
+        [cmdletbinding()]
+        param()
+
+        $SPOHeaders = [ordered] @{}
+        foreach ($Key in $AdditionalHeaders.Keys) {
+            $SPOHeaders[$Key] = $AdditionalHeaders[$Key]
+        }
+        $SPOHeaders['Accept'] = 'application/json'
+        $SPOHeaders['odata-version'] = '4.0'
+        $SPOHeaders['x-ms-mac-target-app'] = 'SPO'
+        $SPOHeaders
+    }
+
     function Get-CopilotBillingLeaf {
         [cmdletbinding()]
         param(
-            [Parameter(Mandatory)][string] $Uri
+            [Parameter(Mandatory)][string] $Uri,
+            [System.Collections.IDictionary] $AdditionalLeafHeaders = $AdditionalHeaders
         )
 
         $Splat = @{
             Uri               = $Uri
             Headers           = $RequestHeaders
             Method            = 'GET'
-            AdditionalHeaders = $AdditionalHeaders
+            AdditionalHeaders = $AdditionalLeafHeaders
         }
         if ($HasPortalSessionContext -and $Uri -like 'https://admin.cloud.microsoft/*') {
             $Splat['UsePortalSession'] = $true
@@ -113,7 +128,7 @@ function Get-O365CopilotBillingUsage {
         }
         'BillingPolicies' {
             [PSCustomObject] @{
-                Policies           = Get-CopilotBillingLeaf -Uri 'https://admin.cloud.microsoft/_api/v2.1/billingPolicies'
+                Policies           = Get-CopilotBillingLeaf -Uri 'https://admin.cloud.microsoft/_api/v2.1/billingPolicies' -AdditionalLeafHeaders (Get-CopilotSPOHeaders)
                 PolicyBudgets      = Get-O365CopilotBillingUsage -Headers $Headers -Name BillingPolicyBudgets
                 BillingAccounts    = Get-O365CopilotBillingUsage -Headers $Headers -Name BillingAccounts
                 AzureSubscriptions = Get-O365CopilotBillingUsage -Headers $Headers -Name AzureSubscriptions
@@ -121,7 +136,7 @@ function Get-O365CopilotBillingUsage {
             return
         }
         'BillingPolicyBudgets' {
-            Get-CopilotSafeResult -ResultName 'BillingPolicyBudgets' -ScriptBlock { Get-CopilotBillingLeaf -Uri 'https://admin.cloud.microsoft/_api/v2.1/billingPolicies?budgets=true' }
+            Get-CopilotSafeResult -ResultName 'BillingPolicyBudgets' -ScriptBlock { Get-CopilotBillingLeaf -Uri 'https://admin.cloud.microsoft/_api/v2.1/billingPolicies?budgets=true' -AdditionalLeafHeaders (Get-CopilotSPOHeaders) }
             return
         }
         'BillingAccounts' {
@@ -137,14 +152,14 @@ function Get-O365CopilotBillingUsage {
         }
         'PayAsYouGoServices' {
             [PSCustomObject] @{
-                Policies          = Get-CopilotSafeResult -ResultName 'Policies' -ScriptBlock { Get-CopilotBillingLeaf -Uri 'https://admin.cloud.microsoft/_api/v2.1/billingPolicies' }
-                CopilotChatPolicy = Get-CopilotSafeResult -ResultName 'CopilotChatPolicy' -ScriptBlock { Get-CopilotBillingLeaf -Uri 'https://admin.cloud.microsoft/_api/v2.1/billingPolicies?feature=M365CopilotChat' }
+                Policies          = Get-CopilotSafeResult -ResultName 'Policies' -ScriptBlock { Get-CopilotBillingLeaf -Uri 'https://admin.cloud.microsoft/_api/v2.1/billingPolicies' -AdditionalLeafHeaders (Get-CopilotSPOHeaders) }
+                CopilotChatPolicy = Get-CopilotSafeResult -ResultName 'CopilotChatPolicy' -ScriptBlock { Get-CopilotBillingLeaf -Uri 'https://admin.cloud.microsoft/_api/v2.1/billingPolicies?feature=M365CopilotChat' -AdditionalLeafHeaders (Get-CopilotSPOHeaders) }
             }
             return
         }
         'HighUsageUsers' {
             [PSCustomObject] @{
-                Policies   = Get-CopilotSafeResult -ResultName 'Policies' -ScriptBlock { Get-CopilotBillingLeaf -Uri 'https://admin.cloud.microsoft/_api/v2.1/billingPolicies' }
+                Policies   = Get-CopilotSafeResult -ResultName 'Policies' -ScriptBlock { Get-CopilotBillingLeaf -Uri 'https://admin.cloud.microsoft/_api/v2.1/billingPolicies' -AdditionalLeafHeaders (Get-CopilotSPOHeaders) }
                 DataBacked = $false
                 Description = 'The High-usage users tab shows a prerequisite message until at least one Copilot billing policy is connected. No separate high-usage user feed was requested by the current tenant state.'
             }

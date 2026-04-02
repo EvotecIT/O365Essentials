@@ -49,7 +49,7 @@ function Get-O365CopilotSettings {
         $null
     }
     $RequestHeaders = if ($Headers) { $Headers } else { $ResolvedHeaders }
-    $AdditionalHeaders = Get-O365PortalContextHeaders -Context Copilot -PortalHost 'https://admin.cloud.microsoft' -AjaxSessionKey $RequestHeaders.AjaxSessionKey -PortalRouteKey $RequestHeaders.PortalRouteKey
+    $AdditionalHeaders = Get-O365PortalContextHeaders -Context CopilotSettings -PortalHost 'https://admin.cloud.microsoft' -AjaxSessionKey $RequestHeaders.AjaxSessionKey -PortalRouteKey $RequestHeaders.PortalRouteKey
     $HasPortalSessionContext = $false
     if ($RequestHeaders) {
         if ($RequestHeaders.Contains('AjaxSessionKey') -and -not [string]::IsNullOrWhiteSpace($RequestHeaders['AjaxSessionKey'])) {
@@ -64,6 +64,20 @@ function Get-O365CopilotSettings {
     $PolicyFilter = [uri]::EscapeDataString("Identity eq 'Default DLP policy - Protect sensitive M365 Copilot interactions'")
     $StartTime = [uri]::EscapeDataString($WindowStart.ToString('o'))
     $EndTime = [uri]::EscapeDataString($WindowEnd.ToString('o'))
+
+    function Get-CopilotSPOHeaders {
+        [cmdletbinding()]
+        param()
+
+        $SPOHeaders = [ordered] @{}
+        foreach ($Key in $AdditionalHeaders.Keys) {
+            $SPOHeaders[$Key] = $AdditionalHeaders[$Key]
+        }
+        $SPOHeaders['Accept'] = 'application/json'
+        $SPOHeaders['odata-version'] = '4.0'
+        $SPOHeaders['x-ms-mac-target-app'] = 'SPO'
+        $SPOHeaders
+    }
 
     function Get-CopilotSettingsLeaf {
         [cmdletbinding()]
@@ -210,7 +224,7 @@ function Get-O365CopilotSettings {
             return
         }
         'CopilotChatBillingPolicy' {
-            Get-CopilotSettingsLeaf -Uri 'https://admin.cloud.microsoft/_api/v2.1/billingPolicies?feature=M365CopilotChat'
+            Get-CopilotSettingsLeaf -Uri 'https://admin.cloud.microsoft/_api/v2.1/billingPolicies?feature=M365CopilotChat' -AdditionalLeafHeaders (Get-CopilotSPOHeaders)
             return
         }
         'AuditEnabled' {

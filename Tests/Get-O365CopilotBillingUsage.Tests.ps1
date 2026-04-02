@@ -13,6 +13,33 @@ Describe 'Get-O365CopilotBillingUsage' {
         } -Exactly 1
     }
 
+    It 'requests the live CopilotBilling portal context' {
+        Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { [ordered] @{ Tenant = 'tenant-1234' } }
+        Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.cloud.microsoft/' } }
+        Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { }
+
+        Get-O365CopilotBillingUsage -Name BillingPolicyBudgets
+
+        Assert-MockCalled Get-O365PortalContextHeaders -ModuleName O365Essentials -ParameterFilter {
+            $Context -eq 'CopilotBilling'
+        } -Exactly 1
+    }
+
+    It 'uses SPO-flavored headers for billing policy routes' {
+        Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { [ordered] @{ Tenant = 'tenant-1234' } }
+        Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.cloud.microsoft/'; 'x-ms-mac-target-app' = 'MAC' } }
+        Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { }
+
+        Get-O365CopilotBillingUsage -Name BillingPolicyBudgets
+
+        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+            $Uri -eq 'https://admin.cloud.microsoft/_api/v2.1/billingPolicies?budgets=true' -and
+            $AdditionalHeaders['x-ms-mac-target-app'] -eq 'SPO' -and
+            $AdditionalHeaders['odata-version'] -eq '4.0' -and
+            $AdditionalHeaders['Accept'] -eq 'application/json'
+        } -Exactly 1
+    }
+
     It 'builds the billing policies bundle' {
         Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { [ordered] @{ Tenant = 'tenant-1234' } }
         Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.cloud.microsoft/' } }

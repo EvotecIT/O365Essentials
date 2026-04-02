@@ -26,7 +26,7 @@ function Get-O365PortalContextHeaders {
     #>
     [cmdletbinding()]
     param(
-        [Parameter(Mandatory)][ValidateSet('Agents', 'Backup', 'BrandCenter', 'Copilot', 'CopilotConnectors', 'DataLocation', 'Homepage', 'IntegratedApps', 'MicrosoftEdge', 'MicrosoftSearch', 'PayAsYouGo', 'People', 'Viva')][string] $Context,
+        [Parameter(Mandatory)][ValidateSet('Agents', 'Backup', 'BrandCenter', 'Copilot', 'CopilotBilling', 'CopilotConnectors', 'CopilotSettings', 'DataLocation', 'Homepage', 'IntegratedApps', 'MicrosoftEdge', 'MicrosoftSearch', 'PayAsYouGo', 'People', 'Viva')][string] $Context,
         [string] $AjaxSessionKey,
         [string] $PortalRouteKey,
         [string] $PortalHost = 'https://admin.microsoft.com'
@@ -81,6 +81,16 @@ function Get-O365PortalContextHeaders {
             $MacAppId = 'e103e082-0998-4474-af03-186c96afc209'
             $Headers['Referer'] = "$PortalHost/"
             $Headers['x-adminapp-request'] = '/copilot/connectors'
+        }
+        'CopilotSettings' {
+            $MacAppId = 'e103e082-0998-4474-af03-186c96afc209'
+            $Headers['Referer'] = "$PortalHost/"
+            $Headers['x-adminapp-request'] = '/copilot/settings/Optimize'
+        }
+        'CopilotBilling' {
+            $MacAppId = 'e103e082-0998-4474-af03-186c96afc209'
+            $Headers['Referer'] = "$PortalHost/"
+            $Headers['x-adminapp-request'] = '/copilot/billing'
         }
         'IntegratedApps' {
             $Headers['Referer'] = "$PortalHost/"

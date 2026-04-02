@@ -16,6 +16,31 @@ Describe 'Get-O365CopilotSettings' {
         } -Exactly 1
     }
 
+    It 'requests the live CopilotSettings portal context' {
+        Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.cloud.microsoft/' } }
+        Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { }
+
+        Get-O365CopilotSettings -Name Recommendations
+
+        Assert-MockCalled Get-O365PortalContextHeaders -ModuleName O365Essentials -ParameterFilter {
+            $Context -eq 'CopilotSettings'
+        } -Exactly 1
+    }
+
+    It 'uses SPO-flavored headers for the billing policy route' {
+        Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.cloud.microsoft/'; 'x-ms-mac-target-app' = 'MAC' } }
+        Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { }
+
+        Get-O365CopilotSettings -Name CopilotChatBillingPolicy
+
+        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+            $Uri -eq 'https://admin.cloud.microsoft/_api/v2.1/billingPolicies?feature=M365CopilotChat' -and
+            $AdditionalHeaders['x-ms-mac-target-app'] -eq 'SPO' -and
+            $AdditionalHeaders['odata-version'] -eq '4.0' -and
+            $AdditionalHeaders['Accept'] -eq 'application/json'
+        } -Exactly 1
+    }
+
     It 'builds the Optimize bundle' {
         Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.cloud.microsoft/' } }
         Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { [pscustomobject] @{ Uri = $Uri } }
