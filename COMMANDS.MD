@@ -24,6 +24,12 @@
 | Get-O365AzureExternalIdentitiesPolicies         |                                              |                                                             |
 | Get-O365AzureFeatureConfiguration               |                                              |                                                             |
 | Get-O365AzureFeaturePortal                      |                                              |                                                             |
+| Get-O365InternalApiFinding                      |                                              | Flattens internal API health checks into actionable findings |
+| Get-O365InternalApiHealth                       |                                              | Validates newer internal admin APIs and summarizes availability |
+| Get-O365InternalApiValidationReport             |                                              | Builds a consolidated internal API validation report with priorities |
+| Get-O365AgentSettings                           |                                              | Microsoft 365 admin Agents settings and templates           |
+| Get-O365AgentTools                              |                                              | Microsoft 365 admin Agents tools / MCP server inventory     |
+| Get-O365AgentOverview                           |                                              | Microsoft 365 admin Agents overview and risk metrics        |
 | Get-O365AzureGroupExpiration                    | Set-O365AzureGroupExpiration                 |                                                             |
 | Get-O365AzureGroupGeneral                       |                                              |                                                             |
 | Get-O365AzureGroupM365                          | Set-O365AzureGroupM365                       |                                                             |
@@ -46,6 +52,11 @@
 | Get-O365BillingProfile                          |                                              | Doesn't work, wrong URL, no data to test                    |
 | Get-O365BillingSubscriptions                    |                                              |                                                             |
 | Get-O365ConsiergeAll                            |                                              |                                                             |
+| Get-O365ContentUnderstanding                    |                                              | Content Understanding billing and processing settings       |
+| Get-O365CopilotBillingUsage                     |                                              | Portal-backed Copilot billing policies, accounts, subscriptions, and usage prerequisites |
+| Get-O365CopilotConnectors                       |                                              | Portal-backed Copilot connectors gallery and connection inventory |
+| Get-O365CopilotOverview                         |                                              | Portal-backed Copilot overview, usage, about, and Purview-backed security payloads |
+| Get-O365CopilotSettings                         |                                              | Portal-backed Copilot settings, deployment, and Purview-backed security recommendations |
 | Get-O365DirectorySync                           |                                              |                                                             |
 | Get-O365DirectorySyncErrors                     |                                              |                                                             |
 | Get-O365DirectorySyncManagement                 |                                              |                                                             |
@@ -61,6 +72,7 @@
 | Get-O365OrgAzureSpeechServices                  | Set-O365OrgAzureSpeechServices               |                                                             |
 | Get-O365OrgBingDataCollection                   | Set-O365OrgBingDataCollection                |                                                             |
 | Get-O365OrgBookings                             | Set-O365OrgBookings                          |                                                             |
+| Get-O365OrgBrandCenter                          |                                              | Brand Center configuration and site URL                     |
 | Get-O365OrgBriefingEmail                        | Set-O365OrgBriefingEmail                     |                                                             |
 | Get-O365OrgCalendarSharing                      | Set-O365OrgCalendarSharing                   |                                                             |
 | Get-O365OrgCommunicationToUsers                 | Set-O365OrgCommunicationToUsers              |                                                             |
@@ -75,9 +87,12 @@
 | Get-O365OrgGraphDataConnect                     | Set-O365OrgGraphDataConnect                  |                                                             |
 | Get-O365OrgHelpdeskInformation                  | Set-O365OrgHelpdeskInformation               |                                                             |
 | Get-O365OrgInstallationOptions                  | Set-O365OrgInstallationOptions               |                                                             |
+| Get-O365OrgIntegratedApps                       |                                              | Internal integrated apps catalog and recommendations        |
 | Get-O365OrgM365Groups                           | Set-O365OrgM365Groups                        |                                                             |
+| Get-O365OrgMicrosoftEdge                        |                                              | Internal Microsoft Edge policy, extension, device, and site list payloads |
 | Get-O365OrgMicrosoftTeams                       | Set-O365OrgMicrosoftTeams                    | Set command not working - 100-500 nested properties         |
-| Get-O365OrgMicrosoftEdgeSiteLists               |                                              |                                                             |
+| Get-O365OrgPeopleSettings                       |                                              | Internal People settings such as pronouns and profile cards |
+| Get-O365OrgMicrosoftEdgeSiteLists               |                                              | Internal Microsoft Edge site list and notification payloads |
 | Get-O365OrgModernAuthentication                 | Set-O365OrgModernAuthentication              |                                                             |
 | Get-O365OrgMyAnalytics                          | Set-O365OrgMyAnalytics                       |                                                             |
 | Get-O365OrgNews                                 | Set-O365OrgNews                              |                                                             |
@@ -85,6 +100,7 @@
 | Get-O365OrgOfficeProductivity                   | Set-O365OrgOfficeProductivity                |                                                             |
 | Get-O365OrgOrganizationInformation              | Set-O365OrgOrganizationInformation           |                                                             |
 | Get-O365OrgPasswordExpirationPolicy             | Set-O365OrgPasswordExpirationPolicy          |                                                             |
+| Get-O365OrgBackup                               |                                              | Microsoft 365 Backup subscriptions, feature state, and enhanced restore status |
 | Get-O365OrgPlanner                              | Set-O365OrgPlanner                           |                                                             |
 | Get-O365OrgPrivacyProfile                       | Set-O365OrgPrivacyProfile                    |                                                             |
 | Get-O365OrgPrivilegedAccess                     | Set-O365OrgPrivilegedAccess                  | Requires more testing on SET cmd                            |
@@ -100,15 +116,22 @@
 | Get-O365OrgUserOwnedApps                        | Set-O365OrgUserOwnedApps                     |                                                             |
 | Get-O365OrgWhiteboard                           | Set-O365OrgWhiteboard                        |                                                             |
 | Get-O365OrgVivaLearning                         | Set-O365OrgVivaLearning                      |                                                             |
+| Get-O365OrgVivaSettings                         |                                              | Internal Viva modules, roles, Glint client, and account SKU payloads |
 | Get-O365PartnerRelationship                     |                                              |                                                             |
+| Get-O365PayAsYouGoService                       |                                              | Consolidated pay-as-you-go backup and Content Understanding surfaces |
 | Get-O365PasswordReset                           | Set-O365PasswordReset                        |                                                             |
+| Get-O365UnavailableResult                       |                                              | Finds structured unavailable placeholders inside nested results |
+| Get-O365UnavailableSummary                      |                                              | Summarizes unavailable placeholders found inside nested results |
+| Test-O365UnavailableResult                      |                                              | Tests whether a result is a structured unavailable placeholder |
 | Get-O365PasswordResetIntegration                | Set-O365PasswordResetIntegration             |                                                             |
 | Get-O365SearchIntelligenceBingConfigurations    | Set-O365SearchIntelligenceBingConfigurations |                                                             |
 | Get-O365SearchIntelligenceBingExtension         | Set-O365SearchIntelligenceBingExtension      |                                                             |
+| Get-O365SearchIntelligenceAdvanced              |                                              | Portal-backed advanced searchadminapi payloads and QnAs    |
 | Get-O365SearchIntelligenceItemInsights          | Set-O365SearchIntelligenceItemInsights       |                                                             |
 | Get-O365SearchIntelligenceMeetingInsights       | Set-O365SearchIntelligenceMeetingInsights    |                                                             |
 | Get-O365ServicePrincipal                        |                                              |                                                             |
 | Get-O365TenantID                                |                                              |                                                             |
+| Get-O365TenantRelationship                      |                                              | Multi-tenant org and user sync relationship endpoints       |
 | Get-O365User                                    |                                              |                                                             |
 | Get-O365AzureElevatedRoleAssignments             | Set-O365AzureElevatedAccess | Inspect elevated role assignments for a user |
 | Get-O365AzureElevatedDenyAssignments             | Remove-O365AzureElevatedAccess | Check deny assignments after elevation |

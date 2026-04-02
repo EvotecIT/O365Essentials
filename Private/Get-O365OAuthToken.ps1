@@ -107,11 +107,11 @@ function Get-O365OAuthToken {
     if ($Device) {
         $deviceEndpoint = "https://login.microsoftonline.com/$Tenant/oauth2/v2.0/devicecode"
         $deviceBody = @{ client_id = $ClientId; scope = $Scope }
-        $device = Invoke-RestMethod -Method Post -Uri $deviceEndpoint -Body $deviceBody -ContentType 'application/x-www-form-urlencoded'
-        Write-Host $device.message
-        $pollBody = @{ grant_type = 'urn:ietf:params:oauth:grant-type:device_code'; client_id = $ClientId; device_code = $device.device_code }
+        $deviceInfo = Invoke-RestMethod -Method Post -Uri $deviceEndpoint -Body $deviceBody -ContentType 'application/x-www-form-urlencoded'
+        Write-Host $deviceInfo.message
+        $pollBody = @{ grant_type = 'urn:ietf:params:oauth:grant-type:device_code'; client_id = $ClientId; device_code = $deviceInfo.device_code }
         do {
-            Start-Sleep -Seconds $device.interval
+            Start-Sleep -Seconds $deviceInfo.interval
             try {
                 $result = Invoke-RestMethod -Method Post -Uri $tokenEndpoint -Body $pollBody -ContentType 'application/x-www-form-urlencoded'
             } catch {
