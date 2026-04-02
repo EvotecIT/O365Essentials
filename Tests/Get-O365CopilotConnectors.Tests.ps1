@@ -1,0 +1,63 @@
+Import-Module "$PSScriptRoot/../O365Essentials.psd1" -Force
+
+Describe 'Get-O365CopilotConnectors' {
+    It 'uses the summary endpoint' {
+        Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.cloud.microsoft/?' } }
+        Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { }
+        Get-O365CopilotConnectors -Name Summary
+        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+            $Uri -eq 'https://admin.cloud.microsoft/admin/api/searchadminapi/UDTConnectorsSummary'
+        } -Exactly 1
+    }
+
+    It 'builds the YourConnections bundle' {
+        Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.cloud.microsoft/?' } }
+        Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { [pscustomobject] @{ Uri = $Uri } }
+        $Result = Get-O365CopilotConnectors -Name YourConnections
+        $Result.Summary.Uri | Should -Be 'https://admin.cloud.microsoft/admin/api/searchadminapi/UDTConnectorsSummary'
+        $Result.Connections.Uri | Should -Be 'https://admin.cloud.microsoft/fd/mssearchconnectors/v1.0/admin/connections?useRpcOverRest=true'
+    }
+
+    It 'uses the live admin.cloud.microsoft connector routes' {
+        Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.cloud.microsoft/?' } }
+        Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { }
+
+        Get-O365CopilotConnectors -Name Statistics
+        Get-O365CopilotConnectors -Name Connections
+        Get-O365CopilotConnectors -Name AdminUxOptions
+
+        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+            $Uri -eq 'https://admin.cloud.microsoft/fd/mssearchconnectors/v1.0/admin/connections/getStatistics'
+        } -Exactly 1
+        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+            $Uri -eq 'https://admin.cloud.microsoft/fd/mssearchconnectors/v1.0/admin/connections?useRpcOverRest=true'
+        } -Exactly 1
+        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+            $Uri -eq 'https://admin.cloud.microsoft/fd/mssearchconnectors/v1.0/admin/AdminUxOptions'
+        } -Exactly 1
+    }
+
+    It 'returns a placeholder when summary data is unavailable' {
+        Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.cloud.microsoft/?' } }
+        Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { $null }
+
+        $Result = Get-O365CopilotConnectors -Name Summary
+
+        $Result.Name | Should -Be 'Summary'
+        $Result.DataBacked | Should -BeFalse
+    }
+
+    It 'prefers portal session replay for admin.cloud.microsoft summary routes when portal metadata is available' {
+        Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.cloud.microsoft/'; AjaxSessionKey = 'ajax-key'; 'x-portal-routekey' = 'weu' } }
+        Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { }
+
+        Get-O365CopilotConnectors -Headers @{ AjaxSessionKey = 'ajax-key'; PortalRouteKey = 'weu'; PortalWebSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new() } -Name Summary
+
+        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+            $Uri -eq 'https://admin.cloud.microsoft/admin/api/searchadminapi/UDTConnectorsSummary' -and
+            $UsePortalSession -and
+            $AdditionalHeaders.AjaxSessionKey -eq 'ajax-key' -and
+            $AdditionalHeaders['x-portal-routekey'] -eq 'weu'
+        } -Exactly 1
+    }
+}

@@ -30,15 +30,28 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [validateset('GET', 'DELETE', 'POST', 'PATCH', 'PUT')][string] $Method = 'GET',
         [string] $ContentType = "application/json; charset=UTF-8",
-        [System.Collections.IDictionary] $Body,
-        [System.Collections.IDictionary] $QueryParameter
+        [object] $Body,
+        [System.Collections.IDictionary] $QueryParameter,
+        [System.Collections.IDictionary] $AdditionalHeaders,
+        [switch] $UsePortalSession,
+        [switch] $QuietOnError
     )
+
     if (-not $Headers -and $Script:AuthorizationO365Cache) {
+        $Headers = $Script:AuthorizationO365Cache
+    }
+
+    $PortalSessionRequest = $false
+    if ($UsePortalSession -and $Uri -like '*admin.cloud.microsoft*' -and $Headers -and $Headers.Contains('PortalWebSession') -and $Headers.PortalWebSession) {
+        $PortalSessionRequest = $true
+    }
+
+    if (-not $PortalSessionRequest -and -not $Headers -and $Script:AuthorizationO365Cache) {
         # This forces a reconnect of session in case it's about to time out. If it's not timeouting a cache value is used
         $Headers = Connect-O365Admin -Headers $Headers
-    } elseif ($Headers) {
+    } elseif (-not $PortalSessionRequest -and $Headers) {
         $Headers = Connect-O365Admin -Headers $Headers
-    } else {
+    } elseif (-not $Headers) {
         Write-Warning "Invoke-O365Admin - Not connected. Please connect using Connect-O365Admin."
         return
     }
@@ -50,17 +63,35 @@
         Method      = $Method
         ContentType = $ContentType
     }
-    if ($Uri -like '*admin.microsoft.com*') {
+    if ($PortalSessionRequest) {
+        $RestSplat['Headers'] = if ($Headers.Contains('HeadersPortal') -and $Headers.HeadersPortal) { $Headers.HeadersPortal } else { @{} }
+        $RestSplat['WebSession'] = $Headers.PortalWebSession
+    } elseif ($Uri -like '*admin.microsoft.com*' -or $Uri -like '*admin.cloud.microsoft*') {
         $RestSplat['Headers'] = $Headers.HeadersO365
     } elseif ($Uri -like '*graph.microsoft.com*') {
         $RestSplat['Headers'] = $Headers.HeadersGraph
     } elseif ($Uri -like '*management.azure.com*') {
         $RestSplat['Headers'] = if ($Headers.HeadersARM) { $Headers.HeadersARM } else { $Headers.HeadersAzure }
+    } elseif ($Uri -like '*teams.microsoft.com*') {
+        $RestSplat['Headers'] = if ($Headers.HeadersTeams) { $Headers.HeadersTeams } else { $Headers.HeadersO365 }
+    } elseif ($Uri -like '*substrate.office.com*') {
+        $RestSplat['Headers'] = if ($Headers.HeadersSubstrate) { $Headers.HeadersSubstrate } else { $Headers.HeadersO365 }
     } else {
         $RestSplat['Headers'] = if ($Headers.HeadersAzure) { $Headers.HeadersAzure } else { $Headers.HeadersARM }
     }
 
-    if ($PSVersionTable.PSVersion.Major -eq 5) {
+    if ($AdditionalHeaders) {
+        $MergedHeaders = [ordered] @{}
+        foreach ($Key in $RestSplat['Headers'].Keys) {
+            $MergedHeaders[$Key] = $RestSplat['Headers'][$Key]
+        }
+        foreach ($Key in $AdditionalHeaders.Keys) {
+            $MergedHeaders[$Key] = $AdditionalHeaders[$Key]
+        }
+        $RestSplat['Headers'] = $MergedHeaders
+    }
+
+    if ($PSVersionTable.PSVersion.Major -eq 5 -and -not $RestSplat.ContainsKey('WebSession')) {
         $CookieContainer = [System.Net.CookieContainer]::new()
         $CookieContainer.MaxCookieSize = 1048576
 
@@ -104,9 +135,13 @@
                 if ($OutputQuery -is [bool]) {
                     $OutputQuery
                 } elseif ($OutputQuery -is [array]) {
-                    $Properties = $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length' -WarningAction SilentlyContinue -WarningVariable varWarning
-                    if (-not $varWarning) {
-                        $OutputQuery | Select-Object -Property $Properties
+                    if ($OutputQuery.Count -eq 0) {
+                        Write-Output -NoEnumerate $OutputQuery
+                    } else {
+                        $Properties = $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length' -WarningAction SilentlyContinue -WarningVariable varWarning
+                        if (-not $varWarning) {
+                            $OutputQuery | Select-Object -Property $Properties
+                        }
                     }
                 } elseif ($OutputQuery -is [string]) {
                     if ($OutputQuery) {
@@ -117,9 +152,13 @@
                     }
                 } elseif ($OutputQuery -is [PSCustomObject]) {
                     if ($OutputQuery.PSObject.Properties.Name -contains 'value') {
-                        $Properties = $OutputQuery.value | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length' -WarningAction SilentlyContinue -WarningVariable varWarning
-                        if (-not $varWarning) {
-                            $OutputQuery.value | Select-Object -Property $Properties
+                        if ($OutputQuery.value -is [array] -and $OutputQuery.value.Count -eq 0) {
+                            Write-Output -NoEnumerate $OutputQuery.value
+                        } else {
+                            $Properties = $OutputQuery.value | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length' -WarningAction SilentlyContinue -WarningVariable varWarning
+                            if (-not $varWarning) {
+                                $OutputQuery.value | Select-Object -Property $Properties
+                            }
                         }
                     } else {
                         $Properties = $OutputQuery | Select-Properties -ExcludeProperty '@odata.context', '@odata.id', '@odata.type', 'Length' -WarningAction SilentlyContinue -WarningVariable varWarning
@@ -165,6 +204,12 @@
             }
         }
     } catch {
+        if ($QuietOnError) {
+            if ($Method -notin 'GET', 'POST') {
+                return $false
+            }
+            return
+        }
         if ($PSBoundParameters.ErrorAction -eq 'Stop') {
             Write-Error $_
             return
