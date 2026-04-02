@@ -53,10 +53,10 @@
 | Get-O365BillingSubscriptions                    |                                              |                                                             |
 | Get-O365ConsiergeAll                            |                                              |                                                             |
 | Get-O365ContentUnderstanding                    |                                              | Content Understanding billing and processing settings       |
-| Get-O365CopilotBillingUsage                     |                                              | Copilot billing policies, accounts, subscriptions, and usage prerequisites |
-| Get-O365CopilotConnectors                       |                                              | Copilot connectors gallery and connection inventory         |
-| Get-O365CopilotOverview                         |                                              | Copilot overview, usage, about, and Purview-backed security payloads |
-| Get-O365CopilotSettings                         |                                              | Copilot settings, deployment, and Purview-backed security recommendations |
+| Get-O365CopilotBillingUsage                     |                                              | Portal-backed Copilot billing policies, accounts, subscriptions, and usage prerequisites |
+| Get-O365CopilotConnectors                       |                                              | Portal-backed Copilot connectors gallery and connection inventory |
+| Get-O365CopilotOverview                         |                                              | Portal-backed Copilot overview, usage, about, and Purview-backed security payloads |
+| Get-O365CopilotSettings                         |                                              | Portal-backed Copilot settings, deployment, and Purview-backed security recommendations |
 | Get-O365DirectorySync                           |                                              |                                                             |
 | Get-O365DirectorySyncErrors                     |                                              |                                                             |
 | Get-O365DirectorySyncManagement                 |                                              |                                                             |
@@ -92,7 +92,7 @@
 | Get-O365OrgMicrosoftEdge                        |                                              | Internal Microsoft Edge policy, extension, device, and site list payloads |
 | Get-O365OrgMicrosoftTeams                       | Set-O365OrgMicrosoftTeams                    | Set command not working - 100-500 nested properties         |
 | Get-O365OrgPeopleSettings                       |                                              | Internal People settings such as pronouns and profile cards |
-| Get-O365OrgMicrosoftEdgeSiteLists               |                                              |                                                             |
+| Get-O365OrgMicrosoftEdgeSiteLists               |                                              | Internal Microsoft Edge site list and notification payloads |
 | Get-O365OrgModernAuthentication                 | Set-O365OrgModernAuthentication              |                                                             |
 | Get-O365OrgMyAnalytics                          | Set-O365OrgMyAnalytics                       |                                                             |
 | Get-O365OrgNews                                 | Set-O365OrgNews                              |                                                             |
@@ -126,7 +126,7 @@
 | Get-O365PasswordResetIntegration                | Set-O365PasswordResetIntegration             |                                                             |
 | Get-O365SearchIntelligenceBingConfigurations    | Set-O365SearchIntelligenceBingConfigurations |                                                             |
 | Get-O365SearchIntelligenceBingExtension         | Set-O365SearchIntelligenceBingExtension      |                                                             |
-| Get-O365SearchIntelligenceAdvanced              |                                              | Advanced searchadminapi payloads and QnAs                  |
+| Get-O365SearchIntelligenceAdvanced              |                                              | Portal-backed advanced searchadminapi payloads and QnAs    |
 | Get-O365SearchIntelligenceItemInsights          | Set-O365SearchIntelligenceItemInsights       |                                                             |
 | Get-O365SearchIntelligenceMeetingInsights       | Set-O365SearchIntelligenceMeetingInsights    |                                                             |
 | Get-O365ServicePrincipal                        |                                              |                                                             |

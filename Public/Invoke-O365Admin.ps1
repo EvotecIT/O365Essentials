@@ -5,6 +5,10 @@
 
     .DESCRIPTION
     This function is responsible for sending requests to the Office 365 API for administrative tasks.
+    It selects the correct cached token headers for each backend, supports cookie-backed
+    admin.cloud.microsoft portal replay, and performs a one-time hidden reconnect when a
+    portal-sensitive route responds with HTTP 440 and portal attachment state can be
+    folded into Connect-O365Admin.
 
     .PARAMETER Uri
     The URI endpoint for the API request.
@@ -23,6 +27,14 @@
 
     .PARAMETER QueryParameter
     The query parameters for the request.
+
+    .PARAMETER UsePortalSession
+    Forces the request through the cached admin.cloud.microsoft portal WebSession
+    attached to the current authorization state.
+
+    .PARAMETER QuietOnError
+    Suppresses warning noise for expected tenant-specific or portal-sensitive failures so
+    callers can convert them into structured unavailable results.
     #>
     [cmdletBinding(SupportsShouldProcess)]
     param(
@@ -34,7 +46,8 @@
         [System.Collections.IDictionary] $QueryParameter,
         [System.Collections.IDictionary] $AdditionalHeaders,
         [switch] $UsePortalSession,
-        [switch] $QuietOnError
+        [switch] $QuietOnError,
+        [Parameter(DontShow)][switch] $SkipPortalAttachRetry
     )
 
     if (-not $Headers -and $Script:AuthorizationO365Cache) {
@@ -204,6 +217,40 @@
             }
         }
     } catch {
+        $CanRetryWithPortalAttach = -not $SkipPortalAttachRetry -and
+            -not $PortalSessionRequest -and
+            $Uri -like '*admin.cloud.microsoft*' -and
+            $Headers -and
+            $_.Exception.Message -match '\b440\b'
+
+        if ($CanRetryWithPortalAttach) {
+            # Some admin.cloud.microsoft routes succeed only after a hidden host-provided
+            # portal attachment has been folded into the current Connect-O365Admin state.
+            $RetriedHeaders = Connect-O365Admin -Headers $Headers
+            $HasPortalRetryState = $RetriedHeaders -and
+                $RetriedHeaders.Contains('PortalWebSession') -and
+                $null -ne $RetriedHeaders.PortalWebSession
+
+            if ($HasPortalRetryState) {
+                $RetrySplat = @{
+                    Uri                  = $Uri
+                    Headers              = $RetriedHeaders
+                    Method               = $Method
+                    ContentType          = $ContentType
+                    QueryParameter       = $QueryParameter
+                    AdditionalHeaders    = $AdditionalHeaders
+                    UsePortalSession     = $true
+                    QuietOnError         = $QuietOnError
+                    SkipPortalAttachRetry = $true
+                }
+                if ($PSBoundParameters.ContainsKey('Body')) {
+                    $RetrySplat['Body'] = $Body
+                }
+
+                return Invoke-O365Admin @RetrySplat
+            }
+        }
+
         if ($QuietOnError) {
             if ($Method -notin 'GET', 'POST') {
                 return $false

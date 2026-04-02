@@ -1,4 +1,22 @@
 function Connect-O365Admin {
+    <#
+    .SYNOPSIS
+    Connects to Microsoft 365 admin workloads used by O365Essentials.
+
+    .DESCRIPTION
+    Creates or refreshes the shared O365Essentials authorization cache used by the
+    module's Graph, ARM, Teams, Substrate, and admin center readers.
+
+    For normal users this remains the only public connection command. Host apps can
+    transparently attach an existing admin.cloud.microsoft portal session by supplying
+    hidden portal artifacts through the hidden PortalAttach* parameters or the
+    process-scoped O365ESSENTIALS_PORTAL_* environment variables consumed by
+    Get-O365PortalAttachmentContext.
+
+    When portal attachment state is present, Connect-O365Admin folds that browser-backed
+    session into the cached authorization object so portal-sensitive routes can later
+    replay through Invoke-O365Admin without changing the user-facing workflow.
+    #>
     [cmdletbinding(DefaultParameterSetName = 'Credential')]
     param(
         [parameter(ParameterSetName = 'Credential')][PSCredential] $Credential,
@@ -15,6 +33,8 @@ function Connect-O365Admin {
         [alias('TenantID')][string] $Tenant,
         [string] $DomainName,
         [string] $Subscription,
+        # Hidden portal attachment inputs are intended for host/app integrations only.
+        # End users should still call Connect-O365Admin the same way as before.
         [Parameter(DontShow)][Microsoft.PowerShell.Commands.WebRequestSession] $PortalAttachWebSession,
         [Parameter(DontShow)][string] $PortalAttachRootAuthToken,
         [Parameter(DontShow)][string] $PortalAttachSPAAuthCookie,

@@ -7,6 +7,11 @@ function Get-O365CopilotConnectors {
     Reads internal Copilot Connectors payloads used by the connector gallery and
     your-connections experience in the Microsoft 365 admin center.
 
+    The cmdlet is token-first, but when the current connection carries hidden
+    admin.cloud.microsoft portal state it automatically replays portal-sensitive routes
+    through that session. If a usable payload still is not available, the cmdlet returns
+    a structured unavailable result instead of raw 440 warning noise.
+
     .PARAMETER Headers
     Optional authorization cache returned by Connect-O365Admin.
 
@@ -50,7 +55,28 @@ function Get-O365CopilotConnectors {
         if ($HasPortalSessionContext -and $Uri -like 'https://admin.cloud.microsoft/*') {
             $Splat['UsePortalSession'] = $true
         }
+        $Splat['QuietOnError'] = $true
         Invoke-O365Admin @Splat
+    }
+
+    function New-CopilotConnectorUnavailableResult {
+        [cmdletbinding()]
+        param(
+            [Parameter(Mandatory)][string] $ResultName,
+            [string] $ErrorMessage
+        )
+
+        $Reason = 'TenantSpecific'
+        $Description = 'The Copilot connectors section did not return a usable payload.'
+        $SuggestedAction = 'Verify the tenant has Copilot connectors features enabled, the signed-in account has the required admin role, and the route is available in the current portal experience.'
+
+        if (-not $HasPortalSessionContext -or $ErrorMessage -match '\b440\b') {
+            $Reason = 'PortalSessionRequired'
+            $Description = 'The Copilot connectors section appears to require an authenticated admin.cloud.microsoft portal session with AjaxSessionKey or portal cookies in addition to bearer-token auth.'
+            $SuggestedAction = 'Replay the request through a validated admin.cloud.microsoft portal session or supply portal session state before retrying this Copilot surface.'
+        }
+
+        New-O365UnavailableResult -Name $ResultName -Area 'Copilot connectors section' -Description $Description -Reason $Reason -ErrorMessage $ErrorMessage -SuggestedAction $SuggestedAction
     }
 
     function Get-CopilotConnectorSafeResult {
@@ -63,12 +89,12 @@ function Get-O365CopilotConnectors {
         try {
             $Result = & $ScriptBlock
             if ($null -eq $Result) {
-                New-O365UnavailableResult -Name $ResultName -Area 'Copilot connectors section' -Description 'The Copilot connectors section did not return a usable payload.'
+                New-CopilotConnectorUnavailableResult -ResultName $ResultName
             } else {
                 $Result
             }
         } catch {
-            New-O365UnavailableResult -Name $ResultName -Area 'Copilot connectors section' -Description 'The Copilot connectors section did not return a usable payload.' -ErrorMessage $_.Exception.Message
+            New-CopilotConnectorUnavailableResult -ResultName $ResultName -ErrorMessage $_.Exception.Message
         }
     }
 
@@ -89,15 +115,15 @@ function Get-O365CopilotConnectors {
             return
         }
         'Connections' {
-            Get-CopilotConnectorSafeResult -ResultName 'Connections' -ScriptBlock { Get-CopilotConnectorLeaf -Uri 'https://admin.cloud.microsoft/fd/mssearchconnectors/v1.0/admin/connections?useRpcOverRest=true' }
+            Get-CopilotConnectorSafeResult -ResultName 'Connections' -ScriptBlock { Get-CopilotConnectorLeaf -Uri 'https://admin.cloud.microsoft/fd/mssearchconnectors/v1.0/admin/connections/v2?filterActive=false&useCachedRead=true&includeFederatedConnections=true' }
             return
         }
         'AdminUxOptions' {
-            Get-CopilotConnectorSafeResult -ResultName 'AdminUxOptions' -ScriptBlock { Get-CopilotConnectorLeaf -Uri 'https://admin.cloud.microsoft/fd/mssearchconnectors/v1.0/admin/AdminUxOptions' }
+            Get-CopilotConnectorSafeResult -ResultName 'AdminUxOptions' -ScriptBlock { Get-CopilotConnectorLeaf -Uri 'https://admin.cloud.microsoft/fd/mssearchconnectors/v1.0/admin/AdminUxOptionsV2/Connectors?query=Connectors' }
             return
         }
         'GallerySettings' {
-            Get-CopilotConnectorSafeResult -ResultName 'GallerySettings' -ScriptBlock { Get-CopilotConnectorLeaf -Uri "https://admin.microsoft.com/fd/ssms/api/v1.0/'MSS'/Collection('VT')/Settings(Path='',LogicalId='all')" }
+            Get-CopilotConnectorSafeResult -ResultName 'GallerySettings' -ScriptBlock { Get-CopilotConnectorLeaf -Uri "https://admin.cloud.microsoft/fd/ssms/api/v1.0/'MSS'/Collection('VT')/Settings(Path='',LogicalId='all')" }
             return
         }
         'YourConnections' {

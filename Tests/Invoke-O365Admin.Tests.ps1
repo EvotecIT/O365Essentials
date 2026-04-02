@@ -191,5 +191,68 @@ Describe 'Invoke-O365Admin header selection' {
         $result -is [array] | Should -BeTrue
         $result.Count | Should -Be 0
     }
+
+    It 'retries admin.cloud.microsoft requests with portal replay after a 440 when portal state becomes available' {
+        $portalWebSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new()
+        $headers = [ordered]@{
+            HeadersO365   = @{ Authorization = 'Bearer o365' }
+            HeadersGraph  = @{ Authorization = 'Bearer graph' }
+            HeadersAzure  = @{ Authorization = 'Bearer portal' }
+            HeadersARM    = @{ Authorization = 'Bearer arm' }
+        }
+        $portalHeaders = [ordered]@{
+            HeadersO365      = @{ Authorization = 'Bearer o365' }
+            HeadersGraph     = @{ Authorization = 'Bearer graph' }
+            HeadersAzure     = @{ Authorization = 'Bearer portal' }
+            HeadersARM       = @{ Authorization = 'Bearer arm' }
+            HeadersPortal    = @{ Accept = 'application/json'; AjaxSessionKey = 'ajax-key' }
+            PortalWebSession = $portalWebSession
+        }
+
+        Mock -ModuleName O365Essentials Connect-O365Admin -MockWith {
+            param($Headers)
+            if ($Headers -eq $portalHeaders) {
+                return $portalHeaders
+            }
+            $script:connectCallCount = ($script:connectCallCount + 1)
+            if ($script:connectCallCount -eq 1) {
+                return $headers
+            }
+            return $portalHeaders
+        }
+        Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith {
+            if (-not $WebSession) {
+                throw 'Response status code does not indicate success: 440 ().'
+            }
+            [pscustomobject]@{ ok = $true; usedPortal = $true }
+        }
+
+        $result = Invoke-O365Admin -Uri 'https://admin.cloud.microsoft/admin/api/test' -Headers $headers
+
+        $result.ok | Should -BeTrue
+        Assert-MockCalled Connect-O365Admin -ModuleName O365Essentials -Exactly 2
+        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter {
+            $WebSession -eq $portalWebSession -and
+            $Headers.AjaxSessionKey -eq 'ajax-key'
+        } -Exactly 1
+    }
+
+    It 'does not recurse indefinitely when a 440 cannot be upgraded to portal replay' {
+        $headers = [ordered]@{
+            HeadersO365  = @{ Authorization = 'Bearer o365' }
+            HeadersGraph = @{ Authorization = 'Bearer graph' }
+            HeadersAzure = @{ Authorization = 'Bearer portal' }
+            HeadersARM   = @{ Authorization = 'Bearer arm' }
+        }
+        Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { param($Headers) $Headers }
+        Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith { throw 'Response status code does not indicate success: 440 ().' }
+        Mock -ModuleName O365Essentials Write-Warning
+
+        $result = Invoke-O365Admin -Uri 'https://admin.cloud.microsoft/admin/api/test' -Headers $headers -QuietOnError
+
+        $null -eq $result | Should -BeTrue
+        Assert-MockCalled Connect-O365Admin -ModuleName O365Essentials -Exactly 2
+        Assert-MockCalled Write-Warning -ModuleName O365Essentials -Exactly 0
+    }
 }
 

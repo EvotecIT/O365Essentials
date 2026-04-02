@@ -15,7 +15,7 @@ Describe 'Get-O365CopilotConnectors' {
         Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { [pscustomobject] @{ Uri = $Uri } }
         $Result = Get-O365CopilotConnectors -Name YourConnections
         $Result.Summary.Uri | Should -Be 'https://admin.cloud.microsoft/admin/api/searchadminapi/UDTConnectorsSummary'
-        $Result.Connections.Uri | Should -Be 'https://admin.cloud.microsoft/fd/mssearchconnectors/v1.0/admin/connections?useRpcOverRest=true'
+        $Result.Connections.Uri | Should -Be 'https://admin.cloud.microsoft/fd/mssearchconnectors/v1.0/admin/connections/v2?filterActive=false&useCachedRead=true&includeFederatedConnections=true'
     }
 
     It 'uses the live admin.cloud.microsoft connector routes' {
@@ -30,10 +30,10 @@ Describe 'Get-O365CopilotConnectors' {
             $Uri -eq 'https://admin.cloud.microsoft/fd/mssearchconnectors/v1.0/admin/connections/getStatistics'
         } -Exactly 1
         Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
-            $Uri -eq 'https://admin.cloud.microsoft/fd/mssearchconnectors/v1.0/admin/connections?useRpcOverRest=true'
+            $Uri -eq 'https://admin.cloud.microsoft/fd/mssearchconnectors/v1.0/admin/connections/v2?filterActive=false&useCachedRead=true&includeFederatedConnections=true'
         } -Exactly 1
         Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
-            $Uri -eq 'https://admin.cloud.microsoft/fd/mssearchconnectors/v1.0/admin/AdminUxOptions'
+            $Uri -eq 'https://admin.cloud.microsoft/fd/mssearchconnectors/v1.0/admin/AdminUxOptionsV2/Connectors?query=Connectors'
         } -Exactly 1
     }
 
@@ -44,6 +44,7 @@ Describe 'Get-O365CopilotConnectors' {
         $Result = Get-O365CopilotConnectors -Name Summary
 
         $Result.Name | Should -Be 'Summary'
+        $Result.Reason | Should -Be 'PortalSessionRequired'
         $Result.DataBacked | Should -BeFalse
     }
 

@@ -6,6 +6,8 @@ function Get-O365PortalContextHeaders {
     .DESCRIPTION
     Some internal admin center endpoints behave differently depending on portal route context.
     This helper returns a small header set that can be merged into Invoke-O365Admin calls.
+    The values here intentionally mirror the current admin.cloud.microsoft portal shape so
+    token-backed requests and cookie-backed replay stay aligned with the live browser.
 
     .PARAMETER Context
     The admin center experience the request belongs to.

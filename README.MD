@@ -98,6 +98,43 @@ When working with multiple tenants you can target a specific tenant using the `-
 $null = Connect-O365Admin -Tenant 'contoso.onmicrosoft.com' -Verbose
 ```
 
+### Portal-backed routes for host apps
+
+Some newer internal `admin.cloud.microsoft` surfaces, especially parts of Copilot,
+Search, and Agents, may require a live admin portal session in addition to bearer
+tokens. End users should still use only `Connect-O365Admin`; the portal session is a
+host/app integration detail, not a second public connection workflow.
+
+For host applications that already capture browser session state from
+`https://admin.cloud.microsoft`, the hidden portal attachment contract is:
+
+* seed the current PowerShell **process** with either:
+  * `O365ESSENTIALS_PORTAL_CONTEXT_JSON`
+  * `O365ESSENTIALS_PORTAL_COOKIE_HEADER`
+  * `O365ESSENTIALS_PORTAL_COOKIE_LIST_JSON`
+  * or the expanded `O365ESSENTIALS_PORTAL_*` variables
+* then call `Connect-O365Admin` normally
+* `Connect-O365Admin` will consume that state, attach the portal replay session,
+  and clear the seeded values after use by default
+
+Minimum useful cookie seed:
+
+* `RootAuthToken`
+* at least one of `OIDCAuthCookie` or `SPAAuthCookie`
+
+Recommended additional values for better replay fidelity:
+
+* `s.AjaxSessionKey`
+* `s.SessID`
+* `s.UserTenantId`
+* `x-portal-routekey`
+* `s.userid`
+
+If a portal-sensitive route still hits HTTP `440`, `Invoke-O365Admin` now performs a
+one-time hidden retry against the attached portal session before returning a structured
+unavailable result. This keeps the user-facing workflow unchanged while allowing host
+applications to light up the more session-sensitive internal endpoints.
+
 ### Required permissions
 
 The module uses Microsoft Graph, the Azure management API and several
