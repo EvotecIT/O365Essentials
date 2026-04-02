@@ -15,6 +15,9 @@ Describe 'Get-O365OrgPeopleSettings' {
     It 'returns a placeholder when tenant information is missing' {
         $Headers = [ordered] @{}
         Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { param($Headers) $Headers }
+        InModuleScope O365Essentials {
+            $Script:AuthorizationO365Cache = $null
+        }
 
         $Result = Get-O365OrgPeopleSettings -Headers $Headers -Name Pronouns
 

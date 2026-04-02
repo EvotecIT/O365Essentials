@@ -221,7 +221,7 @@ Describe 'Invoke-O365Admin header selection' {
             return $portalHeaders
         }
         Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith {
-            if (-not $WebSession) {
+            if (-not $Headers.AjaxSessionKey) {
                 throw 'Response status code does not indicate success: 440 ().'
             }
             [pscustomobject]@{ ok = $true; usedPortal = $true }
