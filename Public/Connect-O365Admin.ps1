@@ -29,6 +29,7 @@ function Connect-O365Admin {
         [int] $ExpiresTimeout = 30,
         [switch] $ForceRefresh,
         [switch] $Device,
+        [parameter(ParameterSetName = 'Credential')][alias('WAM')][switch] $UseWam,
         # Tenant ID; defaults to 'organizations' and is replaced with the actual tenant after sign-in
         [alias('TenantID')][string] $Tenant,
         [string] $DomainName,
@@ -101,6 +102,7 @@ function Connect-O365Admin {
             $Tenant = $Headers.Tenant
             $Subscription = $Headers.Subscription
             $RefreshToken = $Headers.RefreshToken
+            $UseWam = $Headers.Contains('AuthenticationMode') -and $Headers.AuthenticationMode -eq 'WAM'
             if ($Headers.Contains('PortalWebSession')) { $PortalWebSession = $Headers.PortalWebSession }
             if ($Headers.Contains('AjaxSessionKey')) { $AjaxSessionKey = $Headers.AjaxSessionKey }
             if ($Headers.Contains('PortalRouteKey')) { $PortalRouteKey = $Headers.PortalRouteKey }
@@ -121,6 +123,7 @@ function Connect-O365Admin {
             $Tenant = $Script:AuthorizationO365Cache.Tenant
             $Subscription = $Script:AuthorizationO365Cache.Subscription
             $RefreshToken = $Script:AuthorizationO365Cache.RefreshToken
+            $UseWam = $Script:AuthorizationO365Cache.Contains('AuthenticationMode') -and $Script:AuthorizationO365Cache.AuthenticationMode -eq 'WAM'
             if ($Script:AuthorizationO365Cache.Contains('PortalWebSession')) { $PortalWebSession = $Script:AuthorizationO365Cache.PortalWebSession }
             if ($Script:AuthorizationO365Cache.Contains('AjaxSessionKey')) { $AjaxSessionKey = $Script:AuthorizationO365Cache.AjaxSessionKey }
             if ($Script:AuthorizationO365Cache.Contains('PortalRouteKey')) { $PortalRouteKey = $Script:AuthorizationO365Cache.PortalRouteKey }
@@ -197,9 +200,15 @@ function Connect-O365Admin {
     # Substrate Admin App Catalog (used by Teams admin UI to reflect app availability) — use v1 resource GUID
     $ResourceSubstrate = '08ff1ce2-4973-4b08-86a3-ebed13badc7f'
 
+    if ($UseWam -and $Device) {
+        Write-Warning -Message 'Connect-O365Admin - The -Device switch is ignored with -UseWam. Use -Device without -UseWam for device-code OAuth.'
+    }
+
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Graph"
-        if ($PSCmdlet.ParameterSetName -eq 'App') {
+        if ($UseWam) {
+            $tokenGraph = Get-O365BrokerAccessToken -Tenant $Tenant -ResourceUrl 'https://graph.microsoft.com/' -ForcePrompt:$ForceRefresh
+        } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
             $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } elseif ($RefreshToken -and -not $Credential -and -not $Device) {
             $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -RefreshToken $RefreshToken
@@ -228,12 +237,14 @@ function Connect-O365Admin {
     if (-not $PSBoundParameters.ContainsKey('Tenant') -or $Tenant -eq 'organizations') {
         $Tenant = $tenantInfo.tid
     }
-    $refresh = $tokenGraph.refresh_token
+    $refresh = if ($UseWam) { $null } else { $tokenGraph.refresh_token }
     $tokenO365 = $null
     $tokenAzure = $null
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for admin.microsoft.com"
-        if ($PSCmdlet.ParameterSetName -eq 'App') {
+        if ($UseWam) {
+            $tokenO365 = Get-O365BrokerAccessToken -Tenant $Tenant -ResourceUrl 'https://admin.microsoft.com/'
+        } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
             $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesO365 -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } else {
             $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesO365 -RefreshToken $refresh
@@ -241,7 +252,9 @@ function Connect-O365Admin {
     } catch {
         Write-Verbose -Message "Connect-O365Admin - admin.microsoft.com scope token failed. Falling back to portal resource audience. Error: $($_.Exception.Message)"
         try {
-            if ($PSCmdlet.ParameterSetName -eq 'App') {
+            if ($UseWam) {
+                $tokenO365 = Get-O365BrokerAccessToken -Tenant $Tenant -ResourceUrl $ResourceAzure
+            } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
                 $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
             } else {
                 $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -RefreshToken $refresh
@@ -255,7 +268,9 @@ function Connect-O365Admin {
     }
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Teams (api.spaces.skype.com)"
-        if ($PSCmdlet.ParameterSetName -eq 'App') {
+        if ($UseWam) {
+            $tokenTeams = Get-O365BrokerAccessToken -Tenant $Tenant -ResourceUrl 'https://api.spaces.skype.com/'
+        } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
             $tokenTeams = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesTeams -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } else {
             $tokenTeams = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesTeams -RefreshToken $refresh
@@ -267,7 +282,9 @@ function Connect-O365Admin {
     if (-not $tokenAzure) {
         try {
             Write-Verbose -Message "Connect-O365Admin - Acquiring token for Azure"
-            if ($PSCmdlet.ParameterSetName -eq 'App') {
+            if ($UseWam) {
+                $tokenAzure = Get-O365BrokerAccessToken -Tenant $Tenant -ResourceUrl $ResourceAzure
+            } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
                 $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
             } else {
                 $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -RefreshToken $refresh
@@ -279,7 +296,9 @@ function Connect-O365Admin {
     }
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Azure management"
-        if ($PSCmdlet.ParameterSetName -eq 'App') {
+        if ($UseWam) {
+            $tokenARM = Get-O365BrokerAccessToken -Tenant $Tenant -ResourceUrl 'https://management.azure.com/'
+        } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
             $tokenARM = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesARM -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } else {
             $tokenARM = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesARM -RefreshToken $refresh
@@ -293,7 +312,7 @@ function Connect-O365Admin {
     $tokenSubstrate = $null
     try {
         $cfg = Get-O365EssentialsConfig
-        if ($cfg.Substrate -and $cfg.Substrate.ClientId -and $cfg.Substrate.RefreshToken) {
+        if (-not $UseWam -and $cfg.Substrate -and $cfg.Substrate.ClientId -and $cfg.Substrate.RefreshToken) {
             $rt = Unprotect-O365Secret -Protected $cfg.Substrate.RefreshToken
             Write-Verbose -Message "Connect-O365Admin - Using persisted Substrate client to acquire token"
             $tokenSubstrate = Get-O365OAuthToken -Tenant $Tenant -Scope 'https://substrate.office.com/.default offline_access' -ClientId $cfg.Substrate.ClientId -RefreshToken $rt
@@ -312,7 +331,13 @@ function Connect-O365Admin {
             if ($tokenSubstrate) { break }
             try {
                 Write-Verbose -Message "Connect-O365Admin - Acquiring token for Substrate using $($attempt.type): $($attempt.value)"
-                if ($attempt.type -eq 'resource') {
+                if ($UseWam) {
+                    if ($attempt.type -eq 'scope') {
+                        $tokenSubstrate = Get-O365BrokerAccessToken -Tenant $Tenant -Scope $attempt.value
+                    } else {
+                        $tokenSubstrate = Get-O365BrokerAccessToken -Tenant $Tenant -ResourceUrl $attempt.value
+                    }
+                } elseif ($attempt.type -eq 'resource') {
                     if ($PSCmdlet.ParameterSetName -eq 'App') {
                         $tokenSubstrate = Get-O365OAuthToken -Tenant $Tenant -Resource $attempt.value -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
                     } else {
@@ -337,6 +362,8 @@ function Connect-O365Admin {
 
     if ($PSCmdlet.ParameterSetName -eq 'App') {
         $userName = $ClientId
+    } elseif ($UseWam -and $tokenGraph.account) {
+        $userName = $tokenGraph.account
     } elseif ($Credential) {
         $userName = $Credential.UserName
     } else {
@@ -345,17 +372,24 @@ function Connect-O365Admin {
         $userName = if ($tokenInfo.preferred_username) { $tokenInfo.preferred_username } else { $tokenInfo.upn }
     }
 
+    $ExpiresOnUTC = if ($UseWam -and $tokenGraph.expires_on) {
+        ([datetime] $tokenGraph.expires_on).AddSeconds(-$ExpiresTimeout)
+    } else {
+        ([datetime]::UtcNow).AddSeconds($ExpiresIn - $ExpiresTimeout)
+    }
+
     $Script:AuthorizationO365Cache = [ordered] @{
         'Credential'          = $Credential
         'ClientId'            = $ClientId
         'ClientSecret'        = $ClientSecret
         'Certificate'         = $Certificate
         'CertificatePassword' = $CertificatePassword
+        'AuthenticationMode'   = if ($UseWam) { 'WAM' } else { 'OAuth' }
         'UserName'            = $userName
         'Environment'         = 'AzureCloud'
         'Subscription'        = $Subscription
         'Tenant'              = $Tenant
-        'ExpiresOnUTC'        = ([datetime]::UtcNow).AddSeconds($ExpiresIn - $ExpiresTimeout)
+        'ExpiresOnUTC'        = $ExpiresOnUTC
         'RefreshToken'        = $refresh
         'AccessTokenO365'     = $tokenO365.access_token
         'HeadersO365'         = [ordered] @{

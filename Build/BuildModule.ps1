@@ -33,7 +33,72 @@
     # Keep in mind it has it's limits when "copying" functions such as it should not depend on DLLs or other external files
     New-ConfigurationModule -Type ApprovedModule -Name 'PSSharedGoods', 'PSWriteColor', 'Connectimo', 'PSUnifi', 'PSWebToolbox', 'PSMyPassword'
 
-    New-ConfigurationModuleSkip -IgnoreFunctionName 'Select-Unique' -IgnoreModuleName 'Microsoft.PowerShell.Utility', 'Microsoft.PowerShell.Management'
+    $NestedHelperFunctions = @(
+        'Add-CookieMapToSession',
+        'Add-CookieToSession',
+        'Convert-CookieHeaderToMap',
+        'Convert-CookieListToMap',
+        'Convert-PortalSourceToMap',
+        'ConvertTo-BoolOrDefault',
+        'ConvertTo-MicrosoftEdgeDeviceSummary',
+        'Copy-AuthorizationState',
+        'Get-AgentOfferRecommendation',
+        'Get-AgentRiskyAgentsFallback',
+        'Get-AgentSafeResult',
+        'Get-AgentSharedSettings',
+        'Get-AgentSummary',
+        'Get-AgentTemplatesBundle',
+        'Get-AgentToolsSafeResult',
+        'Get-AzureSubscriptionPermissions',
+        'Get-BackupLeaf',
+        'Get-BackupSafeResult',
+        'Get-BrandCenterSafeResult',
+        'Get-ContentUnderstandingSafeResult',
+        'Get-CopilotBillingLeaf',
+        'Get-CopilotConnectorLeaf',
+        'Get-CopilotConnectorSafeResult',
+        'Get-CopilotOptimizeBundle',
+        'Get-CopilotOverviewLeaf',
+        'Get-CopilotPurviewHeaders',
+        'Get-CopilotSafeResult',
+        'Get-CopilotSettingsLeaf',
+        'Get-CopilotSPOHeaders',
+        'Get-CopilotViewAllBundle',
+        'Get-EdgeSiteListSafeResult',
+        'Get-EnhancedRestoreStatus',
+        'Get-FindingPriority',
+        'Get-HealthComponents',
+        'Get-IntegratedAppsSafeResult',
+        'Get-MappedPortalValue',
+        'Get-MicrosoftEdgeHeaders',
+        'Get-MicrosoftEdgeSafeResult',
+        'Get-PayAsYouGoSafeResult',
+        'Get-PayAsYouGoTelemetryInfo',
+        'Get-PeopleSafeResult',
+        'Get-PortalCookieValue',
+        'Get-PriorityRank',
+        'Get-ProcessEnvironmentValue',
+        'Get-SearchLeaf',
+        'Get-SearchSafeResult',
+        'Get-SuggestedCommand',
+        'Get-TenantRelationshipSafeResult',
+        'Get-ValidationResult',
+        'Get-VivaSettingsSafeResult',
+        'Get-WebSessionCookieValue',
+        'Invoke-AgentOverviewRequest',
+        'Invoke-HealthLeaf',
+        'New-CopilotBillingUnavailableResult',
+        'New-CopilotConnectorUnavailableResult',
+        'New-CopilotOverviewUnavailableResult',
+        'New-CopilotSettingsUnavailableResult',
+        'New-HealthLeafBundle',
+        'New-SearchFallbackResult',
+        'New-SearchUnavailableResult',
+        'Remove-ProcessEnvironmentValue',
+        'Resolve-PortalHeaderValue',
+        'Visit-O365UnavailableNode'
+    )
+    New-ConfigurationModuleSkip -IgnoreFunctionName (@('Select-Unique') + $NestedHelperFunctions) -IgnoreModuleName 'Microsoft.PowerShell.Utility', 'Microsoft.PowerShell.Management'
 
     $ConfigurationFormat = [ordered] @{
         RemoveComments                              = $false
@@ -76,9 +141,9 @@
     New-ConfigurationFormat -ApplyTo 'DefaultPSD1', 'OnMergePSD1' -PSD1Style 'Minimal'
 
     # configuration for documentation, at the same time it enables documentation processing
-    New-ConfigurationDocumentation -Enable:$false -StartClean -UpdateWhenNew -PathReadme 'Docs\Readme.md' -Path 'Docs'
+    New-ConfigurationDocumentation -Enable:$false -PathReadme 'Docs\Readme.md' -Path 'Docs'
 
-    New-ConfigurationImportModule -ImportSelf -ImportRequiredModules
+    New-ConfigurationImportModule -ImportSelf -ImportRequiredModules -SkipBinaryConflictAnalysis
 
     $newConfigurationBuildSplat = @{
         Enable                            = $true
@@ -88,7 +153,19 @@
         CertificateThumbprint             = '483292C9E317AA13B07BB7A96AE9D1A5ED9E7703'
         DoNotAttemptToFixRelativePaths    = $true
         MergeFunctionsFromApprovedModules = $true
-        RefreshPSD1Only                   = $true
+        RefreshPSD1Only                   = $false
+        NETProjectPath                    = "$PSScriptRoot\..\Sources\O365Essentials.Auth\O365Essentials.Auth.csproj"
+        NETProjectName                    = 'O365Essentials.Auth'
+        NETFramework                      = @('net8.0')
+        NETBinaryModule                   = @('O365Essentials.Auth.dll')
+        NETBinaryModuleCmdletScanDisabled = $true
+        NETAssemblyLoadContext            = $true
+        NETAssemblyTypeAcceleratorMode    = 'AllowList'
+        NETAssemblyTypeAccelerators       = @(
+            'O365Essentials.Auth.BrokerTokenClient',
+            'O365Essentials.Auth.BrokerTokenResult'
+        )
+        NETHandleRuntimes                 = $true
     }
     New-ConfigurationBuild @newConfigurationBuildSplat
 

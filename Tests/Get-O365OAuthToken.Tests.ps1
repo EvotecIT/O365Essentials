@@ -144,6 +144,38 @@ Describe 'Connect-O365Admin portal token' {
         } -Exactly 1
     }
 
+    It 'uses bundled MSAL WAM tokens without requiring a refresh token' {
+        Mock -ModuleName O365Essentials ConvertFrom-JSONWebToken -MockWith {
+            [pscustomobject]@{
+                tid = 'tenant-id'
+                upn = 'user@contoso.com'
+            }
+        }
+        Mock -ModuleName O365Essentials Get-O365BrokerAccessToken -MockWith {
+            param($Tenant, $ResourceUrl, $Scope, $ForcePrompt)
+            $Target = if ($ResourceUrl) { $ResourceUrl } else { $Scope }
+            [pscustomobject]@{
+                access_token = "token:$Target"
+                expires_on   = ([datetime]::UtcNow).AddHours(1)
+                tenant_id    = 'tenant-id'
+                account      = 'user@contoso.com'
+            }
+        }
+        Mock -ModuleName O365Essentials Get-O365OAuthToken -MockWith { throw 'legacy OAuth path should not be used' }
+
+        $result = Connect-O365Admin -UseWam -Tenant 'tenant-id'
+
+        $result.AuthenticationMode | Should -Be 'WAM'
+        $result.RefreshToken | Should -BeNullOrEmpty
+        $result.AccessTokenGraph | Should -Be 'token:https://graph.microsoft.com/'
+        $result.AccessTokenO365 | Should -Be 'token:https://admin.microsoft.com/'
+        $result.HeadersO365.Authorization | Should -Be 'Bearer token:https://admin.microsoft.com/'
+        Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -Exactly 0
+        Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
+            $ResourceUrl -eq 'https://admin.microsoft.com/'
+        } -Exactly 1
+    }
+
     It 'tries the substrate.office.com resource before legacy substrate audiences' {
         $cred = New-Object System.Management.Automation.PSCredential('user',(ConvertTo-SecureString 'pass' -AsPlainText -Force))
         $script:attempts = [System.Collections.Generic.List[string]]::new()
