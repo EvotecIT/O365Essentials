@@ -291,6 +291,50 @@ Describe 'Connect-O365Admin portal token' {
         } -Exactly 1
     }
 
+    It 'prefers an explicit WAM credential over an expired cached WAM username' {
+        $cred = New-Object System.Management.Automation.PSCredential('new@contoso.com',(ConvertTo-SecureString 'pass' -AsPlainText -Force))
+        InModuleScope O365Essentials {
+            $script:AuthorizationO365Cache = [ordered] @{
+                Credential          = New-Object System.Management.Automation.PSCredential('old@contoso.com',(ConvertTo-SecureString 'pass' -AsPlainText -Force))
+                ClientId            = $null
+                ClientSecret        = $null
+                Certificate         = $null
+                CertificatePassword = $null
+                AuthenticationMode  = 'WAM'
+                UserName            = 'old@contoso.com'
+                Tenant              = 'tenant-id'
+                Subscription        = $null
+                RefreshToken        = $null
+                ExpiresOnUTC        = ([datetime]::UtcNow).AddMinutes(-5)
+            }
+        }
+        Mock -ModuleName O365Essentials ConvertFrom-JSONWebToken -MockWith {
+            [pscustomobject]@{
+                tid = 'tenant-id'
+                upn = 'new@contoso.com'
+            }
+        }
+        Mock -ModuleName O365Essentials Get-O365BrokerAccessToken -MockWith {
+            param($Tenant, $ResourceUrl, $Scope, $Account, $ForcePrompt)
+            $Target = if ($ResourceUrl) { $ResourceUrl } else { $Scope }
+            [pscustomobject]@{
+                access_token = "token:$Target"
+                expires_on   = ([datetime]::UtcNow).AddHours(1)
+                tenant_id    = 'tenant-id'
+                account      = if ($Account) { $Account } else { 'new@contoso.com' }
+            }
+        }
+        Mock -ModuleName O365Essentials Get-O365OAuthToken -MockWith { throw 'legacy OAuth path should not be used' }
+
+        $result = Connect-O365Admin -UseWam -Credential $cred -ForceRefresh
+
+        $result.AuthenticationMode | Should -Be 'WAM'
+        $result.UserName | Should -Be 'new@contoso.com'
+        Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
+            $ResourceUrl -eq 'https://graph.microsoft.com/' -and $Account -eq 'new@contoso.com'
+        } -Exactly 1
+    }
+
     It 'tries the substrate.office.com resource before legacy substrate audiences' {
         $cred = New-Object System.Management.Automation.PSCredential('user',(ConvertTo-SecureString 'pass' -AsPlainText -Force))
         $script:attempts = [System.Collections.Generic.List[string]]::new()

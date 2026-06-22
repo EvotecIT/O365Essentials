@@ -90,6 +90,7 @@ function Connect-O365Admin {
     $PortalTenantId = $null
     $HeadersPortal = $null
     $RequestedUseWam = [bool] $UseWam
+    $ExplicitCredential = if ($PSBoundParameters.ContainsKey('Credential')) { $Credential } else { $null }
     $CachedAuthenticationMode = $null
     $CachedUserName = $null
     if ($Headers) {
@@ -142,6 +143,10 @@ function Connect-O365Admin {
             if ($Script:AuthorizationO365Cache.Contains('PortalTenantId')) { $PortalTenantId = $Script:AuthorizationO365Cache.PortalTenantId }
             if ($Script:AuthorizationO365Cache.Contains('HeadersPortal')) { $HeadersPortal = $Script:AuthorizationO365Cache.HeadersPortal }
         }
+    }
+
+    if ($ExplicitCredential) {
+        $Credential = $ExplicitCredential
     }
 
     if ($HasPortalAttachInput -and -not $ForceRefresh) {
@@ -217,7 +222,9 @@ function Connect-O365Admin {
 
     $WamLoginHint = $null
     if ($UseWam) {
-        if ($Credential -and -not [string]::IsNullOrWhiteSpace($Credential.UserName)) {
+        if ($ExplicitCredential -and -not [string]::IsNullOrWhiteSpace($ExplicitCredential.UserName)) {
+            $WamLoginHint = $ExplicitCredential.UserName
+        } elseif ($Credential -and -not [string]::IsNullOrWhiteSpace($Credential.UserName)) {
             $WamLoginHint = $Credential.UserName
         } elseif ($CachedAuthenticationMode -eq 'WAM' -and -not [string]::IsNullOrWhiteSpace($CachedUserName)) {
             $WamLoginHint = $CachedUserName

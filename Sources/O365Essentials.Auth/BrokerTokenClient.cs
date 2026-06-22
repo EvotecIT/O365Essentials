@@ -1,5 +1,6 @@
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Broker;
+using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 
 namespace O365Essentials.Auth;
@@ -20,6 +21,7 @@ public sealed class BrokerTokenResult
 public static class BrokerTokenClient
 {
     private const string DefaultAuthorityTenant = "organizations";
+    private static readonly ConcurrentDictionary<string, IPublicClientApplication> Applications = new(StringComparer.OrdinalIgnoreCase);
 
     public static BrokerTokenResult AcquireTokenForResource(
         string? tenant,
@@ -71,18 +73,7 @@ public static class BrokerTokenClient
         }
 
         var authorityTenant = string.IsNullOrWhiteSpace(tenant) ? DefaultAuthorityTenant : tenant.Trim();
-        var brokerOptions = new BrokerOptions(BrokerOptions.OperatingSystems.Windows)
-        {
-            Title = "O365Essentials"
-        };
-
-        var application = PublicClientApplicationBuilder
-            .Create(clientId.Trim())
-            .WithAuthority($"https://login.microsoftonline.com/{authorityTenant}")
-            .WithDefaultRedirectUri()
-            .WithParentActivityOrWindow(GetConsoleOrTerminalWindow)
-            .WithBroker(brokerOptions)
-            .Build();
+        var application = GetOrCreateApplication(clientId.Trim(), authorityTenant);
 
         Exception? lastFailure = null;
         foreach (var scopes in scopeCandidates)
@@ -104,6 +95,28 @@ public static class BrokerTokenClient
         }
 
         throw new InvalidOperationException("MSAL WAM token acquisition failed for all configured scope candidates.", lastFailure);
+    }
+
+    private static IPublicClientApplication GetOrCreateApplication(string clientId, string authorityTenant)
+    {
+        return Applications.GetOrAdd(
+            clientId,
+            static (key, tenant) =>
+            {
+                var brokerOptions = new BrokerOptions(BrokerOptions.OperatingSystems.Windows)
+                {
+                    Title = "O365Essentials"
+                };
+
+                return PublicClientApplicationBuilder
+                    .Create(key)
+                    .WithAuthority($"https://login.microsoftonline.com/{tenant}")
+                    .WithDefaultRedirectUri()
+                    .WithParentActivityOrWindow(GetConsoleOrTerminalWindow)
+                    .WithBroker(brokerOptions)
+                    .Build();
+            },
+            authorityTenant);
     }
 
     private static async Task<AuthenticationResult> AcquireTokenForScopesAsync(
