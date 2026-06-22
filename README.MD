@@ -76,10 +76,10 @@ If we have MFA we simply let it query you for MFA code.
 $null = Connect-O365Admin -Verbose
 ```
 
-On Windows PowerShell 7+, you can opt into the Web Account Manager broker through
-the bundled MSAL helper. This allows Windows Hello, Conditional Access, FIDO, and
-the Windows account picker to participate in delegated sign-in while the MSAL
-assemblies stay isolated inside the packaged module:
+On Windows PowerShell 7.4+, you can opt into the Web Account Manager broker
+through the bundled MSAL helper. This allows Windows Hello, Conditional Access,
+FIDO, and the Windows account picker to participate in delegated sign-in while
+the MSAL assemblies stay isolated inside the packaged module:
 
 ```powershell
 $null = Connect-O365Admin -UseWam -Tenant 'contoso.onmicrosoft.com' -Verbose

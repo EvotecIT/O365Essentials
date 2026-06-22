@@ -152,7 +152,7 @@ Describe 'Connect-O365Admin portal token' {
             }
         }
         Mock -ModuleName O365Essentials Get-O365BrokerAccessToken -MockWith {
-            param($Tenant, $ResourceUrl, $Scope, $ForcePrompt)
+            param($Tenant, $ResourceUrl, $Scope, $Account, $ForcePrompt)
             $Target = if ($ResourceUrl) { $ResourceUrl } else { $Scope }
             [pscustomobject]@{
                 access_token = "token:$Target"
@@ -172,7 +172,51 @@ Describe 'Connect-O365Admin portal token' {
         $result.HeadersO365.Authorization | Should -Be 'Bearer token:https://admin.microsoft.com/'
         Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -Exactly 0
         Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
-            $ResourceUrl -eq 'https://admin.microsoft.com/'
+            $ResourceUrl -eq 'https://admin.microsoft.com/' -and $Account -eq 'user@contoso.com'
+        } -Exactly 1
+    }
+
+    It 'honors explicit WAM refresh when an expired OAuth cache exists' {
+        InModuleScope O365Essentials {
+            $script:AuthorizationO365Cache = [ordered] @{
+                Credential         = $null
+                ClientId           = $null
+                ClientSecret       = $null
+                Certificate        = $null
+                CertificatePassword = $null
+                AuthenticationMode = 'OAuth'
+                UserName           = 'old@contoso.com'
+                Tenant             = 'tenant-id'
+                Subscription       = $null
+                RefreshToken       = 'old-refresh-token'
+                ExpiresOnUTC       = ([datetime]::UtcNow).AddMinutes(-5)
+            }
+        }
+        Mock -ModuleName O365Essentials ConvertFrom-JSONWebToken -MockWith {
+            [pscustomobject]@{
+                tid = 'tenant-id'
+                upn = 'user@contoso.com'
+            }
+        }
+        Mock -ModuleName O365Essentials Get-O365BrokerAccessToken -MockWith {
+            param($Tenant, $ResourceUrl, $Scope, $Account, $ForcePrompt)
+            $Target = if ($ResourceUrl) { $ResourceUrl } else { $Scope }
+            [pscustomobject]@{
+                access_token = "token:$Target"
+                expires_on   = ([datetime]::UtcNow).AddHours(1)
+                tenant_id    = 'tenant-id'
+                account      = 'user@contoso.com'
+            }
+        }
+        Mock -ModuleName O365Essentials Get-O365OAuthToken -MockWith { throw 'legacy OAuth path should not be used' }
+
+        $result = Connect-O365Admin -UseWam -ForceRefresh
+
+        $result.AuthenticationMode | Should -Be 'WAM'
+        $result.UserName | Should -Be 'user@contoso.com'
+        Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -Exactly 0
+        Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
+            $ResourceUrl -eq 'https://graph.microsoft.com/' -and $ForcePrompt
         } -Exactly 1
     }
 

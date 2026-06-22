@@ -1,10 +1,10 @@
 ---
-title: "Preview group naming policy changes"
-description: "Use O365Essentials to inspect and preview Microsoft 365 group naming policy changes."
+title: "Review group naming policy settings"
+description: "Use O365Essentials to inspect Microsoft 365 group naming policy settings before making changes."
 layout: docs
 ---
 
-This pattern is useful when you need to review the current naming policy and model a change without applying it.
+This pattern is useful when you need to review the current naming policy before deciding whether to apply a change.
 
 It is adapted from `Examples/GetO365AzureGroupNaming.ps1`.
 
@@ -20,14 +20,13 @@ Get-O365AzureGroupNamingPolicy -Verbose | Format-Table
 Set-O365AzureGroupNamingPolicy `
     -Prefix 'M365' `
     -Suffix 'Department', 'Region' `
-    -Verbose `
-    -WhatIf
+    -Verbose
 ```
 
 ## What this demonstrates
 
 - reviewing the current group naming policy
-- modeling a naming change with `-WhatIf`
+- applying an intentional naming policy change after review
 - avoiding tenant-specific suffix values
 
 ## Source

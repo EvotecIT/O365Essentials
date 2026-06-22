@@ -9,11 +9,12 @@ function Get-O365BrokerAccessToken {
         [Parameter(Mandatory, ParameterSetName = 'Scope')][string] $Scope,
         [string] $Tenant = 'organizations',
         [string] $ClientId = '1950a258-227b-4e31-a9cf-717495945fc2',
+        [string] $Account,
         [switch] $ForcePrompt
     )
 
-    if ($PSEdition -ne 'Core') {
-        throw 'MSAL WAM broker authentication requires PowerShell 7 or newer.'
+    if ($PSEdition -ne 'Core' -or $PSVersionTable.PSVersion -lt [version] '7.4') {
+        throw 'MSAL WAM broker authentication requires PowerShell 7.4 or newer.'
     }
 
     $BrokerClientType = 'O365Essentials.Auth.BrokerTokenClient' -as [type]
@@ -23,9 +24,9 @@ function Get-O365BrokerAccessToken {
 
     try {
         if ($PSCmdlet.ParameterSetName -eq 'Scope') {
-            $Result = $BrokerClientType.GetMethod('AcquireTokenForScope').Invoke($null, @($Tenant, $Scope, $ClientId, [bool] $ForcePrompt))
+            $Result = $BrokerClientType.GetMethod('AcquireTokenForScope').Invoke($null, @($Tenant, $Scope, $ClientId, $Account, [bool] $ForcePrompt))
         } else {
-            $Result = $BrokerClientType.GetMethod('AcquireTokenForResource').Invoke($null, @($Tenant, $ResourceUrl, $ClientId, [bool] $ForcePrompt))
+            $Result = $BrokerClientType.GetMethod('AcquireTokenForResource').Invoke($null, @($Tenant, $ResourceUrl, $ClientId, $Account, [bool] $ForcePrompt))
         }
     } catch [System.Reflection.TargetInvocationException] {
         $Inner = $_.Exception.InnerException
