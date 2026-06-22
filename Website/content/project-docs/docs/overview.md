@@ -12,5 +12,5 @@ The module combines Microsoft Graph calls with admin portal and internal API cal
 
 - Review administrative roles and role membership.
 - Inspect Conditional Access and tenant-wide settings.
-- Preview group naming or enterprise application settings with `-WhatIf`.
+- Review group naming or enterprise application settings before applying changes.
 - Keep authentication and tenant targeting explicit.

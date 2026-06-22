@@ -90,6 +90,8 @@ function Connect-O365Admin {
     $PortalTenantId = $null
     $HeadersPortal = $null
     $RequestedUseWam = [bool] $UseWam
+    $CachedAuthenticationMode = $null
+    $CachedUserName = $null
     if ($Headers) {
         if ($Headers.ExpiresOnUTC -gt [datetime]::UtcNow -and -not $ForceRefresh -and -not $HasPortalAttachInput) {
             Write-Verbose -Message "Connect-O365Admin - Using cache for connection $($Headers.UserName)"
@@ -103,8 +105,10 @@ function Connect-O365Admin {
             $Tenant = $Headers.Tenant
             $Subscription = $Headers.Subscription
             $RefreshToken = $Headers.RefreshToken
+            if ($Headers.Contains('AuthenticationMode')) { $CachedAuthenticationMode = $Headers.AuthenticationMode }
+            if ($Headers.Contains('UserName')) { $CachedUserName = $Headers.UserName }
             if (-not $RequestedUseWam) {
-                $UseWam = $Headers.Contains('AuthenticationMode') -and $Headers.AuthenticationMode -eq 'WAM'
+                $UseWam = $CachedAuthenticationMode -eq 'WAM'
             }
             if ($Headers.Contains('PortalWebSession')) { $PortalWebSession = $Headers.PortalWebSession }
             if ($Headers.Contains('AjaxSessionKey')) { $AjaxSessionKey = $Headers.AjaxSessionKey }
@@ -126,8 +130,10 @@ function Connect-O365Admin {
             $Tenant = $Script:AuthorizationO365Cache.Tenant
             $Subscription = $Script:AuthorizationO365Cache.Subscription
             $RefreshToken = $Script:AuthorizationO365Cache.RefreshToken
+            if ($Script:AuthorizationO365Cache.Contains('AuthenticationMode')) { $CachedAuthenticationMode = $Script:AuthorizationO365Cache.AuthenticationMode }
+            if ($Script:AuthorizationO365Cache.Contains('UserName')) { $CachedUserName = $Script:AuthorizationO365Cache.UserName }
             if (-not $RequestedUseWam) {
-                $UseWam = $Script:AuthorizationO365Cache.Contains('AuthenticationMode') -and $Script:AuthorizationO365Cache.AuthenticationMode -eq 'WAM'
+                $UseWam = $CachedAuthenticationMode -eq 'WAM'
             }
             if ($Script:AuthorizationO365Cache.Contains('PortalWebSession')) { $PortalWebSession = $Script:AuthorizationO365Cache.PortalWebSession }
             if ($Script:AuthorizationO365Cache.Contains('AjaxSessionKey')) { $AjaxSessionKey = $Script:AuthorizationO365Cache.AjaxSessionKey }
@@ -209,10 +215,19 @@ function Connect-O365Admin {
         Write-Warning -Message 'Connect-O365Admin - The -Device switch is ignored with -UseWam. Use -Device without -UseWam for device-code OAuth.'
     }
 
+    $WamLoginHint = $null
+    if ($UseWam) {
+        if ($Credential -and -not [string]::IsNullOrWhiteSpace($Credential.UserName)) {
+            $WamLoginHint = $Credential.UserName
+        } elseif ($CachedAuthenticationMode -eq 'WAM' -and -not [string]::IsNullOrWhiteSpace($CachedUserName)) {
+            $WamLoginHint = $CachedUserName
+        }
+    }
+
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Graph"
         if ($UseWam) {
-            $tokenGraph = Get-O365BrokerAccessToken -Tenant $Tenant -ResourceUrl 'https://graph.microsoft.com/' -ForcePrompt:$ForceRefresh
+            $tokenGraph = Get-O365BrokerAccessToken -Tenant $Tenant -ResourceUrl 'https://graph.microsoft.com/' -Account $WamLoginHint -ForcePrompt:$ForceRefresh
         } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
             $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } elseif ($RefreshToken -and -not $Credential -and -not $Device) {

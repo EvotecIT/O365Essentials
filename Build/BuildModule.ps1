@@ -72,6 +72,7 @@
         'Get-MappedPortalValue',
         'Get-MicrosoftEdgeHeaders',
         'Get-MicrosoftEdgeSafeResult',
+        'Get-O365EssentialsConfig',
         'Get-PayAsYouGoSafeResult',
         'Get-PayAsYouGoTelemetryInfo',
         'Get-PeopleSafeResult',
@@ -96,6 +97,7 @@
         'New-SearchUnavailableResult',
         'Remove-ProcessEnvironmentValue',
         'Resolve-PortalHeaderValue',
+        'Unprotect-O365Secret',
         'Visit-O365UnavailableNode'
     )
     New-ConfigurationModuleSkip -IgnoreFunctionName (@('Select-Unique') + $NestedHelperFunctions) -IgnoreModuleName 'Microsoft.PowerShell.Utility', 'Microsoft.PowerShell.Management'

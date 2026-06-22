@@ -176,6 +176,34 @@ Describe 'Connect-O365Admin portal token' {
         } -Exactly 1
     }
 
+    It 'passes credential username to the first WAM token request' {
+        $cred = New-Object System.Management.Automation.PSCredential('seed@contoso.com',(ConvertTo-SecureString 'pass' -AsPlainText -Force))
+        Mock -ModuleName O365Essentials ConvertFrom-JSONWebToken -MockWith {
+            [pscustomobject]@{
+                tid = 'tenant-id'
+                upn = 'seed@contoso.com'
+            }
+        }
+        Mock -ModuleName O365Essentials Get-O365BrokerAccessToken -MockWith {
+            param($Tenant, $ResourceUrl, $Scope, $Account, $ForcePrompt)
+            $Target = if ($ResourceUrl) { $ResourceUrl } else { $Scope }
+            [pscustomobject]@{
+                access_token = "token:$Target"
+                expires_on   = ([datetime]::UtcNow).AddHours(1)
+                tenant_id    = 'tenant-id'
+                account      = if ($Account) { $Account } else { 'seed@contoso.com' }
+            }
+        }
+        Mock -ModuleName O365Essentials Get-O365OAuthToken -MockWith { throw 'legacy OAuth path should not be used' }
+
+        $result = Connect-O365Admin -UseWam -Credential $cred -Tenant 'tenant-id'
+
+        $result.UserName | Should -Be 'seed@contoso.com'
+        Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
+            $ResourceUrl -eq 'https://graph.microsoft.com/' -and $Account -eq 'seed@contoso.com'
+        } -Exactly 1
+    }
+
     It 'honors explicit WAM refresh when an expired OAuth cache exists' {
         InModuleScope O365Essentials {
             $script:AuthorizationO365Cache = [ordered] @{
@@ -216,7 +244,50 @@ Describe 'Connect-O365Admin portal token' {
         $result.UserName | Should -Be 'user@contoso.com'
         Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -Exactly 0
         Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
-            $ResourceUrl -eq 'https://graph.microsoft.com/' -and $ForcePrompt
+            $ResourceUrl -eq 'https://graph.microsoft.com/' -and $ForcePrompt -and [string]::IsNullOrWhiteSpace($Account)
+        } -Exactly 1
+    }
+
+    It 'uses the cached WAM username to refresh an existing WAM connection' {
+        InModuleScope O365Essentials {
+            $script:AuthorizationO365Cache = [ordered] @{
+                Credential         = $null
+                ClientId           = $null
+                ClientSecret       = $null
+                Certificate        = $null
+                CertificatePassword = $null
+                AuthenticationMode = 'WAM'
+                UserName           = 'cached@contoso.com'
+                Tenant             = 'tenant-id'
+                Subscription       = $null
+                RefreshToken       = $null
+                ExpiresOnUTC       = ([datetime]::UtcNow).AddMinutes(-5)
+            }
+        }
+        Mock -ModuleName O365Essentials ConvertFrom-JSONWebToken -MockWith {
+            [pscustomobject]@{
+                tid = 'tenant-id'
+                upn = 'cached@contoso.com'
+            }
+        }
+        Mock -ModuleName O365Essentials Get-O365BrokerAccessToken -MockWith {
+            param($Tenant, $ResourceUrl, $Scope, $Account, $ForcePrompt)
+            $Target = if ($ResourceUrl) { $ResourceUrl } else { $Scope }
+            [pscustomobject]@{
+                access_token = "token:$Target"
+                expires_on   = ([datetime]::UtcNow).AddHours(1)
+                tenant_id    = 'tenant-id'
+                account      = if ($Account) { $Account } else { 'cached@contoso.com' }
+            }
+        }
+        Mock -ModuleName O365Essentials Get-O365OAuthToken -MockWith { throw 'legacy OAuth path should not be used' }
+
+        $result = Connect-O365Admin -ForceRefresh
+
+        $result.AuthenticationMode | Should -Be 'WAM'
+        $result.UserName | Should -Be 'cached@contoso.com'
+        Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
+            $ResourceUrl -eq 'https://graph.microsoft.com/' -and $Account -eq 'cached@contoso.com'
         } -Exactly 1
     }
 
