@@ -115,9 +115,9 @@ public static class BrokerTokenClient
         var expectedUsername = string.IsNullOrWhiteSpace(accountUsername) ? null : accountUsername.Trim();
         if (!forcePrompt)
         {
-            var accounts = await application.GetAccountsAsync().ConfigureAwait(false);
+            var accounts = (await application.GetAccountsAsync().ConfigureAwait(false)).ToArray();
             var candidateAccounts = string.IsNullOrWhiteSpace(expectedUsername)
-                ? accounts
+                ? accounts.Length == 1 ? accounts : Array.Empty<IAccount>()
                 : accounts.Where(account =>
                     !string.IsNullOrWhiteSpace(account.Username)
                     && account.Username.Equals(expectedUsername, StringComparison.OrdinalIgnoreCase));
@@ -127,20 +127,6 @@ public static class BrokerTokenClient
                 try
                 {
                     return await application.AcquireTokenSilent(scopes, account).ExecuteAsync().ConfigureAwait(false);
-                }
-                catch (MsalUiRequiredException)
-                {
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(expectedUsername))
-            {
-                try
-                {
-                    return await application
-                        .AcquireTokenSilent(scopes, PublicClientApplication.OperatingSystemAccount)
-                        .ExecuteAsync()
-                        .ConfigureAwait(false);
                 }
                 catch (MsalUiRequiredException)
                 {
