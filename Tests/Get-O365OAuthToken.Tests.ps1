@@ -176,6 +176,40 @@ Describe 'Connect-O365Admin portal token' {
         } -Exactly 1
     }
 
+    It 'keeps the initial WAM authority tenant for resource token requests' {
+        $script:wamRequests = [System.Collections.Generic.List[object]]::new()
+        Mock -ModuleName O365Essentials ConvertFrom-JSONWebToken -MockWith {
+            [pscustomobject]@{
+                tid = 'resolved-tenant-id'
+                upn = 'user@contoso.com'
+            }
+        }
+        Mock -ModuleName O365Essentials Get-O365BrokerAccessToken -MockWith {
+            param($Tenant, $ResourceUrl, $Scope, $Account, $ForcePrompt)
+            $script:wamRequests.Add([pscustomobject]@{
+                    Tenant      = $Tenant
+                    ResourceUrl = $ResourceUrl
+                    Scope       = $Scope
+                    Account     = $Account
+                }) | Out-Null
+            $Target = if ($ResourceUrl) { $ResourceUrl } else { $Scope }
+            [pscustomobject]@{
+                access_token = "token:$Target"
+                expires_on   = ([datetime]::UtcNow).AddHours(1)
+                tenant_id    = 'resolved-tenant-id'
+                account      = 'user@contoso.com'
+            }
+        }
+        Mock -ModuleName O365Essentials Get-O365OAuthToken -MockWith { throw 'legacy OAuth path should not be used' }
+
+        $result = Connect-O365Admin -UseWam
+
+        $result.Tenant | Should -Be 'resolved-tenant-id'
+        $script:wamRequests.Count | Should -BeGreaterThan 1
+        $script:wamRequests | ForEach-Object { $_.Tenant | Should -Be 'organizations' }
+        Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -Exactly 0
+    }
+
     It 'passes credential username to the first WAM token request' {
         $cred = New-Object System.Management.Automation.PSCredential('seed@contoso.com',(ConvertTo-SecureString 'pass' -AsPlainText -Force))
         Mock -ModuleName O365Essentials ConvertFrom-JSONWebToken -MockWith {

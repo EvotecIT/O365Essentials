@@ -205,6 +205,7 @@ function Connect-O365Admin {
     }
 
     $Tenant = if ($Tenant) { $Tenant } else { 'organizations' }
+    $WamAuthorityTenant = if ($UseWam) { $Tenant } else { $null }
     $ScopesO365 = 'https://admin.microsoft.com/.default offline_access'
     # Admin and directory portal routes can require the Microsoft 365/Azure portal audience
     $ResourceAzure = '74658136-14ec-4630-ad9b-26e160ff0fc6'
@@ -234,7 +235,7 @@ function Connect-O365Admin {
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Graph"
         if ($UseWam) {
-            $tokenGraph = Get-O365BrokerAccessToken -Tenant $Tenant -ResourceUrl 'https://graph.microsoft.com/' -Account $WamLoginHint -ForcePrompt:$ForceRefresh
+            $tokenGraph = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://graph.microsoft.com/' -Account $WamLoginHint -ForcePrompt:$ForceRefresh
         } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
             $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } elseif ($RefreshToken -and -not $Credential -and -not $Device) {
@@ -271,7 +272,7 @@ function Connect-O365Admin {
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for admin.microsoft.com"
         if ($UseWam) {
-            $tokenO365 = Get-O365BrokerAccessToken -Tenant $Tenant -ResourceUrl 'https://admin.microsoft.com/' -Account $WamAccount
+            $tokenO365 = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://admin.microsoft.com/' -Account $WamAccount
         } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
             $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesO365 -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } else {
@@ -281,7 +282,7 @@ function Connect-O365Admin {
         Write-Verbose -Message "Connect-O365Admin - admin.microsoft.com scope token failed. Falling back to portal resource audience. Error: $($_.Exception.Message)"
         try {
             if ($UseWam) {
-                $tokenO365 = Get-O365BrokerAccessToken -Tenant $Tenant -ResourceUrl $ResourceAzure -Account $WamAccount
+                $tokenO365 = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl $ResourceAzure -Account $WamAccount
             } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
                 $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
             } else {
@@ -297,7 +298,7 @@ function Connect-O365Admin {
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Teams (api.spaces.skype.com)"
         if ($UseWam) {
-            $tokenTeams = Get-O365BrokerAccessToken -Tenant $Tenant -ResourceUrl 'https://api.spaces.skype.com/' -Account $WamAccount
+            $tokenTeams = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://api.spaces.skype.com/' -Account $WamAccount
         } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
             $tokenTeams = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesTeams -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } else {
@@ -311,7 +312,7 @@ function Connect-O365Admin {
         try {
             Write-Verbose -Message "Connect-O365Admin - Acquiring token for Azure"
             if ($UseWam) {
-                $tokenAzure = Get-O365BrokerAccessToken -Tenant $Tenant -ResourceUrl $ResourceAzure -Account $WamAccount
+                $tokenAzure = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl $ResourceAzure -Account $WamAccount
             } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
                 $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
             } else {
@@ -325,7 +326,7 @@ function Connect-O365Admin {
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Azure management"
         if ($UseWam) {
-            $tokenARM = Get-O365BrokerAccessToken -Tenant $Tenant -ResourceUrl 'https://management.azure.com/' -Account $WamAccount
+            $tokenARM = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://management.azure.com/' -Account $WamAccount
         } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
             $tokenARM = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesARM -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } else {
@@ -361,9 +362,9 @@ function Connect-O365Admin {
                 Write-Verbose -Message "Connect-O365Admin - Acquiring token for Substrate using $($attempt.type): $($attempt.value)"
                 if ($UseWam) {
                     if ($attempt.type -eq 'scope') {
-                        $tokenSubstrate = Get-O365BrokerAccessToken -Tenant $Tenant -Scope $attempt.value -Account $WamAccount
+                        $tokenSubstrate = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -Scope $attempt.value -Account $WamAccount
                     } else {
-                        $tokenSubstrate = Get-O365BrokerAccessToken -Tenant $Tenant -ResourceUrl $attempt.value -Account $WamAccount
+                        $tokenSubstrate = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl $attempt.value -Account $WamAccount
                     }
                 } elseif ($attempt.type -eq 'resource') {
                     if ($PSCmdlet.ParameterSetName -eq 'App') {

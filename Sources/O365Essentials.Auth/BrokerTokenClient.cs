@@ -99,9 +99,10 @@ public static class BrokerTokenClient
 
     private static IPublicClientApplication GetOrCreateApplication(string clientId, string authorityTenant)
     {
+        var cacheKey = string.Join("|", clientId, authorityTenant);
         return Applications.GetOrAdd(
-            clientId,
-            static (key, tenant) =>
+            cacheKey,
+            static (_, state) =>
             {
                 var brokerOptions = new BrokerOptions(BrokerOptions.OperatingSystems.Windows)
                 {
@@ -109,14 +110,14 @@ public static class BrokerTokenClient
                 };
 
                 return PublicClientApplicationBuilder
-                    .Create(key)
-                    .WithAuthority($"https://login.microsoftonline.com/{tenant}")
+                    .Create(state.ClientId)
+                    .WithAuthority($"https://login.microsoftonline.com/{state.AuthorityTenant}")
                     .WithDefaultRedirectUri()
                     .WithParentActivityOrWindow(GetConsoleOrTerminalWindow)
                     .WithBroker(brokerOptions)
                     .Build();
             },
-            authorityTenant);
+            (ClientId: clientId, AuthorityTenant: authorityTenant));
     }
 
     private static async Task<AuthenticationResult> AcquireTokenForScopesAsync(
