@@ -80,14 +80,10 @@
 
     New-ConfigurationImportModule -ImportSelf -ImportRequiredModules -SkipBinaryConflictAnalysis
 
-    $SigningCertificateThumbprint = '483292C9E317AA13B07BB7A96AE9D1A5ED9E7703'
-    $SigningCertificate = Get-ChildItem -Path 'Cert:\CurrentUser\My', 'Cert:\LocalMachine\My' -ErrorAction SilentlyContinue |
-        Where-Object { $_.Thumbprint -eq $SigningCertificateThumbprint } |
-        Select-Object -First 1
-
     $newConfigurationBuildSplat = @{
         Enable                            = $true
-        SignModule                        = [bool] $SigningCertificate
+        SignModule                        = [bool] (Get-ChildItem -Path 'Cert:\CurrentUser\My', 'Cert:\LocalMachine\My' -ErrorAction SilentlyContinue | Where-Object { $_.Thumbprint -eq '483292C9E317AA13B07BB7A96AE9D1A5ED9E7703' } | Select-Object -First 1)
+        CertificateThumbprint             = '483292C9E317AA13B07BB7A96AE9D1A5ED9E7703'
         DeleteTargetModuleBeforeBuild     = $true
         MergeModuleOnBuild                = $true
         DoNotAttemptToFixRelativePaths    = $true
@@ -105,9 +101,6 @@
             'O365Essentials.Auth.BrokerTokenResult'
         )
         NETHandleRuntimes                 = $true
-    }
-    if ($SigningCertificate) {
-        $newConfigurationBuildSplat.CertificateThumbprint = $SigningCertificateThumbprint
     }
     New-ConfigurationBuild @newConfigurationBuildSplat
 
