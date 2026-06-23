@@ -117,14 +117,13 @@ Describe 'Invoke-O365Admin header selection' {
             HeadersGraph       = @{ Authorization = 'Bearer old-graph' }
             HeadersAzure       = @{ Authorization = 'Bearer portal' }
             HeadersARM         = @{ Authorization = 'Bearer arm' }
+            HeadersTeams       = @{ Authorization = 'Bearer teams' }
         }
         $refreshedHeaders = [ordered]@{
             AuthenticationMode = 'WAM'
             GraphScopes        = @('User.Read', 'Policy.Read.All')
-            HeadersO365        = @{ Authorization = 'Bearer o365' }
             HeadersGraph       = @{ Authorization = 'Bearer new-graph' }
-            HeadersAzure       = @{ Authorization = 'Bearer portal' }
-            HeadersARM         = @{ Authorization = 'Bearer arm' }
+            HeadersTeams       = $null
         }
         Mock -ModuleName O365Essentials Connect-O365Admin -MockWith {
             param($Headers, $ForceRefresh, $GraphScope)
@@ -143,6 +142,23 @@ Describe 'Invoke-O365Admin header selection' {
         Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer new-graph' } -Exactly 1
         $headers.HeadersGraph.Authorization | Should -Be 'Bearer new-graph'
         $headers.GraphScopes | Should -Contain 'Policy.Read.All'
+        $headers.HeadersTeams.Authorization | Should -Be 'Bearer teams'
+        $headers.HeadersARM.Authorization | Should -Be 'Bearer arm'
+    }
+    It 'stops instead of sending stale explicit headers when reconnect fails' {
+        $headers = [ordered]@{
+            HeadersGraph = @{ Authorization = 'Bearer stale-graph' }
+        }
+        Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { $null }
+        Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith { throw 'stale token was sent' }
+        Mock -ModuleName O365Essentials Write-Warning
+
+        Invoke-O365Admin -Uri 'https://graph.microsoft.com/v1.0/test' -Headers $headers
+
+        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -Exactly 0
+        Assert-MockCalled Write-Warning -ModuleName O365Essentials -ParameterFilter {
+            $Message -eq 'Invoke-O365Admin - Authorization error. Skipping.'
+        } -Exactly 1
     }
     It 'does not refresh Graph headers when required scopes are already granted' {
         $headers = [ordered]@{
@@ -211,6 +227,37 @@ Describe 'Invoke-O365Admin header selection' {
             $ParsedBody.Count -eq 2 -and
             $ParsedBody[0] -eq 'alpha' -and
             $ParsedBody[1] -eq 'beta'
+        } -Exactly 1
+    }
+    It 'honors custom JSON depth for nested request bodies' {
+        $headers = [ordered]@{
+            HeadersO365  = @{ Authorization = 'Bearer o365' }
+            HeadersGraph = @{ Authorization = 'Bearer graph' }
+            HeadersAzure = @{ Authorization = 'Bearer portal' }
+            HeadersARM   = @{ Authorization = 'Bearer arm' }
+        }
+        $body = [ordered]@{
+            level1 = [ordered]@{
+                level2 = [ordered]@{
+                    level3 = [ordered]@{
+                        level4 = [ordered]@{
+                            level5 = [ordered]@{
+                                level6 = 'kept'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { param($Headers) $Headers }
+        Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith { [pscustomobject]@{ ok = $true } }
+
+        Invoke-O365Admin -Uri 'https://admin.microsoft.com/admin/api/test' -Headers $headers -Method POST -Body $body -JsonDepth 20 | Out-Null
+
+        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter {
+            $ParsedBody = $Body | ConvertFrom-Json
+            $Method -eq 'POST' -and
+            $ParsedBody.level1.level2.level3.level4.level5.level6 -eq 'kept'
         } -Exactly 1
     }
     It 'preserves explicit empty array GET responses' {

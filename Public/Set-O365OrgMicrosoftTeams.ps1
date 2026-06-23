@@ -103,7 +103,7 @@
     }
 
     if ($PSCmdlet.ShouldProcess($Uri, 'Update Microsoft Teams settings')) {
-        $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method POST -Body $Body
+        $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method POST -Body $Body -JsonDepth 20
         if ($PassThru) {
             $Output
         }

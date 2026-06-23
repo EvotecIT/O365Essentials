@@ -25,7 +25,7 @@
         [switch] $NoTranslation
     )
     $Uri = 'https://graph.microsoft.com/v1.0/policies/adminConsentRequestPolicy'
-    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -RequiredGraphScope 'Policy.Read.All'
+    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -RequiredGraphScope 'Policy.Read.All|Policy.ReadWrite.ConsentRequest|Directory.Read.All|Directory.ReadWrite.All'
     if ($Output) {
         if ($NoTranslation) {
             $Output

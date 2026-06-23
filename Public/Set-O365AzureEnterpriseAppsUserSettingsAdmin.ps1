@@ -77,6 +77,6 @@
     }
 
     if ($PSCmdlet.ShouldProcess($Uri, 'Update admin consent request policy')) {
-        Invoke-O365Admin -Uri $Uri -Headers $Headers -Method PUT -Body $Body -RequiredGraphScope 'Policy.ReadWrite.ConsentRequest'
+        Invoke-O365Admin -Uri $Uri -Headers $Headers -Method PUT -Body $Body -RequiredGraphScope 'Policy.ReadWrite.ConsentRequest|Directory.ReadWrite.All'
     }
 }

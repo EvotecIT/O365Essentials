@@ -234,9 +234,10 @@ Describe 'Connect-O365Admin portal token' {
 
         $result = Connect-O365Admin -Headers $cachedHeaders -GraphScope 'Policy.Read.All|Policy.ReadWrite.ConditionalAccess'
 
-        $result.AccessTokenGraph | Should -Be 'token:Policy.Read.All offline_access'
+        $result.AccessTokenGraph | Should -Be 'token:User.Read Policy.Read.All offline_access'
+        $result.GraphScopes | Should -Contain 'User.Read'
         Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
-            $Scope -eq 'Policy.Read.All offline_access'
+            $Scope -eq 'User.Read Policy.Read.All offline_access'
         } -Exactly 1
     }
 

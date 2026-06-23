@@ -100,16 +100,9 @@ function Connect-O365Admin {
     $CachedAuthenticationMode = $null
     $CachedUserName = $null
     $RequestedGraphScopes = @($GraphScope | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | ForEach-Object { $_.Trim() })
-    $GraphScopesToRequest = @(
-        foreach ($Scope in $RequestedGraphScopes) {
-            foreach ($Part in ($Scope -split '\s+')) {
-                if (-not [string]::IsNullOrWhiteSpace($Part)) {
-                    ($Part -split '\|' | Select-Object -First 1).Trim()
-                }
-            }
-        }
-    )
+    $ExistingGraphScopes = @()
     if ($Headers) {
+        $ExistingGraphScopes = @($Headers.GraphScopes | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | ForEach-Object { $_.Trim() })
         $HasRequestedGraphScopes = $RequestedGraphScopes.Count -eq 0 -or (Test-O365GraphScope -GrantedScope $Headers.GraphScopes -RequiredScope $RequestedGraphScopes)
         if ($Headers.ExpiresOnUTC -gt [datetime]::UtcNow -and -not $ForceRefresh -and -not $HasPortalAttachInput -and $HasRequestedGraphScopes) {
             Write-Verbose -Message "Connect-O365Admin - Using cache for connection $($Headers.UserName)"
@@ -136,6 +129,7 @@ function Connect-O365Admin {
             if ($Headers.Contains('HeadersPortal')) { $HeadersPortal = $Headers.HeadersPortal }
         }
     } elseif ($Script:AuthorizationO365Cache) {
+        $ExistingGraphScopes = @($Script:AuthorizationO365Cache.GraphScopes | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | ForEach-Object { $_.Trim() })
         $HasRequestedGraphScopes = $RequestedGraphScopes.Count -eq 0 -or (Test-O365GraphScope -GrantedScope $Script:AuthorizationO365Cache.GraphScopes -RequiredScope $RequestedGraphScopes)
         if ($Script:AuthorizationO365Cache.ExpiresOnUTC -gt [datetime]::UtcNow -and -not $ForceRefresh -and -not $HasPortalAttachInput -and $HasRequestedGraphScopes) {
             Write-Verbose -Message "Connect-O365Admin - Using cache for connection $($Script:AuthorizationO365Cache.UserName)"
@@ -162,6 +156,18 @@ function Connect-O365Admin {
             if ($Script:AuthorizationO365Cache.Contains('HeadersPortal')) { $HeadersPortal = $Script:AuthorizationO365Cache.HeadersPortal }
         }
     }
+    $GraphScopesToRequest = @(
+        foreach ($Scope in @($ExistingGraphScopes + $RequestedGraphScopes)) {
+            foreach ($Part in ($Scope -split '\s+')) {
+                if (-not [string]::IsNullOrWhiteSpace($Part) -and $Part -notin 'offline_access', 'openid', 'profile', 'email') {
+                    $ConcreteScope = ($Part -split '\|' | Select-Object -First 1).Trim()
+                    if (-not [string]::IsNullOrWhiteSpace($ConcreteScope)) {
+                        $ConcreteScope
+                    }
+                }
+            }
+        }
+    ) | Select-Object -Unique
 
     if ($ExplicitCredential) {
         $Credential = $ExplicitCredential

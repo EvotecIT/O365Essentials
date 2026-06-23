@@ -34,6 +34,11 @@
     be refreshed, Invoke-O365Admin reconnects with those scopes before sending the
     request.
 
+    .PARAMETER JsonDepth
+    Depth used when serializing request bodies. Leave the default for normal API
+    calls and raise it only for known full-settings payloads with deeper nested
+    objects.
+
     .PARAMETER UsePortalSession
     Forces the request through the cached admin.cloud.microsoft portal WebSession
     attached to the current authorization state.
@@ -52,6 +57,7 @@
         [System.Collections.IDictionary] $QueryParameter,
         [System.Collections.IDictionary] $AdditionalHeaders,
         [string[]] $RequiredGraphScope,
+        [ValidateRange(1, 100)][int] $JsonDepth = 5,
         [switch] $UsePortalSession,
         [switch] $QuietOnError,
         [Parameter(DontShow)][switch] $SkipPortalAttachRetry
@@ -71,10 +77,15 @@
         # This forces a reconnect of session in case it's about to time out. If it's not timeouting a cache value is used
         $Headers = Connect-O365Admin -Headers $Headers
     } elseif (-not $PortalSessionRequest -and $Headers) {
-        $Headers = Connect-O365Admin -Headers $Headers
-        Update-AuthorizationState -Target $CallerHeaders -Source $Headers
-        if ($CallerHeaders) {
-            $Headers = $CallerHeaders
+        $RefreshedHeaders = Connect-O365Admin -Headers $Headers
+        if ($RefreshedHeaders) {
+            $Headers = $RefreshedHeaders
+            Update-AuthorizationState -Target $CallerHeaders -Source $RefreshedHeaders
+            if ($CallerHeaders) {
+                $Headers = $CallerHeaders
+            }
+        } else {
+            $Headers = $null
         }
     } elseif (-not $Headers) {
         Write-Warning "Invoke-O365Admin - Not connected. Please connect using Connect-O365Admin."
@@ -89,14 +100,16 @@
         $CanRefreshGraphScope = $Headers.AuthenticationMode -eq 'WAM' -or $Headers.RefreshToken -or $Headers.Credential
         if ($CanRefreshGraphScope) {
             Write-Verbose -Message "Invoke-O365Admin - Refreshing Graph token with required scopes: $($RequiredGraphScope -join ', ')"
-            $Headers = Connect-O365Admin -Headers $Headers -ForceRefresh -GraphScope $RequiredGraphScope
-            Update-AuthorizationState -Target $CallerHeaders -Source $Headers
-            if ($CallerHeaders) {
-                $Headers = $CallerHeaders
-            }
-            if (-not $Headers) {
+            $RefreshedHeaders = Connect-O365Admin -Headers $Headers -ForceRefresh -GraphScope $RequiredGraphScope
+            if (-not $RefreshedHeaders) {
                 Write-Warning "Invoke-O365Admin - Authorization error after Graph scope refresh. Skipping."
                 return
+            }
+            $Headers = $RefreshedHeaders
+            $GraphRefreshKeys = 'AccessTokenGraph', 'HeadersGraph', 'GraphScopes', 'ExpiresOnUTC', 'RefreshToken', 'Tenant', 'UserName', 'AuthenticationMode'
+            Update-AuthorizationState -Target $CallerHeaders -Source $RefreshedHeaders -Key $GraphRefreshKeys
+            if ($CallerHeaders) {
+                $Headers = $CallerHeaders
             }
         } else {
             Write-Verbose -Message "Invoke-O365Admin - Required Graph scopes were not present and the current authentication mode cannot be refreshed automatically: $($RequiredGraphScope -join ', ')"
@@ -162,7 +175,7 @@
     #$RestSplat.Headers."etag" = '1629993527.826253_3ce8143d'
 
     if ($Body) {
-        $RestSplat['Body'] = $Body | ConvertTo-Json -Depth 5
+        $RestSplat['Body'] = $Body | ConvertTo-Json -Depth $JsonDepth
     }
     $RestSplat.Uri = Join-UriQuery -BaseUri $Uri -QueryParameter $QueryParameter
     if ($RestSplat['Body']) {
@@ -271,6 +284,7 @@
                     QueryParameter       = $QueryParameter
                     AdditionalHeaders     = $AdditionalHeaders
                     RequiredGraphScope    = $RequiredGraphScope
+                    JsonDepth             = $JsonDepth
                     UsePortalSession      = $true
                     QuietOnError          = $QuietOnError
                     SkipPortalAttachRetry = $true

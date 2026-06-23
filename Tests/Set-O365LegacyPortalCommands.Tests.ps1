@@ -25,7 +25,7 @@ Describe 'Enterprise Apps admin consent policy commands' {
         $result.approversV2.user | Should -Contain 'user-id'
         Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://graph.microsoft.com/v1.0/policies/adminConsentRequestPolicy' -and
-            $RequiredGraphScope -contains 'Policy.Read.All'
+            $RequiredGraphScope -contains 'Policy.Read.All|Policy.ReadWrite.ConsentRequest|Directory.Read.All|Directory.ReadWrite.All'
         } -Exactly 1
     }
 
@@ -64,7 +64,7 @@ Describe 'Enterprise Apps admin consent policy commands' {
         Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Method -eq 'PUT' -and
             $Uri -eq 'https://graph.microsoft.com/v1.0/policies/adminConsentRequestPolicy' -and
-            $RequiredGraphScope -contains 'Policy.ReadWrite.ConsentRequest'
+            $RequiredGraphScope -contains 'Policy.ReadWrite.ConsentRequest|Directory.ReadWrite.All'
         } -Exactly 1
     }
 }
@@ -112,7 +112,8 @@ Describe 'Microsoft Teams settings setter' {
         $script:teamsBody.CloudStorage.Box.Value | Should -BeFalse
         Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.microsoft.com/admin/api/settings/apps/skypeteams' -and
-            $Method -eq 'POST'
+            $Method -eq 'POST' -and
+            $JsonDepth -eq 20
         } -Exactly 1
     }
 
