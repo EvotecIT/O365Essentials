@@ -110,9 +110,12 @@ Describe 'Invoke-O365Admin header selection' {
         Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer graph' } -Exactly 1
     }
     It 'refreshes Graph headers when required scopes are missing' {
+        $oldExpiry = ([datetime]::UtcNow).AddMinutes(5)
+        $newExpiry = ([datetime]::UtcNow).AddHours(1)
         $headers = [ordered]@{
             AuthenticationMode = 'WAM'
             GraphScopes        = @('User.Read')
+            ExpiresOnUTC       = $oldExpiry
             HeadersO365        = @{ Authorization = 'Bearer o365' }
             HeadersGraph       = @{ Authorization = 'Bearer old-graph' }
             HeadersAzure       = @{ Authorization = 'Bearer portal' }
@@ -122,11 +125,12 @@ Describe 'Invoke-O365Admin header selection' {
         $refreshedHeaders = [ordered]@{
             AuthenticationMode = 'WAM'
             GraphScopes        = @('User.Read', 'Policy.Read.All')
+            ExpiresOnUTC       = $newExpiry
             HeadersGraph       = @{ Authorization = 'Bearer new-graph' }
             HeadersTeams       = $null
         }
         Mock -ModuleName O365Essentials Connect-O365Admin -MockWith {
-            param($Headers, $ForceRefresh, $GraphScope)
+            param($Headers, $ForceRefresh, $GraphScope, $SuppressWamPrompt)
             if ($ForceRefresh -and $GraphScope -contains 'Policy.Read.All') {
                 return $refreshedHeaders
             }
@@ -137,11 +141,12 @@ Describe 'Invoke-O365Admin header selection' {
         Invoke-O365Admin -Uri 'https://graph.microsoft.com/v1.0/policies/authenticationFlowsPolicy' -Headers $headers -RequiredGraphScope 'Policy.Read.All'
 
         Assert-MockCalled Connect-O365Admin -ModuleName O365Essentials -ParameterFilter {
-            $ForceRefresh -and $GraphScope -contains 'Policy.Read.All'
+            $ForceRefresh -and $SuppressWamPrompt -and $GraphScope -contains 'Policy.Read.All'
         } -Exactly 1
         Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer new-graph' } -Exactly 1
         $headers.HeadersGraph.Authorization | Should -Be 'Bearer new-graph'
         $headers.GraphScopes | Should -Contain 'Policy.Read.All'
+        $headers.ExpiresOnUTC | Should -Be $oldExpiry
         $headers.HeadersTeams.Authorization | Should -Be 'Bearer teams'
         $headers.HeadersARM.Authorization | Should -Be 'Bearer arm'
     }

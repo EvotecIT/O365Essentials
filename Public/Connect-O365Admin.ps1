@@ -52,7 +52,8 @@ function Connect-O365Admin {
         [Parameter(DontShow)][string] $PortalAttachRouteKey,
         [Parameter(DontShow)][string] $PortalAttachUserName,
         [Parameter(DontShow)][System.Collections.IDictionary] $PortalAttachCookieMap,
-        [Parameter(DontShow)][switch] $SkipPortalBootstrap
+        [Parameter(DontShow)][switch] $SkipPortalBootstrap,
+        [Parameter(DontShow)][switch] $SuppressWamPrompt
     )
 
     $HasPortalAttachInput = $PSBoundParameters.ContainsKey('PortalAttachWebSession') -or
@@ -230,6 +231,7 @@ function Connect-O365Admin {
 
     $Tenant = if ($Tenant) { $Tenant } else { 'organizations' }
     $WamAuthorityTenant = if ($UseWam) { $Tenant } else { $null }
+    $ForceWamPrompt = $ForceRefresh -and -not $SuppressWamPrompt
     $ScopesO365 = 'https://admin.microsoft.com/.default offline_access'
     # Admin and directory portal routes can require the Microsoft 365/Azure portal audience
     $ResourceAzure = '74658136-14ec-4630-ad9b-26e160ff0fc6'
@@ -264,9 +266,9 @@ function Connect-O365Admin {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Graph"
         if ($UseWam) {
             if ($RequestedGraphScopes.Count -gt 0) {
-                $tokenGraph = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -Scope $ScopesGraph -Account $WamLoginHint -ForcePrompt:$ForceRefresh
+                $tokenGraph = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -Scope $ScopesGraph -Account $WamLoginHint -ForcePrompt:$ForceWamPrompt
             } else {
-                $tokenGraph = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://graph.microsoft.com/' -Account $WamLoginHint -ForcePrompt:$ForceRefresh
+                $tokenGraph = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://graph.microsoft.com/' -Account $WamLoginHint -ForcePrompt:$ForceWamPrompt
             }
         } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
             $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword

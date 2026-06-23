@@ -100,15 +100,16 @@
         $CanRefreshGraphScope = $Headers.AuthenticationMode -eq 'WAM' -or $Headers.RefreshToken -or $Headers.Credential
         if ($CanRefreshGraphScope) {
             Write-Verbose -Message "Invoke-O365Admin - Refreshing Graph token with required scopes: $($RequiredGraphScope -join ', ')"
-            $RefreshedHeaders = Connect-O365Admin -Headers $Headers -ForceRefresh -GraphScope $RequiredGraphScope
+            $RefreshedHeaders = Connect-O365Admin -Headers $Headers -ForceRefresh -GraphScope $RequiredGraphScope -SuppressWamPrompt
             if (-not $RefreshedHeaders) {
                 Write-Warning "Invoke-O365Admin - Authorization error after Graph scope refresh. Skipping."
                 return
             }
             $Headers = $RefreshedHeaders
-            $GraphRefreshKeys = 'AccessTokenGraph', 'HeadersGraph', 'GraphScopes', 'ExpiresOnUTC', 'RefreshToken', 'Tenant', 'UserName', 'AuthenticationMode'
+            $GraphRefreshKeys = 'AccessTokenGraph', 'HeadersGraph', 'GraphScopes', 'RefreshToken', 'Tenant', 'UserName', 'AuthenticationMode'
             Update-AuthorizationState -Target $CallerHeaders -Source $RefreshedHeaders -Key $GraphRefreshKeys
             if ($CallerHeaders) {
+                $Script:AuthorizationO365Cache = $CallerHeaders
                 $Headers = $CallerHeaders
             }
         } else {
