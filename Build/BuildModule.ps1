@@ -76,19 +76,26 @@
     New-ConfigurationFormat -ApplyTo 'DefaultPSD1', 'OnMergePSD1' -PSD1Style 'Minimal'
 
     # configuration for documentation, at the same time it enables documentation processing
-    New-ConfigurationDocumentation -Enable:$false -StartClean -UpdateWhenNew -PathReadme 'Docs\Readme.md' -Path 'Docs'
+    New-ConfigurationDocumentation -Enable:$false -PathReadme 'Docs\Readme.md' -Path 'Docs'
 
-    New-ConfigurationImportModule -ImportSelf -ImportRequiredModules
+    New-ConfigurationImportModule -ImportSelf -ImportRequiredModules -SkipBinaryConflictAnalysis
 
     $newConfigurationBuildSplat = @{
         Enable                            = $true
         SignModule                        = $true
+        CertificateThumbprint             = '483292C9E317AA13B07BB7A96AE9D1A5ED9E7703'
         DeleteTargetModuleBeforeBuild     = $true
         MergeModuleOnBuild                = $true
-        CertificateThumbprint             = '483292C9E317AA13B07BB7A96AE9D1A5ED9E7703'
         DoNotAttemptToFixRelativePaths    = $true
         MergeFunctionsFromApprovedModules = $true
         RefreshPSD1Only                   = $true
+        NETProjectPath                    = "$PSScriptRoot\..\Sources\O365Essentials.Auth\O365Essentials.Auth.csproj"
+        NETProjectName                    = 'O365Essentials.Auth'
+        NETFramework                      = @('net8.0')
+        NETBinaryModule                   = @('O365Essentials.Auth.dll')
+        NETBinaryModuleCmdletScanDisabled = $true
+        NETAssemblyLoadContext            = $true
+        NETHandleRuntimes                 = $true
     }
     New-ConfigurationBuild @newConfigurationBuildSplat
 

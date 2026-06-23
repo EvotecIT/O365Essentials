@@ -26,78 +26,13 @@ function Set-O365PortalSession {
         [switch] $SkipBootstrap
     )
 
-    function Add-CookieToSession {
-        [cmdletbinding()]
-        param(
-            [Parameter(Mandatory)][Microsoft.PowerShell.Commands.WebRequestSession] $Session,
-            [Parameter(Mandatory)][string] $Name,
-            [Parameter(Mandatory)][string] $Value,
-            [Parameter(Mandatory)][string] $Domain
-        )
-
-        $Cookie = [System.Net.Cookie]::new($Name, $Value, '/', $Domain)
-        $Session.Cookies.Add($Cookie)
-    }
-
-    function Add-CookieMapToSession {
-        [cmdletbinding()]
-        param(
-            [Parameter(Mandatory)][Microsoft.PowerShell.Commands.WebRequestSession] $Session,
-            [Parameter(Mandatory)][System.Collections.IDictionary] $CookieMap,
-            [Parameter(Mandatory)][string] $Domain
-        )
-
-        foreach ($Entry in @($CookieMap.GetEnumerator())) {
-            $CookieName = [string] $Entry.Key
-            $CookieValue = [string] $Entry.Value
-            if ([string]::IsNullOrWhiteSpace($CookieName) -or [string]::IsNullOrWhiteSpace($CookieValue)) {
-                continue
-            }
-            Add-CookieToSession -Session $Session -Name $CookieName -Value $CookieValue -Domain $Domain
-        }
-    }
-
-    function Copy-AuthorizationState {
-        [cmdletbinding()]
-        param(
-            [System.Collections.IDictionary] $Source
-        )
-
-        $Clone = [ordered] @{}
-        if ($Source) {
-            foreach ($Entry in @($Source.GetEnumerator())) {
-                $Clone[$Entry.Key] = $Entry.Value
-            }
-        }
-        $Clone
-    }
-
-    function Resolve-PortalHeaderValue {
-        [cmdletbinding()]
-        param(
-            [string] $Value
-        )
-
-        if ([string]::IsNullOrWhiteSpace($Value)) {
-            return $Value
-        }
-
-        if ($Value -match '%[0-9A-Fa-f]{2}') {
-            try {
-                return [System.Uri]::UnescapeDataString($Value)
-            } catch {
-                return $Value
-            }
-        }
-
-        $Value
-    }
-
     $BaseHeaders = if ($Headers) {
         Connect-O365Admin -Headers $Headers
-    } elseif ($Script:AuthorizationO365Cache) {
+    }
+    elseif ($Script:AuthorizationO365Cache) {
         Connect-O365Admin -Headers $Script:AuthorizationO365Cache
-    } else {
+    }
+    else {
         [ordered] @{}
     }
 
@@ -108,7 +43,8 @@ function Set-O365PortalSession {
             $WebSession.UserAgent = $UserAgent
         }
         $WebSession
-    } else {
+    }
+    else {
         $Session = [Microsoft.PowerShell.Commands.WebRequestSession]::new()
         $Session.UserAgent = $UserAgent
 
@@ -149,7 +85,8 @@ function Set-O365PortalSession {
             TenantId       = $TenantId
             UserId         = $Username
         }
-    } else {
+    }
+    else {
         Initialize-O365PortalWebSession -WebSession $ResolvedWebSession -UserAgent $UserAgent
     }
 

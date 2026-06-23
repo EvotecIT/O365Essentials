@@ -27,25 +27,6 @@ function Get-O365OrgBrandCenter {
 
     $AdditionalHeaders = Get-O365PortalContextHeaders -Context BrandCenter
 
-    function Get-BrandCenterSafeResult {
-        [cmdletbinding()]
-        param(
-            [Parameter(Mandatory)][string] $ResultName,
-            [Parameter(Mandatory)][scriptblock] $ScriptBlock
-        )
-
-        try {
-            $Result = & $ScriptBlock
-            if ($null -eq $Result) {
-                New-O365UnavailableResult -Name $ResultName -Area 'Brand Center section' -Description 'The Brand Center section did not return a usable payload.'
-            } else {
-                $Result
-            }
-        } catch {
-            New-O365UnavailableResult -Name $ResultName -Area 'Brand Center section' -Description 'The Brand Center section did not return a usable payload.' -ErrorMessage $_.Exception.Message
-        }
-    }
-
     if ($Name -eq 'All') {
         [PSCustomObject] @{
             Configuration = Get-O365OrgBrandCenter -Headers $Headers -Name Configuration
@@ -59,5 +40,5 @@ function Get-O365OrgBrandCenter {
         'SiteUrl' { "https://admin.microsoft.com/_api/GroupSiteManager/GetValidSiteUrlFromAlias?alias='BrandGuide'&managedPath='sites'" }
     }
 
-    Get-BrandCenterSafeResult -ResultName $Name -ScriptBlock { Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET -AdditionalHeaders $AdditionalHeaders }
+    Invoke-O365SectionSafeResult -Section BrandCenter -ResultName $Name -ScriptBlock { Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET -AdditionalHeaders $AdditionalHeaders }
 }

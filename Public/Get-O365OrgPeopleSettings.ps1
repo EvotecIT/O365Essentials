@@ -39,25 +39,6 @@ function Get-O365OrgPeopleSettings {
 
     $AdditionalHeaders = Get-O365PortalContextHeaders -Context People
 
-    function Get-PeopleSafeResult {
-        [cmdletbinding()]
-        param(
-            [Parameter(Mandatory)][string] $ResultName,
-            [Parameter(Mandatory)][scriptblock] $ScriptBlock
-        )
-
-        try {
-            $Result = & $ScriptBlock
-            if ($null -eq $Result) {
-                New-O365UnavailableResult -Name $ResultName -Area 'People settings section' -Description 'The People settings section did not return a usable payload.'
-            } else {
-                $Result
-            }
-        } catch {
-            New-O365UnavailableResult -Name $ResultName -Area 'People settings section' -Description 'The People settings section did not return a usable payload.' -ErrorMessage $_.Exception.Message
-        }
-    }
-
     if ($Name -eq 'All') {
         [PSCustomObject] @{
             ProfileCardProperties = Get-O365OrgPeopleSettings -Headers $Headers -Name ProfileCardProperties
@@ -75,5 +56,5 @@ function Get-O365OrgPeopleSettings {
         'Pronouns' { "https://admin.microsoft.com/fd/peopleadminservice/$TenantID/settings/pronouns" }
     }
 
-    Get-PeopleSafeResult -ResultName $Name -ScriptBlock { Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET -AdditionalHeaders $AdditionalHeaders }
+    Invoke-O365SectionSafeResult -Section People -ResultName $Name -ScriptBlock { Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET -AdditionalHeaders $AdditionalHeaders }
 }

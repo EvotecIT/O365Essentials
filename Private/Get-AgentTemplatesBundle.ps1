@@ -1,0 +1,10 @@
+function Get-AgentTemplatesBundle {
+    [PSCustomObject] @{
+        Templates                = Invoke-O365SectionSafeResult -Section AgentsSettings -ResultName 'Templates' -ScriptBlock { Invoke-O365Admin -Uri 'https://admin.cloud.microsoft/admin/api/agenttemplates/getagenttemplates' -Headers $Headers -Method GET -AdditionalHeaders $AdditionalHeaders -UsePortalSession:$UsePortalSession }
+        Policies                 = Invoke-O365SectionSafeResult -Section AgentsSettings -ResultName 'Policies' -ScriptBlock { Invoke-O365Admin -Uri 'https://admin.cloud.microsoft/admin/api/agenttemplates/getpolicies?expand=true' -Headers $Headers -Method GET -AdditionalHeaders $AdditionalHeaders -UsePortalSession:$UsePortalSession }
+        BillingAccounts          = Invoke-O365SectionSafeResult -Section AgentsSettings -ResultName 'BillingAccounts' -ScriptBlock { Invoke-O365Admin -Uri 'https://admin.cloud.microsoft/admin/api/tenant/billingAccountsWithShell' -Headers $Headers -Method GET -AdditionalHeaders $AdditionalHeaders -UsePortalSession:$UsePortalSession }
+        AutoQuotaEnabled         = Invoke-O365SectionSafeResult -Section AgentsSettings -ResultName 'AutoQuotaEnabled' -ScriptBlock { Invoke-O365Admin -Uri 'https://admin.cloud.microsoft/_api/SPOInternalUseOnly.TenantAdminSettings/AutoQuotaEnabled' -Headers $Headers -Method GET -AdditionalHeaders $AdditionalHeaders -UsePortalSession:$UsePortalSession }
+        CustomViewFilterDefaults = Invoke-O365SectionSafeResult -Section AgentsSettings -ResultName 'CustomViewFilterDefaults' -ScriptBlock { Invoke-O365Admin -Uri 'https://admin.cloud.microsoft/admin/api/tenant/customviewfilterdefaults' -Headers $Headers -Method GET -AdditionalHeaders $AdditionalHeaders -UsePortalSession:$UsePortalSession }
+        UserRoles                = Invoke-O365SectionSafeResult -Section AgentsSettings -ResultName 'UserRoles' -ScriptBlock { Invoke-O365Admin -Uri 'https://admin.cloud.microsoft/admin/api/users/getuserroles' -Headers $Headers -Method POST -Body @{} -AdditionalHeaders $AdditionalHeaders -UsePortalSession:$UsePortalSession }
+    }
+}

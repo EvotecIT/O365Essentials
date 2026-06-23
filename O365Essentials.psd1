@@ -12,12 +12,12 @@
     PowerShellVersion    = '5.1'
     PrivateData          = @{
         PSData = @{
-            IconUri    = 'https://evotec.xyz/wp-content/uploads/2023/07/O365Essentials.png'
-            ProjectUri = 'https://github.com/EvotecIT/O365Essentials'
-            Tags       = @('Windows', 'Office365', 'Graph', 'Azure', 'Unsupported', 'API')
-            RequireLicenseAcceptance = $false
+            IconUri                    = 'https://evotec.xyz/wp-content/uploads/2023/07/O365Essentials.png'
+            ProjectUri                 = 'https://github.com/EvotecIT/O365Essentials'
+            Tags                       = @('Windows', 'Office365', 'Graph', 'Azure', 'Unsupported', 'API')
+            RequireLicenseAcceptance   = $false
             ExternalModuleDependencies = @()
-}
+        }
     }
     RequiredModules      = @(@{
             Guid            = 'ee272aa8-baaa-4edf-9f45-b6d6f7d844fe'

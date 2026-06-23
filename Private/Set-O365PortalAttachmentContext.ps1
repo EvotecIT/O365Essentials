@@ -75,84 +75,6 @@ function Set-O365PortalAttachmentContext {
         [switch] $SkipBootstrap
     )
 
-    function Get-WebSessionCookieValue {
-        [cmdletbinding()]
-        param(
-            [Parameter(Mandatory)][Microsoft.PowerShell.Commands.WebRequestSession] $Session,
-            [Parameter(Mandatory)][string] $Name
-        )
-
-        foreach ($CookieUri in @('https://admin.cloud.microsoft/', 'https://admin.cloud.microsoft/adminportal')) {
-            $PortalCookies = $Session.Cookies.GetCookies($CookieUri)
-            $Cookie = $PortalCookies | Where-Object Name -eq $Name | Select-Object -First 1
-            if ($Cookie) {
-                return $Cookie.Value
-            }
-        }
-    }
-
-    function Get-MappedPortalValue {
-        [cmdletbinding()]
-        param(
-            [Parameter(Mandatory)] $Source,
-            [Parameter(Mandatory)][string[]] $Names
-        )
-
-        foreach ($Name in $Names) {
-            if ($Source -is [System.Collections.IDictionary]) {
-                if ($Source.Contains($Name)) {
-                    return $Source[$Name]
-                }
-            } elseif ($Source.PSObject -and $Source.PSObject.Properties[$Name]) {
-                return $Source.PSObject.Properties[$Name].Value
-            }
-        }
-    }
-
-    function Convert-CookieHeaderToMap {
-        [cmdletbinding()]
-        param(
-            [Parameter(Mandatory)][string] $Header
-        )
-
-        $Parsed = [ordered] @{}
-        foreach ($Pair in ($Header -split ';')) {
-            $TrimmedPair = $Pair.Trim()
-            if ([string]::IsNullOrWhiteSpace($TrimmedPair)) {
-                continue
-            }
-            $KeyValue = $TrimmedPair -split '=', 2
-            if ($KeyValue.Count -lt 2) {
-                continue
-            }
-            $Parsed[$KeyValue[0].Trim()] = $KeyValue[1].Trim()
-        }
-        $Parsed
-    }
-
-    function Convert-CookieListToMap {
-        [cmdletbinding()]
-        param(
-            [Parameter(Mandatory)][System.Collections.IEnumerable] $Cookies
-        )
-
-        $Parsed = [ordered] @{}
-        foreach ($Cookie in $Cookies) {
-            if ($null -eq $Cookie) {
-                continue
-            }
-
-            $CookieName = Get-MappedPortalValue -Source $Cookie -Names @('Name', 'name')
-            if ([string]::IsNullOrWhiteSpace($CookieName)) {
-                continue
-            }
-
-            $CookieValue = Get-MappedPortalValue -Source $Cookie -Names @('Value', 'value')
-            $Parsed[$CookieName] = $CookieValue
-        }
-        $Parsed
-    }
-
     if ($PSCmdlet.ParameterSetName -eq 'WebSession') {
         $RootAuthToken = Get-WebSessionCookieValue -Session $WebSession -Name 'RootAuthToken'
         $SPAAuthCookie = Get-WebSessionCookieValue -Session $WebSession -Name 'SPAAuthCookie'
@@ -162,19 +84,24 @@ function Set-O365PortalAttachmentContext {
         $TenantId = Get-WebSessionCookieValue -Session $WebSession -Name 's.UserTenantId'
         $PortalRouteKey = Get-WebSessionCookieValue -Session $WebSession -Name 'x-portal-routekey'
         $Username = Get-WebSessionCookieValue -Session $WebSession -Name 's.userid'
-    } elseif ($PSCmdlet.ParameterSetName -eq 'CookieMap' -or $PSCmdlet.ParameterSetName -eq 'Json' -or $PSCmdlet.ParameterSetName -eq 'CookieHeader' -or $PSCmdlet.ParameterSetName -eq 'CookieList') {
+    }
+    elseif ($PSCmdlet.ParameterSetName -eq 'CookieMap' -or $PSCmdlet.ParameterSetName -eq 'Json' -or $PSCmdlet.ParameterSetName -eq 'CookieHeader' -or $PSCmdlet.ParameterSetName -eq 'CookieList') {
         $PortalSource = if ($PSCmdlet.ParameterSetName -eq 'Json') {
             try {
                 ConvertFrom-Json -InputObject $Json -ErrorAction Stop
-            } catch {
+            }
+            catch {
                 Write-Error "Set-O365PortalAttachmentContext - Failed to parse Json input. $($_.Exception.Message)"
                 return
             }
-        } elseif ($PSCmdlet.ParameterSetName -eq 'CookieHeader') {
+        }
+        elseif ($PSCmdlet.ParameterSetName -eq 'CookieHeader') {
             Convert-CookieHeaderToMap -Header $CookieHeader
-        } elseif ($PSCmdlet.ParameterSetName -eq 'CookieList') {
+        }
+        elseif ($PSCmdlet.ParameterSetName -eq 'CookieList') {
             Convert-CookieListToMap -Cookies $CookieList
-        } else {
+        }
+        else {
             $CookieMap
         }
 
@@ -199,15 +126,15 @@ function Set-O365PortalAttachmentContext {
     }
 
     $EnvironmentValues = [ordered] @{
-        O365ESSENTIALS_PORTAL_ROOT_AUTH_TOKEN = $RootAuthToken
-        O365ESSENTIALS_PORTAL_SPA_AUTH_COOKIE = $SPAAuthCookie
+        O365ESSENTIALS_PORTAL_ROOT_AUTH_TOKEN  = $RootAuthToken
+        O365ESSENTIALS_PORTAL_SPA_AUTH_COOKIE  = $SPAAuthCookie
         O365ESSENTIALS_PORTAL_OIDC_AUTH_COOKIE = $OIDCAuthCookie
         O365ESSENTIALS_PORTAL_AJAX_SESSION_KEY = $AjaxSessionKey
-        O365ESSENTIALS_PORTAL_SESSION_ID = $SessionId
-        O365ESSENTIALS_PORTAL_TENANT_ID = $TenantId
-        O365ESSENTIALS_PORTAL_ROUTE_KEY = $PortalRouteKey
-        O365ESSENTIALS_PORTAL_USERNAME = $Username
-        O365ESSENTIALS_PORTAL_SKIP_BOOTSTRAP = if ($SkipBootstrap) { 'true' } else { $null }
+        O365ESSENTIALS_PORTAL_SESSION_ID       = $SessionId
+        O365ESSENTIALS_PORTAL_TENANT_ID        = $TenantId
+        O365ESSENTIALS_PORTAL_ROUTE_KEY        = $PortalRouteKey
+        O365ESSENTIALS_PORTAL_USERNAME         = $Username
+        O365ESSENTIALS_PORTAL_SKIP_BOOTSTRAP   = if ($SkipBootstrap) { 'true' } else { $null }
         O365ESSENTIALS_PORTAL_CLEAR_AFTER_READ = if ($ClearAfterRead) { 'true' } else { 'false' }
     }
 
@@ -216,15 +143,15 @@ function Set-O365PortalAttachmentContext {
     }
 
     [PSCustomObject] @{
-        RootAuthTokenPresent = $true
-        SPAAuthCookiePresent = -not [string]::IsNullOrWhiteSpace($SPAAuthCookie)
+        RootAuthTokenPresent  = $true
+        SPAAuthCookiePresent  = -not [string]::IsNullOrWhiteSpace($SPAAuthCookie)
         OIDCAuthCookiePresent = -not [string]::IsNullOrWhiteSpace($OIDCAuthCookie)
         AjaxSessionKeyPresent = -not [string]::IsNullOrWhiteSpace($AjaxSessionKey)
-        SessionIdPresent = -not [string]::IsNullOrWhiteSpace($SessionId)
-        TenantIdPresent = -not [string]::IsNullOrWhiteSpace($TenantId)
+        SessionIdPresent      = -not [string]::IsNullOrWhiteSpace($SessionId)
+        TenantIdPresent       = -not [string]::IsNullOrWhiteSpace($TenantId)
         PortalRouteKeyPresent = -not [string]::IsNullOrWhiteSpace($PortalRouteKey)
-        UsernamePresent = -not [string]::IsNullOrWhiteSpace($Username)
-        SkipBootstrap = [bool] $SkipBootstrap
-        ClearAfterRead = $ClearAfterRead
+        UsernamePresent       = -not [string]::IsNullOrWhiteSpace($Username)
+        SkipBootstrap         = [bool] $SkipBootstrap
+        ClearAfterRead        = $ClearAfterRead
     }
 }

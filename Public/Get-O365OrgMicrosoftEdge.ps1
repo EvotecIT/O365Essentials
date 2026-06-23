@@ -30,68 +30,9 @@ function Get-O365OrgMicrosoftEdge {
     if ($Headers) {
         if ($Headers.Contains('AjaxSessionKey') -and -not [string]::IsNullOrWhiteSpace($Headers['AjaxSessionKey'])) {
             $UsePortalSession = $true
-        } elseif ($Headers.Contains('PortalWebSession') -and $null -ne $Headers['PortalWebSession']) {
+        }
+        elseif ($Headers.Contains('PortalWebSession') -and $null -ne $Headers['PortalWebSession']) {
             $UsePortalSession = $true
-        }
-    }
-
-    function Get-MicrosoftEdgeHeaders {
-        [cmdletbinding()]
-        param(
-            [hashtable] $ExtraHeaders
-        )
-
-        $HeadersToSend = [ordered] @{}
-        foreach ($Key in $AdditionalHeaders.Keys) {
-            $HeadersToSend[$Key] = $AdditionalHeaders[$Key]
-        }
-
-        if ($ExtraHeaders) {
-            foreach ($Key in $ExtraHeaders.Keys) {
-                $HeadersToSend[$Key] = $ExtraHeaders[$Key]
-            }
-        }
-
-        $HeadersToSend
-    }
-
-    function Get-MicrosoftEdgeSafeResult {
-        [cmdletbinding()]
-        param(
-            [Parameter(Mandatory)][string] $ResultName,
-            [Parameter(Mandatory)][scriptblock] $ScriptBlock
-        )
-
-        try {
-            $Result = & $ScriptBlock
-            if ($null -eq $Result) {
-                if ($ResultName -in @('ConfigurationPolicies', 'ExtensionFeedback')) {
-                    Write-Output -NoEnumerate @()
-                } else {
-                    New-O365UnavailableResult -Name $ResultName -Area 'Microsoft Edge section' -Description 'The Microsoft Edge section did not return a usable payload.'
-                }
-            } else {
-                $Result
-            }
-        } catch {
-            if ($ResultName -eq 'ExtensionFeedback') {
-                New-O365UnavailableResult -Name $ResultName -Area 'Microsoft Edge section' -Description 'The Microsoft Edge extension feedback feed did not return data in the current tenant.' -SuggestedAction 'Validate only if extension feedback is expected for this tenant.' -ErrorMessage $_.Exception.Message -IsOptional $true
-            } else {
-                New-O365UnavailableResult -Name $ResultName -Area 'Microsoft Edge section' -Description 'The Microsoft Edge section did not return a usable payload.' -ErrorMessage $_.Exception.Message
-            }
-        }
-    }
-
-    function ConvertTo-MicrosoftEdgeDeviceSummary {
-        [cmdletbinding()]
-        param(
-            [Parameter(Mandatory)] $DeviceResult
-        )
-
-        [PSCustomObject] @{
-            Count       = $DeviceResult.'@odata.count'
-            Sample      = @($DeviceResult.value)
-            RawSettings = $DeviceResult
         }
     }
 
@@ -115,7 +56,8 @@ function Get-O365OrgMicrosoftEdge {
 
             if (Test-O365UnavailableResult -InputObject $Result) {
                 $Result
-            } else {
+            }
+            else {
                 ConvertTo-MicrosoftEdgeDeviceSummary -DeviceResult $Result
             }
             return

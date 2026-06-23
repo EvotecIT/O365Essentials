@@ -27,25 +27,6 @@ function Get-O365OrgIntegratedApps {
 
     $AdditionalHeaders = Get-O365PortalContextHeaders -Context IntegratedApps
 
-    function Get-IntegratedAppsSafeResult {
-        [cmdletbinding()]
-        param(
-            [Parameter(Mandatory)][string] $ResultName,
-            [Parameter(Mandatory)][scriptblock] $ScriptBlock
-        )
-
-        try {
-            $Result = & $ScriptBlock
-            if ($null -eq $Result) {
-                New-O365UnavailableResult -Name $ResultName -Area 'Integrated apps section' -Description 'The integrated apps section did not return a usable payload.'
-            } else {
-                $Result
-            }
-        } catch {
-            New-O365UnavailableResult -Name $ResultName -Area 'Integrated apps section' -Description 'The integrated apps section did not return a usable payload.' -ErrorMessage $_.Exception.Message
-        }
-    }
-
     if ($Name -eq 'All') {
         [PSCustomObject] @{
             Settings                  = Get-O365OrgIntegratedApps -Headers $Headers -Name Settings
@@ -65,5 +46,5 @@ function Get-O365OrgIntegratedApps {
         'PopularAppRecommendations' { 'https://admin.microsoft.com/fd/addins/api/recommendations/appRecommendations?appRecommendationType=PopularApps' }
     }
 
-    Get-IntegratedAppsSafeResult -ResultName $Name -ScriptBlock { Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET -AdditionalHeaders $AdditionalHeaders }
+    Invoke-O365SectionSafeResult -Section IntegratedApps -ResultName $Name -ScriptBlock { Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET -AdditionalHeaders $AdditionalHeaders }
 }
