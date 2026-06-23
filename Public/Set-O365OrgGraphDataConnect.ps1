@@ -63,6 +63,17 @@
             "TenantLockBoxApproverGroup" = $TenantLockBoxApproverGroup
         }
     }
+
+    if (-not $Body) {
+        Write-Warning -Message "Set-O365OrgGraphDataConnect - Current settings could not be read. Use -Force with explicit values to submit a full payload."
+        return
+    }
+
+    if ($Body.ServiceEnabled -and [string]::IsNullOrWhiteSpace($Body.TenantLockBoxApproverGroup)) {
+        Write-Warning -Message "Set-O365OrgGraphDataConnect - TenantLockBoxApproverGroup is required when Graph Data Connect is enabled."
+        return
+    }
+
     $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method POST -Body $Body
     $Output
 }

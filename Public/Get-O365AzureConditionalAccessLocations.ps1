@@ -20,19 +20,17 @@
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
     )
-    $Uri = 'https://graph.microsoft.com/beta/conditionalAccess/namedLocations'
-
-    #?`$filter=&`$orderby=displayName&`$skip=0&`$top=10&`$count=true
+    $Uri = 'https://graph.microsoft.com/v1.0/identity/conditionalAccess/namedLocations'
 
     $QueryParameters = @{
-        top     = 10
-        skip    = 0
-        orderby = 'displayName'
-        filter  = ''
-        count   = 'true'
+        '$top'     = 10
+        '$skip'    = 0
+        '$orderby' = 'displayName'
+        '$filter'  = ''
+        '$count'   = 'true'
     }
 
-    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -QueryParameter $QueryParameters
+    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -QueryParameter $QueryParameters -RequiredGraphScope 'Policy.Read.All'
     if ($Output) {
         $Output
     }

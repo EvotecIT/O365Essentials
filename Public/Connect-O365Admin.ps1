@@ -16,6 +16,11 @@ function Connect-O365Admin {
     When portal attachment state is present, Connect-O365Admin folds that browser-backed
     session into the cached authorization object so portal-sensitive routes can later
     replay through Invoke-O365Admin without changing the user-facing workflow.
+
+    .PARAMETER GraphScope
+    Additional delegated Microsoft Graph scopes to request for Graph-backed commands
+    that need more than the default Graph token. This is especially useful with
+    -UseWam because MSAL can prompt for the required delegated consent interactively.
     #>
     [cmdletbinding(DefaultParameterSetName = 'Credential')]
     param(
@@ -32,6 +37,7 @@ function Connect-O365Admin {
         [parameter(ParameterSetName = 'Credential')][alias('WAM')][switch] $UseWam,
         # Tenant ID; defaults to 'organizations' and is replaced with the actual tenant after sign-in
         [alias('TenantID')][string] $Tenant,
+        [alias('GraphScopes')][string[]] $GraphScope,
         [string] $DomainName,
         [string] $Subscription,
         # Hidden portal attachment inputs are intended for host/app integrations only.
@@ -211,7 +217,12 @@ function Connect-O365Admin {
     $ResourceAzure = '74658136-14ec-4630-ad9b-26e160ff0fc6'
     # Use the management.azure.com resource for ARM token acquisition
     $ScopesARM = 'https://management.azure.com/.default offline_access'
-    $ScopesGraph = 'https://graph.microsoft.com/.default offline_access'
+    $RequestedGraphScopes = @($GraphScope | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | ForEach-Object { $_.Trim() })
+    $ScopesGraph = if ($RequestedGraphScopes.Count -gt 0) {
+        (@($RequestedGraphScopes) + 'offline_access' | Select-Object -Unique) -join ' '
+    } else {
+        'https://graph.microsoft.com/.default offline_access'
+    }
     # Teams admin APIs on teams.microsoft.com expect a token for api.spaces.skype.com
     $ScopesTeams = 'https://api.spaces.skype.com/.default offline_access'
     # Substrate Admin App Catalog (used by Teams admin UI to reflect app availability) — use v1 resource GUID
@@ -235,7 +246,11 @@ function Connect-O365Admin {
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Graph"
         if ($UseWam) {
-            $tokenGraph = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://graph.microsoft.com/' -Account $WamLoginHint -ForcePrompt:$ForceRefresh
+            if ($RequestedGraphScopes.Count -gt 0) {
+                $tokenGraph = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -Scope $ScopesGraph -Account $WamLoginHint -ForcePrompt:$ForceRefresh
+            } else {
+                $tokenGraph = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://graph.microsoft.com/' -Account $WamLoginHint -ForcePrompt:$ForceRefresh
+            }
         } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
             $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } elseif ($RefreshToken -and -not $Credential -and -not $Device) {
@@ -267,6 +282,15 @@ function Connect-O365Admin {
     }
     $refresh = if ($UseWam) { $null } else { $tokenGraph.refresh_token }
     $WamAccount = if ($UseWam) { $tokenGraph.account } else { $null }
+    $graphTokenInfo = ConvertFrom-JSONWebToken -Token $tokenGraph.access_token
+    $GrantedGraphScopes = @()
+    if ($graphTokenInfo.scp) {
+        $GrantedGraphScopes = @($graphTokenInfo.scp -split '\s+' | Where-Object { $_ })
+    } elseif ($graphTokenInfo.roles) {
+        $GrantedGraphScopes = @($graphTokenInfo.roles)
+    } elseif ($tokenGraph.scopes) {
+        $GrantedGraphScopes = @($tokenGraph.scopes)
+    }
     $tokenO365 = $null
     $tokenAzure = $null
     try {
@@ -453,6 +477,7 @@ function Connect-O365Admin {
             $null
         }
         'AccessTokenGraph'    = $tokenGraph.access_token
+        'GraphScopes'         = $GrantedGraphScopes
         'HeadersGraph'        = [ordered] @{
             'Content-Type'           = 'application/json; charset=UTF-8'
             'Authorization'          = "Bearer $($tokenGraph.access_token)"

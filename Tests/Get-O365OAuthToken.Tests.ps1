@@ -176,6 +176,35 @@ Describe 'Connect-O365Admin portal token' {
         } -Exactly 1
     }
 
+    It 'requests explicit Graph scopes through WAM when GraphScope is supplied' {
+        Mock -ModuleName O365Essentials ConvertFrom-JSONWebToken -MockWith {
+            [pscustomobject]@{
+                tid = 'tenant-id'
+                upn = 'user@contoso.com'
+            }
+        }
+        Mock -ModuleName O365Essentials Get-O365BrokerAccessToken -MockWith {
+            param($Tenant, $ResourceUrl, $Scope, $Account, $ForcePrompt)
+            $Target = if ($ResourceUrl) { $ResourceUrl } else { $Scope }
+            [pscustomobject]@{
+                access_token = "token:$Target"
+                expires_on   = ([datetime]::UtcNow).AddHours(1)
+                tenant_id    = 'tenant-id'
+                account      = 'user@contoso.com'
+                scopes       = @($Scope -split '\s+' | Where-Object { $_ -and $_ -ne 'offline_access' })
+            }
+        }
+        Mock -ModuleName O365Essentials Get-O365OAuthToken -MockWith { throw 'legacy OAuth path should not be used' }
+
+        $result = Connect-O365Admin -UseWam -Tenant 'tenant-id' -GraphScope 'Policy.Read.All'
+
+        $result.AccessTokenGraph | Should -Be 'token:Policy.Read.All offline_access'
+        $result.GraphScopes | Should -Contain 'Policy.Read.All'
+        Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
+            $Scope -eq 'Policy.Read.All offline_access' -and -not $ResourceUrl
+        } -Exactly 1
+    }
+
     It 'keeps the initial WAM authority tenant for resource token requests' {
         $script:wamRequests = [System.Collections.Generic.List[object]]::new()
         Mock -ModuleName O365Essentials ConvertFrom-JSONWebToken -MockWith {

@@ -28,6 +28,12 @@
     .PARAMETER QueryParameter
     The query parameters for the request.
 
+    .PARAMETER RequiredGraphScope
+    Delegated Microsoft Graph scopes required by the target Graph endpoint. When the
+    cached Graph token does not include them and the current authentication state can
+    be refreshed, Invoke-O365Admin reconnects with those scopes before sending the
+    request.
+
     .PARAMETER UsePortalSession
     Forces the request through the cached admin.cloud.microsoft portal WebSession
     attached to the current authorization state.
@@ -45,6 +51,7 @@
         [object] $Body,
         [System.Collections.IDictionary] $QueryParameter,
         [System.Collections.IDictionary] $AdditionalHeaders,
+        [string[]] $RequiredGraphScope,
         [switch] $UsePortalSession,
         [switch] $QuietOnError,
         [Parameter(DontShow)][switch] $SkipPortalAttachRetry
@@ -72,6 +79,21 @@
         Write-Warning "Invoke-O365Admin - Authorization error. Skipping."
         return
     }
+
+    if ($Uri -like '*graph.microsoft.com*' -and $RequiredGraphScope -and -not (Test-O365GraphScope -GrantedScope $Headers.GraphScopes -RequiredScope $RequiredGraphScope)) {
+        $CanRefreshGraphScope = $Headers.AuthenticationMode -eq 'WAM' -or $Headers.RefreshToken -or $Headers.Credential
+        if ($CanRefreshGraphScope) {
+            Write-Verbose -Message "Invoke-O365Admin - Refreshing Graph token with required scopes: $($RequiredGraphScope -join ', ')"
+            $Headers = Connect-O365Admin -Headers $Headers -ForceRefresh -GraphScope $RequiredGraphScope
+            if (-not $Headers) {
+                Write-Warning "Invoke-O365Admin - Authorization error after Graph scope refresh. Skipping."
+                return
+            }
+        } else {
+            Write-Verbose -Message "Invoke-O365Admin - Required Graph scopes were not present and the current authentication mode cannot be refreshed automatically: $($RequiredGraphScope -join ', ')"
+        }
+    }
+
     $RestSplat = @{
         Method      = $Method
         ContentType = $ContentType
@@ -238,9 +260,10 @@
                     Method               = $Method
                     ContentType          = $ContentType
                     QueryParameter       = $QueryParameter
-                    AdditionalHeaders    = $AdditionalHeaders
-                    UsePortalSession     = $true
-                    QuietOnError         = $QuietOnError
+                    AdditionalHeaders     = $AdditionalHeaders
+                    RequiredGraphScope    = $RequiredGraphScope
+                    UsePortalSession      = $true
+                    QuietOnError          = $QuietOnError
                     SkipPortalAttachRetry = $true
                 }
                 if ($PSBoundParameters.ContainsKey('Body')) {

@@ -109,6 +109,58 @@ Describe 'Invoke-O365Admin header selection' {
         Invoke-O365Admin -Uri 'https://graph.microsoft.com/v1.0/test' -Headers $headers
         Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer graph' } -Exactly 1
     }
+    It 'refreshes Graph headers when required scopes are missing' {
+        $headers = [ordered]@{
+            AuthenticationMode = 'WAM'
+            GraphScopes        = @('User.Read')
+            HeadersO365        = @{ Authorization = 'Bearer o365' }
+            HeadersGraph       = @{ Authorization = 'Bearer old-graph' }
+            HeadersAzure       = @{ Authorization = 'Bearer portal' }
+            HeadersARM         = @{ Authorization = 'Bearer arm' }
+        }
+        $refreshedHeaders = [ordered]@{
+            AuthenticationMode = 'WAM'
+            GraphScopes        = @('User.Read', 'Policy.Read.All')
+            HeadersO365        = @{ Authorization = 'Bearer o365' }
+            HeadersGraph       = @{ Authorization = 'Bearer new-graph' }
+            HeadersAzure       = @{ Authorization = 'Bearer portal' }
+            HeadersARM         = @{ Authorization = 'Bearer arm' }
+        }
+        Mock -ModuleName O365Essentials Connect-O365Admin -MockWith {
+            param($Headers, $ForceRefresh, $GraphScope)
+            if ($ForceRefresh -and $GraphScope -contains 'Policy.Read.All') {
+                return $refreshedHeaders
+            }
+            $Headers
+        }
+        Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith { }
+
+        Invoke-O365Admin -Uri 'https://graph.microsoft.com/v1.0/policies/authenticationFlowsPolicy' -Headers $headers -RequiredGraphScope 'Policy.Read.All'
+
+        Assert-MockCalled Connect-O365Admin -ModuleName O365Essentials -ParameterFilter {
+            $ForceRefresh -and $GraphScope -contains 'Policy.Read.All'
+        } -Exactly 1
+        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer new-graph' } -Exactly 1
+    }
+    It 'does not refresh Graph headers when required scopes are already granted' {
+        $headers = [ordered]@{
+            AuthenticationMode = 'WAM'
+            GraphScopes        = @('Policy.Read.All')
+            HeadersO365        = @{ Authorization = 'Bearer o365' }
+            HeadersGraph       = @{ Authorization = 'Bearer graph' }
+            HeadersAzure       = @{ Authorization = 'Bearer portal' }
+            HeadersARM         = @{ Authorization = 'Bearer arm' }
+        }
+        Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { param($Headers) $Headers }
+        Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith { }
+
+        Invoke-O365Admin -Uri 'https://graph.microsoft.com/v1.0/policies/authenticationFlowsPolicy' -Headers $headers -RequiredGraphScope 'Policy.Read.All'
+
+        Assert-MockCalled Connect-O365Admin -ModuleName O365Essentials -ParameterFilter {
+            $ForceRefresh
+        } -Exactly 0
+        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer graph' } -Exactly 1
+    }
     It 'merges additional headers into the selected header set' {
         $headers = [ordered]@{
             HeadersO365  = @{ Authorization = 'Bearer o365' }
