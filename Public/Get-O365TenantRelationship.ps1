@@ -25,31 +25,12 @@ function Get-O365TenantRelationship {
         [ValidateSet('All', 'MultiTenantOrganization', 'OrganizationRelationships', 'RemovedTenants', 'Tenants', 'UserSyncAppOutboundDetails')][string] $Name = 'All'
     )
 
-    function Get-TenantRelationshipSafeResult {
-        [cmdletbinding()]
-        param(
-            [Parameter(Mandatory)][string] $ResultName,
-            [Parameter(Mandatory)][scriptblock] $ScriptBlock
-        )
-
-        try {
-            $Result = & $ScriptBlock
-            if ($null -eq $Result) {
-                New-O365UnavailableResult -Name $ResultName -Area 'Tenant relationship section' -Description 'The tenant relationship section did not return a usable payload.'
-            } else {
-                $Result
-            }
-        } catch {
-            New-O365UnavailableResult -Name $ResultName -Area 'Tenant relationship section' -Description 'The tenant relationship section did not return a usable payload.' -ErrorMessage $_.Exception.Message
-        }
-    }
-
     if ($Name -eq 'All') {
         [PSCustomObject] @{
-            MultiTenantOrganization   = Get-O365TenantRelationship -Headers $Headers -Name MultiTenantOrganization
-            OrganizationRelationships = Get-O365TenantRelationship -Headers $Headers -Name OrganizationRelationships
-            Tenants                   = Get-O365TenantRelationship -Headers $Headers -Name Tenants
-            RemovedTenants            = Get-O365TenantRelationship -Headers $Headers -Name RemovedTenants
+            MultiTenantOrganization    = Get-O365TenantRelationship -Headers $Headers -Name MultiTenantOrganization
+            OrganizationRelationships  = Get-O365TenantRelationship -Headers $Headers -Name OrganizationRelationships
+            Tenants                    = Get-O365TenantRelationship -Headers $Headers -Name Tenants
+            RemovedTenants             = Get-O365TenantRelationship -Headers $Headers -Name RemovedTenants
             UserSyncAppOutboundDetails = Get-O365TenantRelationship -Headers $Headers -Name UserSyncAppOutboundDetails
         }
         return
@@ -63,5 +44,5 @@ function Get-O365TenantRelationship {
         'UserSyncAppOutboundDetails' { 'https://admin.cloud.microsoft/admin/api/tenantRelationships/userSyncApps/outboundDetails' }
     }
 
-    Get-TenantRelationshipSafeResult -ResultName $Name -ScriptBlock { Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET }
+    Invoke-O365SectionSafeResult -Section TenantRelationship -ResultName $Name -ScriptBlock { Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET }
 }

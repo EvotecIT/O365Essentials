@@ -39,49 +39,12 @@ function Get-O365InternalApiValidationReport {
         [switch] $IncludeResult
     )
 
-    function Get-FindingPriority {
-        [cmdletbinding()]
-        param(
-            [string] $Reason,
-            [bool] $IsOptional
-        )
-
-        if ($IsOptional) {
-            return 'Low'
-        }
-
-        switch ($Reason) {
-            'AuthorizationError' { 'High' }
-            'MissingTenantId' { 'High' }
-            'PortalSessionRequired' { 'High' }
-            'ValidationError' { 'High' }
-            'UndiscoveredEndpoint' { 'High' }
-            'TenantSpecific' { 'Medium' }
-            default {
-                if ([string]::IsNullOrWhiteSpace($Reason)) { 'Info' } else { 'Medium' }
-            }
-        }
-    }
-
-    function Get-PriorityRank {
-        [cmdletbinding()]
-        param(
-            [Parameter(Mandatory)][string] $Priority
-        )
-
-        switch ($Priority) {
-            'High' { 0 }
-            'Medium' { 1 }
-            'Low' { 2 }
-            default { 3 }
-        }
-    }
-
     $Health = @(Get-O365InternalApiHealth -Headers $Headers -Area $Area -Mode $Mode -IncludeResult:$IncludeResult)
     $Findings = @(
         if ($IncludeHealthyFindings) {
             $Health | Get-O365InternalApiFinding -IncludeHealthy
-        } else {
+        }
+        else {
             $Health | Get-O365InternalApiFinding
         }
     )
@@ -90,21 +53,21 @@ function Get-O365InternalApiValidationReport {
         foreach ($Finding in $Findings) {
             $Priority = Get-FindingPriority -Reason $Finding.Reason -IsOptional $Finding.IsOptional
             [PSCustomObject] @{
-                Area                       = $Finding.Area
-                Mode                       = $Finding.Mode
-                AreaStatus                 = $Finding.AreaStatus
-                Component                  = $Finding.Component
-                ComponentStatus            = $Finding.ComponentStatus
+                Area                         = $Finding.Area
+                Mode                         = $Finding.Mode
+                AreaStatus                   = $Finding.AreaStatus
+                Component                    = $Finding.Component
+                ComponentStatus              = $Finding.ComponentStatus
                 ComponentElapsedMilliseconds = $Finding.ComponentElapsedMilliseconds
-                Name                       = $Finding.Name
-                Reason                     = $Finding.Reason
-                IsOptional                 = [bool] $Finding.IsOptional
-                Priority                   = $Priority
-                PriorityRank               = Get-PriorityRank -Priority $Priority
-                Path                       = $Finding.Path
-                Description                = $Finding.Description
-                SuggestedAction            = $Finding.SuggestedAction
-                SuggestedCommand           = $Finding.SuggestedCommand
+                Name                         = $Finding.Name
+                Reason                       = $Finding.Reason
+                IsOptional                   = [bool] $Finding.IsOptional
+                Priority                     = $Priority
+                PriorityRank                 = Get-PriorityRank -Priority $Priority
+                Path                         = $Finding.Path
+                Description                  = $Finding.Description
+                SuggestedAction              = $Finding.SuggestedAction
+                SuggestedCommand             = $Finding.SuggestedCommand
             }
         }
     ) | Sort-Object PriorityRank, Area, Component, Name
@@ -149,18 +112,18 @@ function Get-O365InternalApiValidationReport {
     ) | Sort-Object ElapsedMilliseconds -Descending | Select-Object -First 10
 
     $Summary = [PSCustomObject] @{
-        CheckedAt           = Get-Date
-        Mode                = $Mode
-        AreaCount           = $Health.Count
+        CheckedAt                = Get-Date
+        Mode                     = $Mode
+        AreaCount                = $Health.Count
         TotalElapsedMilliseconds = if ($null -ne $TotalElapsedMilliseconds) { [int] [Math]::Round($TotalElapsedMilliseconds, 0) } else { 0 }
-        HealthyAreas        = @($Health | Where-Object Status -eq 'Healthy').Count
-        PartialAreas        = @($Health | Where-Object Status -eq 'Partial').Count
-        UnavailableAreas    = @($Health | Where-Object Status -eq 'Unavailable').Count
-        FindingCount        = $PrioritizedFindings.Count
-        HighPriorityCount   = @($PrioritizedFindings | Where-Object Priority -eq 'High').Count
-        MediumPriorityCount = @($PrioritizedFindings | Where-Object Priority -eq 'Medium').Count
-        LowPriorityCount    = @($PrioritizedFindings | Where-Object Priority -eq 'Low').Count
-        InfoCount           = @($PrioritizedFindings | Where-Object Priority -eq 'Info').Count
+        HealthyAreas             = @($Health | Where-Object Status -EQ 'Healthy').Count
+        PartialAreas             = @($Health | Where-Object Status -EQ 'Partial').Count
+        UnavailableAreas         = @($Health | Where-Object Status -EQ 'Unavailable').Count
+        FindingCount             = $PrioritizedFindings.Count
+        HighPriorityCount        = @($PrioritizedFindings | Where-Object Priority -EQ 'High').Count
+        MediumPriorityCount      = @($PrioritizedFindings | Where-Object Priority -EQ 'Medium').Count
+        LowPriorityCount         = @($PrioritizedFindings | Where-Object Priority -EQ 'Low').Count
+        InfoCount                = @($PrioritizedFindings | Where-Object Priority -EQ 'Info').Count
     }
 
     [PSCustomObject] @{

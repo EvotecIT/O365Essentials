@@ -27,25 +27,6 @@ function Get-O365ContentUnderstanding {
 
     $AdditionalHeaders = Get-O365PortalContextHeaders -Context PayAsYouGo
 
-    function Get-ContentUnderstandingSafeResult {
-        [cmdletbinding()]
-        param(
-            [Parameter(Mandatory)][string] $ResultName,
-            [Parameter(Mandatory)][scriptblock] $ScriptBlock
-        )
-
-        try {
-            $Result = & $ScriptBlock
-            if ($null -eq $Result) {
-                New-O365UnavailableResult -Name $ResultName -Area 'Content Understanding section' -Description 'The Content Understanding section did not return a usable payload.'
-            } else {
-                $Result
-            }
-        } catch {
-            New-O365UnavailableResult -Name $ResultName -Area 'Content Understanding section' -Description 'The Content Understanding section did not return a usable payload.' -ErrorMessage $_.Exception.Message
-        }
-    }
-
     if ($Name -eq 'All') {
         [PSCustomObject] @{
             Setting                       = Get-O365ContentUnderstanding -Headers $Headers -Name Setting
@@ -73,5 +54,5 @@ function Get-O365ContentUnderstanding {
         'TaxonomyTagging' { 'https://admin.microsoft.com/admin/api/contentunderstanding/taxonomytaggingsetting' }
     }
 
-    Get-ContentUnderstandingSafeResult -ResultName $Name -ScriptBlock { Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET -AdditionalHeaders $AdditionalHeaders }
+    Invoke-O365SectionSafeResult -Section ContentUnderstanding -ResultName $Name -ScriptBlock { Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET -AdditionalHeaders $AdditionalHeaders }
 }

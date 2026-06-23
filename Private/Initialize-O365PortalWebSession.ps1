@@ -14,21 +14,6 @@ function Initialize-O365PortalWebSession {
         [string] $UserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36'
     )
 
-    function Get-PortalCookieValue {
-        [cmdletbinding()]
-        param(
-            [Parameter(Mandatory)][string] $Name
-        )
-
-        foreach ($CookieUri in @('https://admin.cloud.microsoft/', 'https://admin.cloud.microsoft/adminportal')) {
-            $PortalCookies = $WebSession.Cookies.GetCookies($CookieUri)
-            $Cookie = $PortalCookies | Where-Object Name -eq $Name | Select-Object -First 1
-            if ($Cookie) {
-                return $Cookie.Value
-            }
-        }
-    }
-
     if ($UserAgent) {
         $WebSession.UserAgent = $UserAgent
     }
@@ -43,7 +28,8 @@ function Initialize-O365PortalWebSession {
         )) {
         try {
             $null = Invoke-WebRequest -MaximumRedirection 20 -ErrorAction Stop -WebSession $WebSession -Method Get -Uri $Uri -Headers $DocumentHeaders -UserAgent $UserAgent
-        } catch {
+        }
+        catch {
             Write-Verbose "Initialize-O365PortalWebSession - Bootstrap request failed for '$Uri'. $($_.Exception.Message)"
         }
     }
@@ -54,13 +40,15 @@ function Initialize-O365PortalWebSession {
     if (-not [string]::IsNullOrWhiteSpace($AjaxSessionKey)) {
         try {
             $null = Invoke-WebRequest -MaximumRedirection 20 -ErrorAction Stop -WebSession $WebSession -Method Get -Uri 'https://admin.cloud.microsoft/adminportal/home/ClassicModernAdminDataStream?ref=/homepage' -Headers (Get-O365PortalContextHeaders -Context Homepage -PortalHost 'https://admin.cloud.microsoft' -AjaxSessionKey $AjaxSessionKey -PortalRouteKey $PortalRouteKey) -UserAgent $UserAgent
-        } catch {
+        }
+        catch {
             Write-Verbose "Initialize-O365PortalWebSession - ClassicModernAdminDataStream bootstrap request failed. $($_.Exception.Message)"
         }
 
         try {
             $null = Invoke-WebRequest -MaximumRedirection 20 -ErrorAction Stop -WebSession $WebSession -Method Get -Uri 'https://admin.cloud.microsoft/admin/api/tenant/datalocationandcommitments' -Headers (Get-O365PortalContextHeaders -Context DataLocation -PortalHost 'https://admin.cloud.microsoft' -AjaxSessionKey $AjaxSessionKey -PortalRouteKey $PortalRouteKey) -UserAgent $UserAgent
-        } catch {
+        }
+        catch {
             Write-Verbose "Initialize-O365PortalWebSession - Data location bootstrap request failed. $($_.Exception.Message)"
         }
     }

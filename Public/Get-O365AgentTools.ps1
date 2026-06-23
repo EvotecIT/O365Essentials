@@ -26,27 +26,9 @@ function Get-O365AgentTools {
     if ($Headers) {
         if ($Headers.Contains('AjaxSessionKey') -and -not [string]::IsNullOrWhiteSpace($Headers['AjaxSessionKey'])) {
             $UsePortalSession = $true
-        } elseif ($Headers.Contains('PortalWebSession') -and $null -ne $Headers['PortalWebSession']) {
-            $UsePortalSession = $true
         }
-    }
-
-    function Get-AgentToolsSafeResult {
-        [cmdletbinding()]
-        param(
-            [Parameter(Mandatory)][string] $ResultName,
-            [Parameter(Mandatory)][scriptblock] $ScriptBlock
-        )
-
-        try {
-            $Result = & $ScriptBlock
-            if ($null -eq $Result) {
-                New-O365UnavailableResult -Name $ResultName -Area 'Agents tools section' -Description 'The Agents tools section did not return a usable payload.'
-            } else {
-                $Result
-            }
-        } catch {
-            New-O365UnavailableResult -Name $ResultName -Area 'Agents tools section' -Description 'The Agents tools section did not return a usable payload.' -ErrorMessage $_.Exception.Message
+        elseif ($Headers.Contains('PortalWebSession') -and $null -ne $Headers['PortalWebSession']) {
+            $UsePortalSession = $true
         }
     }
 
@@ -58,5 +40,5 @@ function Get-O365AgentTools {
     }
 
     $Uri = 'https://admin.cloud.microsoft/admin/api/agentssettings/mcpservers'
-    Get-AgentToolsSafeResult -ResultName 'McpServers' -ScriptBlock { Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET -AdditionalHeaders $AdditionalHeaders -UsePortalSession:$UsePortalSession }
+    Invoke-O365SectionSafeResult -Section AgentsTools -ResultName 'McpServers' -ScriptBlock { Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET -AdditionalHeaders $AdditionalHeaders -UsePortalSession:$UsePortalSession }
 }
