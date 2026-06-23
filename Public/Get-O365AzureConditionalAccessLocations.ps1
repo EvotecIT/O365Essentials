@@ -30,7 +30,7 @@
         '$count'   = 'true'
     }
 
-    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -QueryParameter $QueryParameters -RequiredGraphScope 'Policy.Read.All'
+    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -QueryParameter $QueryParameters -RequiredGraphScope 'Policy.Read.All|Policy.ReadWrite.ConditionalAccess'
     if ($Output) {
         $Output
     }

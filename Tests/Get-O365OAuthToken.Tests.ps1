@@ -205,6 +205,41 @@ Describe 'Connect-O365Admin portal token' {
         } -Exactly 1
     }
 
+    It 'refreshes a warm WAM cache when requested Graph scopes are missing' {
+        Mock -ModuleName O365Essentials ConvertFrom-JSONWebToken -MockWith {
+            [pscustomobject]@{
+                tid = 'tenant-id'
+                upn = 'user@contoso.com'
+            }
+        }
+        Mock -ModuleName O365Essentials Get-O365BrokerAccessToken -MockWith {
+            param($Tenant, $ResourceUrl, $Scope, $Account, $ForcePrompt)
+            $Target = if ($ResourceUrl) { $ResourceUrl } else { $Scope }
+            [pscustomobject]@{
+                access_token = "token:$Target"
+                expires_on   = ([datetime]::UtcNow).AddHours(1)
+                tenant_id    = 'tenant-id'
+                account      = 'user@contoso.com'
+                scopes       = @($Scope -split '\s+' | Where-Object { $_ -and $_ -ne 'offline_access' })
+            }
+        }
+
+        $cachedHeaders = [ordered]@{
+            ExpiresOnUTC       = ([datetime]::UtcNow).AddHours(1)
+            AuthenticationMode = 'WAM'
+            UserName           = 'user@contoso.com'
+            Tenant             = 'tenant-id'
+            GraphScopes        = @('User.Read')
+        }
+
+        $result = Connect-O365Admin -Headers $cachedHeaders -GraphScope 'Policy.Read.All|Policy.ReadWrite.ConditionalAccess'
+
+        $result.AccessTokenGraph | Should -Be 'token:Policy.Read.All offline_access'
+        Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
+            $Scope -eq 'Policy.Read.All offline_access'
+        } -Exactly 1
+    }
+
     It 'keeps the initial WAM authority tenant for resource token requests' {
         $script:wamRequests = [System.Collections.Generic.List[object]]::new()
         Mock -ModuleName O365Essentials ConvertFrom-JSONWebToken -MockWith {

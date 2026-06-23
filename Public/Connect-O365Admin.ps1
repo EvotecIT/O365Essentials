@@ -99,8 +99,19 @@ function Connect-O365Admin {
     $ExplicitCredential = if ($PSBoundParameters.ContainsKey('Credential')) { $Credential } else { $null }
     $CachedAuthenticationMode = $null
     $CachedUserName = $null
+    $RequestedGraphScopes = @($GraphScope | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | ForEach-Object { $_.Trim() })
+    $GraphScopesToRequest = @(
+        foreach ($Scope in $RequestedGraphScopes) {
+            foreach ($Part in ($Scope -split '\s+')) {
+                if (-not [string]::IsNullOrWhiteSpace($Part)) {
+                    ($Part -split '\|' | Select-Object -First 1).Trim()
+                }
+            }
+        }
+    )
     if ($Headers) {
-        if ($Headers.ExpiresOnUTC -gt [datetime]::UtcNow -and -not $ForceRefresh -and -not $HasPortalAttachInput) {
+        $HasRequestedGraphScopes = $RequestedGraphScopes.Count -eq 0 -or (Test-O365GraphScope -GrantedScope $Headers.GraphScopes -RequiredScope $RequestedGraphScopes)
+        if ($Headers.ExpiresOnUTC -gt [datetime]::UtcNow -and -not $ForceRefresh -and -not $HasPortalAttachInput -and $HasRequestedGraphScopes) {
             Write-Verbose -Message "Connect-O365Admin - Using cache for connection $($Headers.UserName)"
             return $Headers
         } else {
@@ -125,7 +136,8 @@ function Connect-O365Admin {
             if ($Headers.Contains('HeadersPortal')) { $HeadersPortal = $Headers.HeadersPortal }
         }
     } elseif ($Script:AuthorizationO365Cache) {
-        if ($Script:AuthorizationO365Cache.ExpiresOnUTC -gt [datetime]::UtcNow -and -not $ForceRefresh -and -not $HasPortalAttachInput) {
+        $HasRequestedGraphScopes = $RequestedGraphScopes.Count -eq 0 -or (Test-O365GraphScope -GrantedScope $Script:AuthorizationO365Cache.GraphScopes -RequiredScope $RequestedGraphScopes)
+        if ($Script:AuthorizationO365Cache.ExpiresOnUTC -gt [datetime]::UtcNow -and -not $ForceRefresh -and -not $HasPortalAttachInput -and $HasRequestedGraphScopes) {
             Write-Verbose -Message "Connect-O365Admin - Using cache for connection $($Script:AuthorizationO365Cache.UserName)"
             return $Script:AuthorizationO365Cache
         } else {
@@ -217,9 +229,8 @@ function Connect-O365Admin {
     $ResourceAzure = '74658136-14ec-4630-ad9b-26e160ff0fc6'
     # Use the management.azure.com resource for ARM token acquisition
     $ScopesARM = 'https://management.azure.com/.default offline_access'
-    $RequestedGraphScopes = @($GraphScope | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | ForEach-Object { $_.Trim() })
-    $ScopesGraph = if ($RequestedGraphScopes.Count -gt 0) {
-        (@($RequestedGraphScopes) + 'offline_access' | Select-Object -Unique) -join ' '
+    $ScopesGraph = if ($GraphScopesToRequest.Count -gt 0) {
+        (@($GraphScopesToRequest) + 'offline_access' | Select-Object -Unique) -join ' '
     } else {
         'https://graph.microsoft.com/.default offline_access'
     }

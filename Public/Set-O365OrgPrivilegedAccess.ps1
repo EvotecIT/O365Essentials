@@ -28,12 +28,36 @@
         [string] $AdminGroup
     )
     $Uri = "https://admin.microsoft.com/admin/api/Settings/security/tenantLockbox"
+    $CurrentSettings = Get-O365OrgPrivilegedAccess -Headers $Headers
 
-    $Body = @{
-        EnabledTenantLockbox = $TenantLockBoxEnabled
-        AdminGroup           = $AdminGroup
-        Identity             = $null
+    if (-not $CurrentSettings) {
+        Write-Warning -Message 'Set-O365OrgPrivilegedAccess - Current privileged access settings could not be read.'
+        return
     }
-    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method POST -Body $Body
-    $Output
+
+    $EnabledTenantLockbox = if ($PSBoundParameters.ContainsKey('TenantLockBoxEnabled')) {
+        [bool] $TenantLockBoxEnabled
+    } else {
+        [bool] $CurrentSettings.EnabledTenantLockbox
+    }
+    $ResolvedAdminGroup = if ($PSBoundParameters.ContainsKey('AdminGroup')) {
+        $AdminGroup
+    } else {
+        $CurrentSettings.AdminGroup
+    }
+
+    if ($EnabledTenantLockbox -and [string]::IsNullOrWhiteSpace($ResolvedAdminGroup)) {
+        Write-Warning -Message 'Set-O365OrgPrivilegedAccess - AdminGroup is required when Tenant Lockbox is enabled.'
+        return
+    }
+
+    $Body = [ordered] @{
+        EnabledTenantLockbox = $EnabledTenantLockbox
+        AdminGroup           = $ResolvedAdminGroup
+        Identity             = $CurrentSettings.Identity
+    }
+    if ($PSCmdlet.ShouldProcess($Uri, 'Update privileged access settings')) {
+        $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method POST -Body $Body
+        $Output
+    }
 }

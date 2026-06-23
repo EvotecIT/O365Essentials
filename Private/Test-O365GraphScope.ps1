@@ -9,17 +9,17 @@ function Test-O365GraphScope {
         [string[]] $RequiredScope
     )
 
-    $Required = @(
+    $RequiredGroups = @(
         foreach ($Scope in @($RequiredScope)) {
             foreach ($Part in ($Scope -split '\s+')) {
                 if (-not [string]::IsNullOrWhiteSpace($Part) -and $Part -notin 'offline_access', 'openid', 'profile', 'email') {
-                    $Part.Trim()
+                    , @($Part.Trim() -split '\|' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | ForEach-Object { $_.Trim() })
                 }
             }
         }
     )
 
-    if ($Required.Count -eq 0) {
+    if ($RequiredGroups.Count -eq 0) {
         return $true
     }
 
@@ -32,8 +32,15 @@ function Test-O365GraphScope {
         }
     }
 
-    foreach ($Scope in $Required) {
-        if (-not $Granted.Contains($Scope)) {
+    foreach ($RequiredGroup in $RequiredGroups) {
+        $Matched = $false
+        foreach ($Scope in @($RequiredGroup)) {
+            if ($Granted.Contains($Scope)) {
+                $Matched = $true
+                break
+            }
+        }
+        if (-not $Matched) {
             return $false
         }
     }

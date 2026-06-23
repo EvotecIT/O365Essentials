@@ -9,11 +9,17 @@ namespace O365Essentials.Auth
 {
     public sealed class BrokerTokenResult
     {
-        public string AccessToken { get; set; } = string.Empty;
+        public BrokerTokenResult()
+        {
+            AccessToken = string.Empty;
+            Scopes = new string[0];
+        }
+
+        public string AccessToken { get; set; }
         public DateTimeOffset ExpiresOn { get; set; }
         public string TenantId { get; set; }
         public string AccountUsername { get; set; }
-        public string[] Scopes { get; set; } = Array.Empty<string>();
+        public string[] Scopes { get; set; }
     }
 
     public static class BrokerTokenClient
@@ -62,7 +68,7 @@ namespace O365Essentials.Auth
     }
 }
 
-Describe 'Get-O365BrokerAccessToken' {
+Describe 'Get-O365BrokerAccessToken' -Skip:($PSEdition -ne 'Core' -or $PSVersionTable.PSVersion -lt [version] '7.4') {
     It 'uses the admin resource WAM client by default for resource requests' {
         InModuleScope O365Essentials {
             Get-O365BrokerAccessToken -ResourceUrl 'https://admin.microsoft.com/' -Account 'user@contoso.com' | Out-Null

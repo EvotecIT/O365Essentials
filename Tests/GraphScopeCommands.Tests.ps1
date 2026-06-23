@@ -8,7 +8,7 @@ Describe 'Graph commands with required scopes' {
 
         Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://graph.microsoft.com/v1.0/identity/conditionalAccess/namedLocations' -and
-            $RequiredGraphScope -contains 'Policy.Read.All' -and
+            $RequiredGraphScope -contains 'Policy.Read.All|Policy.ReadWrite.ConditionalAccess' -and
             $QueryParameter['$top'] -eq 10 -and
             $QueryParameter['$orderby'] -eq 'displayName'
         } -Exactly 1
@@ -21,7 +21,7 @@ Describe 'Graph commands with required scopes' {
 
         Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://graph.microsoft.com/v1.0/policies/authenticationFlowsPolicy' -and
-            $RequiredGraphScope -contains 'Policy.Read.All'
+            $RequiredGraphScope -contains 'Policy.Read.All|Policy.ReadWrite.AuthenticationFlows'
         } -Exactly 1
     }
 
@@ -32,7 +32,7 @@ Describe 'Graph commands with required scopes' {
 
         Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://graph.microsoft.com/v1.0/policies/authenticationMethodsPolicy/authenticationMethodConfigurations/email' -and
-            $RequiredGraphScope -contains 'Policy.Read.AuthenticationMethod'
+            $RequiredGraphScope -contains 'Policy.Read.AuthenticationMethod|Policy.ReadWrite.AuthenticationMethod'
         } -Exactly 1
     }
 }

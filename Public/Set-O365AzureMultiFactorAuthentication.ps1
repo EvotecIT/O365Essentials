@@ -99,54 +99,78 @@
         #$BlockedUsers                   ,
         #$BypassedUsers
     )
-    #$Uri = "https://main.iam.ad.ext.azure.com/api/MultiFactorAuthentication/GetOrCreateExpandedTenantModel?tenantName=Evotec"
-    # $Uri = "https://main.iam.ad.ext.azure.com/api/MultiFactorAuthentication/GetOrCreateExpandedTenantModel"
+    $CurrentSettings = Get-O365AzureMultiFactorAuthentication -Headers $Headers
+    if (-not $CurrentSettings -or [string]::IsNullOrWhiteSpace($CurrentSettings.licenseKey)) {
+        Write-Warning -Message 'Set-O365AzureMultiFactorAuthentication - Current MFA settings or license key could not be read.'
+        return
+    }
 
-    # Whatever I do, doesn't work!
-
-    $Uri = "https://main.iam.ad.ext.azure.com/api/MultiFactorAuthentication/TenantModel?licenseKey="
-    $Body = [ordered] @{}
-    <#
-        #tenantId                        = $CurrentSettings #: ceb371f6
-        #licenseKey                      = $CurrentSettings #:
-        #customerId                      = $CurrentSettings #:
-        AllowPhoneMenu                  = $allowPhoneMenu #: False
-        BlockForFraud                   = $BlockForFraud #: False
-        CallerId                        = $callerId #: 8553308653
-        DefaultBypassTimespan           = $defaultBypassTimespan #: 300
-        EnableFraudAlert                = $EnableFraudAlert #: True
-        FraudCode                       = $fraudCode #: 0
-        FraudNotificationEmailAddresses = $fraudNotificationEmailAddresses #:
-        OneTimeBypassEmailAddresses     = $oneTimeBypassEmailAddresses #:
-        PinAttempts                     = $pinAttempts #:
-        SayExtensionDigits              = $sayExtensionDigits #: False
-        SmsTimeoutSeconds               = $smsTimeoutSeconds #: 60
-        #caches                          = $caches #: {}
-        Notifications                   = $notifications #:
-        NotificationEmailAddresses      = $notificationEmailAddresses #: {}
-        #greetings                       = $greetings #: {}
-        #blockedUsers                    = $blockedUsers #: {}
-        #bypassedUsers                   = $bypassedUsers #: {}
-        #groups                          = $groups
-        #etag                            = $etag
-    #>
+    $Uri = "https://main.iam.ad.ext.azure.com/api/MultiFactorAuthentication/TenantModel?licenseKey=$([uri]::EscapeDataString($CurrentSettings.licenseKey))"
+    $Body = [ordered] @{
+        tenantId                         = $CurrentSettings.tenantId
+        licenseKey                       = $CurrentSettings.licenseKey
+        customerId                       = $CurrentSettings.customerId
+        accountLockoutDurationMinutes    = $CurrentSettings.accountLockoutDurationMinutes
+        accountLockoutResetMinutes       = $CurrentSettings.accountLockoutResetMinutes
+        accountLockoutThreshold          = $CurrentSettings.accountLockoutThreshold
+        allowPhoneMenu                   = $CurrentSettings.allowPhoneMenu
+        blockForFraud                    = $CurrentSettings.blockForFraud
+        callerId                         = $CurrentSettings.callerId
+        defaultBypassTimespan            = $CurrentSettings.defaultBypassTimespan
+        enableFraudAlert                 = $CurrentSettings.enableFraudAlert
+        fraudCode                        = $CurrentSettings.fraudCode
+        fraudNotificationEmailAddresses  = $CurrentSettings.fraudNotificationEmailAddresses
+        oneTimeBypassEmailAddresses      = $CurrentSettings.oneTimeBypassEmailAddresses
+        pinAttempts                      = $CurrentSettings.pinAttempts
+        sayExtensionDigits               = $CurrentSettings.sayExtensionDigits
+        smsTimeoutSeconds                = $CurrentSettings.smsTimeoutSeconds
+        caches                           = @($CurrentSettings.caches)
+        notifications                    = $CurrentSettings.notifications
+        notificationEmailAddresses       = @($CurrentSettings.notificationEmailAddresses)
+        greetings                        = @($CurrentSettings.greetings)
+        blockedUsers                     = @($CurrentSettings.blockedUsers)
+        bypassedUsers                    = @($CurrentSettings.bypassedUsers)
+        groups                           = @($CurrentSettings.groups)
+        etag                             = $CurrentSettings.etag
+    }
+    $RequestedChanges = [ordered] @{}
     if ($PSBoundParameters.ContainsKey('AccountLockoutDurationMinutes')) {
-        $Body['AccountLockoutDurationMinutes'] = $AccountLockoutDurationMinutes
+        $Body.accountLockoutDurationMinutes = $AccountLockoutDurationMinutes
+        $RequestedChanges.accountLockoutDurationMinutes = $AccountLockoutDurationMinutes
     }
     if ($PSBoundParameters.ContainsKey('AccountLockoutCounterResetMinutes')) {
-        $Body['AccountLockoutResetMinutes'] = $AccountLockoutCounterResetMinutes
+        $Body.accountLockoutResetMinutes = $AccountLockoutCounterResetMinutes
+        $RequestedChanges.accountLockoutResetMinutes = $AccountLockoutCounterResetMinutes
     }
     if ($PSBoundParameters.ContainsKey('AccountLockoutDenialsToTriggerLockout')) {
-        $Body['AccountLockoutThreshold'] = $AccountLockoutDenialsToTriggerLockout
+        $Body.accountLockoutThreshold = $AccountLockoutDenialsToTriggerLockout
+        $RequestedChanges.accountLockoutThreshold = $AccountLockoutDenialsToTriggerLockout
     }
     if ($PSBoundParameters.ContainsKey('BlockForFraud')) {
-        $Body['BlockForFraud'] = $BlockForFraud
+        $Body.blockForFraud = $BlockForFraud
+        $RequestedChanges.blockForFraud = $BlockForFraud
     }
     if ($PSBoundParameters.ContainsKey('EnableFraudAlert')) {
-        $Body['EnableFraudAlert'] = $EnableFraudAlert
+        $Body.enableFraudAlert = $EnableFraudAlert
+        $RequestedChanges.enableFraudAlert = $EnableFraudAlert
     }
     if ($PSBoundParameters.ContainsKey('FraudCode')) {
-        $Body['FraudCode'] = $FraudCode
+        $Body.fraudCode = [string] $FraudCode
+        $RequestedChanges.fraudCode = [string] $FraudCode
     }
-    $null = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method PATCH -Body $Body
+
+    if ($RequestedChanges.Count -eq 0) {
+        Write-Warning -Message 'Set-O365AzureMultiFactorAuthentication - No MFA setting was specified.'
+        return
+    }
+
+    if ($PSCmdlet.ShouldProcess($Uri, 'Update legacy MFA tenant model')) {
+        $null = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method PATCH -Body $Body
+        $UpdatedSettings = Get-O365AzureMultiFactorAuthentication -Headers $Headers
+        foreach ($PropertyName in $RequestedChanges.Keys) {
+            if ($UpdatedSettings.$PropertyName -ne $RequestedChanges[$PropertyName]) {
+                Write-Warning -Message "Set-O365AzureMultiFactorAuthentication - The service did not persist '$PropertyName'. This legacy portal endpoint may no longer accept tenant model writes."
+            }
+        }
+    }
 }

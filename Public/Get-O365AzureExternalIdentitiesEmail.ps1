@@ -22,7 +22,7 @@
         [switch] $NoTranslation
     )
     $Uri = 'https://graph.microsoft.com/v1.0/policies/authenticationMethodsPolicy/authenticationMethodConfigurations/email'
-    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -RequiredGraphScope 'Policy.Read.AuthenticationMethod'
+    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -RequiredGraphScope 'Policy.Read.AuthenticationMethod|Policy.ReadWrite.AuthenticationMethod'
     if ($Output) {
         if ($NoTranslation) {
             $Output
