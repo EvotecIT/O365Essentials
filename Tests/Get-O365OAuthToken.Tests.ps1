@@ -276,6 +276,39 @@ Describe 'Connect-O365Admin portal token' {
         } -Exactly 1
     }
 
+    It 'keeps app-authenticated reconnects on the Graph default scope' {
+        Mock -ModuleName O365Essentials ConvertFrom-JSONWebToken -MockWith {
+            [pscustomobject]@{
+                tid   = 'tenant-id'
+                roles = @('Policy.Read.All')
+            }
+        }
+        Mock -ModuleName O365Essentials Get-O365OAuthToken -MockWith {
+            param($Tenant, $Scope, $Resource, $ClientId, $ClientSecret)
+            $Target = if ($Scope) { $Scope } else { $Resource }
+            [pscustomobject]@{
+                access_token  = "token:$Target"
+                refresh_token = $null
+            }
+        }
+
+        $cachedHeaders = [ordered]@{
+            ExpiresOnUTC = ([datetime]::UtcNow).AddMinutes(-5)
+            ClientId     = 'app-id'
+            ClientSecret = 'secret'
+            Tenant       = 'tenant-id'
+            GraphScopes  = @('Policy.Read.All')
+        }
+
+        Connect-O365Admin -Headers $cachedHeaders -ForceRefresh | Out-Null
+
+        Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -ParameterFilter {
+            $ClientId -eq 'app-id' -and
+            $ClientSecret -eq 'secret' -and
+            $Scope -eq 'https://graph.microsoft.com/.default offline_access'
+        } -Exactly 1
+    }
+
     It 'keeps the initial WAM authority tenant for resource token requests' {
         $script:wamRequests = [System.Collections.Generic.List[object]]::new()
         Mock -ModuleName O365Essentials ConvertFrom-JSONWebToken -MockWith {

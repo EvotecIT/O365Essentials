@@ -14,7 +14,14 @@ function Get-O365BrokerAccessToken {
     )
 
     if ([string]::IsNullOrWhiteSpace($ClientId)) {
-        $ClientId = if ($PSCmdlet.ParameterSetName -eq 'Scope') {
+        $ScopeParts = if ($PSCmdlet.ParameterSetName -eq 'Scope') {
+            @($Scope -split '\s+' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) -and $_ -notin 'offline_access', 'openid', 'profile', 'email' })
+        } else {
+            @()
+        }
+        $NonGraphScopeParts = @($ScopeParts | Where-Object { $_ -match '://' -and $_ -notlike 'https://graph.microsoft.com/*' })
+        $UseGraphClient = $PSCmdlet.ParameterSetName -eq 'Scope' -and $ScopeParts.Count -gt 0 -and $NonGraphScopeParts.Count -eq 0
+        $ClientId = if ($UseGraphClient) {
             # Microsoft Graph PowerShell public client. Its broker redirect URI is WAM-capable for delegated Graph scopes.
             '14d82eec-204b-4c2f-b7e8-296a70dab67e'
         } else {

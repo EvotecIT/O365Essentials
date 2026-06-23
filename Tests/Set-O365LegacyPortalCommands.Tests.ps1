@@ -67,6 +67,51 @@ Describe 'Enterprise Apps admin consent policy commands' {
             $RequiredGraphScope -contains 'Policy.ReadWrite.ConsentRequest|Directory.ReadWrite.All'
         } -Exactly 1
     }
+
+    It 'uses transitive member reviewer queries for group approvers' {
+        $script:adminConsentBody = $null
+        Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith {
+            if ($Method -eq 'PUT') {
+                $script:adminConsentBody = $Body
+                return
+            }
+
+            [pscustomobject]@{
+                isEnabled             = $true
+                notifyReviewers       = $true
+                remindersEnabled      = $true
+                requestDurationInDays = 30
+                reviewers             = @()
+            }
+        }
+
+        Set-O365AzureEnterpriseAppsUserSettingsAdmin -Headers @{ HeadersGraph = @{ Authorization = 'Bearer graph' } } -GroupApproverId 'group-id'
+
+        $script:adminConsentBody.reviewers[0].query | Should -Be '/groups/group-id/transitiveMembers'
+    }
+
+    It 'accepts hashtable reviewer objects' {
+        $script:adminConsentBody = $null
+        Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith {
+            if ($Method -eq 'PUT') {
+                $script:adminConsentBody = $Body
+                return
+            }
+
+            [pscustomobject]@{
+                isEnabled             = $true
+                notifyReviewers       = $true
+                remindersEnabled      = $true
+                requestDurationInDays = 30
+                reviewers             = @()
+            }
+        }
+
+        Set-O365AzureEnterpriseAppsUserSettingsAdmin -Headers @{ HeadersGraph = @{ Authorization = 'Bearer graph' } } -Reviewer @{ query = '/v1.0/users/user-id'; queryType = 'MicrosoftGraph' }
+
+        $script:adminConsentBody.reviewers[0].query | Should -Be '/users/user-id'
+        $script:adminConsentBody.reviewers[0].queryType | Should -Be 'MicrosoftGraph'
+    }
 }
 
 Describe 'Microsoft Teams settings setter' {
@@ -125,6 +170,24 @@ Describe 'Microsoft Teams settings setter' {
         Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -Exactly 0
         Assert-MockCalled Write-Warning -ModuleName O365Essentials -ParameterFilter {
             $Message -like 'Set-O365OrgMicrosoftTeams - AllowCalendarSharing is not exposed*'
+        } -Exactly 1
+    }
+
+    It 'warns cleanly when a nested Teams setting wrapper is missing' {
+        Mock -ModuleName O365Essentials Write-Warning
+        Mock -ModuleName O365Essentials Get-O365OrgMicrosoftTeams -MockWith {
+            [pscustomobject]@{
+                Email        = [pscustomobject]@{}
+                CloudStorage = [pscustomobject]@{}
+                Bots         = [pscustomobject]@{}
+            }
+        }
+
+        Set-O365OrgMicrosoftTeams -Headers @{ HeadersO365 = @{ Authorization = 'Bearer token' } } -CloudStorageGoogleDriveEnabled $false
+
+        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -Exactly 0
+        Assert-MockCalled Write-Warning -ModuleName O365Essentials -ParameterFilter {
+            $Message -eq "Set-O365EditableSettingValue - Setting 'CloudStorage.GoogleDrive' was not found."
         } -Exactly 1
     }
 }

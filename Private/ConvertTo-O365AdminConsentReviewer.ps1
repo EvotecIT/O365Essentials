@@ -22,6 +22,17 @@ function ConvertTo-O365AdminConsentReviewer {
             continue
         }
 
+        if ($Item -is [System.Collections.IDictionary]) {
+            if ($Item.Contains('query')) {
+                $Query = $Item['query'] -replace '^/v1\.0/', '/'
+                [ordered] @{
+                    query     = $Query
+                    queryType = if ($Item.Contains('queryType') -and $Item['queryType']) { $Item['queryType'] } else { 'MicrosoftGraph' }
+                }
+            }
+            continue
+        }
+
         if ($Item.PSObject.Properties.Name -contains 'query') {
             $Query = $Item.query -replace '^/v1\.0/', '/'
             [ordered] @{

@@ -5,7 +5,7 @@ function Set-O365EditableSettingValue {
     #>
     [cmdletbinding()]
     param(
-        [Parameter(Mandatory)] $Setting,
+        [AllowNull()] $Setting,
         [Parameter(Mandatory)] $Value,
         [Parameter(Mandatory)][string] $Name
     )

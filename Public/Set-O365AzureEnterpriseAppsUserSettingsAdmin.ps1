@@ -55,7 +55,7 @@
             }
             foreach ($ApproverId in @($GroupApproverId)) {
                 if (-not [string]::IsNullOrWhiteSpace($ApproverId)) {
-                    [ordered] @{ query = "/groups/$ApproverId"; queryType = 'MicrosoftGraph' }
+                    [ordered] @{ query = "/groups/$ApproverId/transitiveMembers"; queryType = 'MicrosoftGraph' }
                 }
             }
             foreach ($ApproverId in @($RoleApproverId)) {

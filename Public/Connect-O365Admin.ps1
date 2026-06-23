@@ -157,18 +157,23 @@ function Connect-O365Admin {
             if ($Script:AuthorizationO365Cache.Contains('HeadersPortal')) { $HeadersPortal = $Script:AuthorizationO365Cache.HeadersPortal }
         }
     }
-    $GraphScopesToRequest = @(
-        foreach ($Scope in @($ExistingGraphScopes + $RequestedGraphScopes)) {
-            foreach ($Part in ($Scope -split '\s+')) {
-                if (-not [string]::IsNullOrWhiteSpace($Part) -and $Part -notin 'offline_access', 'openid', 'profile', 'email') {
-                    $ConcreteScope = ($Part -split '\|' | Select-Object -First 1).Trim()
-                    if (-not [string]::IsNullOrWhiteSpace($ConcreteScope)) {
-                        $ConcreteScope
+    $IsAppAuthentication = $PSCmdlet.ParameterSetName -eq 'App' -or ($ClientId -and ($ClientSecret -or $Certificate))
+    $GraphScopesToRequest = if ($IsAppAuthentication) {
+        @()
+    } else {
+        @(
+            foreach ($Scope in @($ExistingGraphScopes + $RequestedGraphScopes)) {
+                foreach ($Part in ($Scope -split '\s+')) {
+                    if (-not [string]::IsNullOrWhiteSpace($Part) -and $Part -notin 'offline_access', 'openid', 'profile', 'email') {
+                        $ConcreteScope = ($Part -split '\|' | Select-Object -First 1).Trim()
+                        if (-not [string]::IsNullOrWhiteSpace($ConcreteScope)) {
+                            $ConcreteScope
+                        }
                     }
                 }
             }
-        }
-    ) | Select-Object -Unique
+        ) | Select-Object -Unique
+    }
 
     if ($ExplicitCredential) {
         $Credential = $ExplicitCredential
@@ -270,7 +275,7 @@ function Connect-O365Admin {
             } else {
                 $tokenGraph = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://graph.microsoft.com/' -Account $WamLoginHint -ForcePrompt:$ForceWamPrompt
             }
-        } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
+        } elseif ($IsAppAuthentication) {
             $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } elseif ($RefreshToken -and -not $Credential -and -not $Device) {
             $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -RefreshToken $RefreshToken
@@ -278,7 +283,7 @@ function Connect-O365Admin {
             $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -Credential $Credential -Device:$Device
         }
     } catch {
-        $CanRetryWithDevice = -not $Device -and $PSCmdlet.ParameterSetName -ne 'App' -and $_.Exception.Message -match 'Failed to listen on prefix|localhost:8400'
+        $CanRetryWithDevice = -not $Device -and -not $IsAppAuthentication -and $_.Exception.Message -match 'Failed to listen on prefix|localhost:8400'
         if ($CanRetryWithDevice) {
             Write-Verbose -Message "Connect-O365Admin - Interactive listener failed. Falling back to device code for Graph."
             try {
@@ -316,7 +321,7 @@ function Connect-O365Admin {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for admin.microsoft.com"
         if ($UseWam) {
             $tokenO365 = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://admin.microsoft.com/' -Account $WamAccount
-        } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
+        } elseif ($IsAppAuthentication) {
             $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesO365 -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } else {
             $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesO365 -RefreshToken $refresh
@@ -326,7 +331,7 @@ function Connect-O365Admin {
         try {
             if ($UseWam) {
                 $tokenO365 = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl $ResourceAzure -Account $WamAccount
-            } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
+            } elseif ($IsAppAuthentication) {
                 $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
             } else {
                 $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -RefreshToken $refresh
@@ -342,7 +347,7 @@ function Connect-O365Admin {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Teams (api.spaces.skype.com)"
         if ($UseWam) {
             $tokenTeams = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://api.spaces.skype.com/' -Account $WamAccount
-        } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
+        } elseif ($IsAppAuthentication) {
             $tokenTeams = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesTeams -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } else {
             $tokenTeams = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesTeams -RefreshToken $refresh
@@ -356,7 +361,7 @@ function Connect-O365Admin {
             Write-Verbose -Message "Connect-O365Admin - Acquiring token for Azure"
             if ($UseWam) {
                 $tokenAzure = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl $ResourceAzure -Account $WamAccount
-            } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
+            } elseif ($IsAppAuthentication) {
                 $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
             } else {
                 $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -RefreshToken $refresh
@@ -370,7 +375,7 @@ function Connect-O365Admin {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Azure management"
         if ($UseWam) {
             $tokenARM = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://management.azure.com/' -Account $WamAccount
-        } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
+        } elseif ($IsAppAuthentication) {
             $tokenARM = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesARM -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } else {
             $tokenARM = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesARM -RefreshToken $refresh
@@ -410,13 +415,13 @@ function Connect-O365Admin {
                         $tokenSubstrate = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl $attempt.value -Account $WamAccount
                     }
                 } elseif ($attempt.type -eq 'resource') {
-                    if ($PSCmdlet.ParameterSetName -eq 'App') {
+                    if ($IsAppAuthentication) {
                         $tokenSubstrate = Get-O365OAuthToken -Tenant $Tenant -Resource $attempt.value -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
                     } else {
                         $tokenSubstrate = Get-O365OAuthToken -Tenant $Tenant -Resource $attempt.value -RefreshToken $refresh
                     }
                 } else {
-                    if ($PSCmdlet.ParameterSetName -eq 'App') {
+                    if ($IsAppAuthentication) {
                         $tokenSubstrate = Get-O365OAuthToken -Tenant $Tenant -Scope $attempt.value -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
                     } else {
                         $tokenSubstrate = Get-O365OAuthToken -Tenant $Tenant -Scope $attempt.value -RefreshToken $refresh
@@ -432,7 +437,7 @@ function Connect-O365Admin {
         }
     }
 
-    if ($PSCmdlet.ParameterSetName -eq 'App') {
+    if ($IsAppAuthentication) {
         $userName = $ClientId
     } elseif ($UseWam -and $tokenGraph.account) {
         $userName = $tokenGraph.account

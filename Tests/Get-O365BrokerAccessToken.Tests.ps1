@@ -87,6 +87,15 @@ Describe 'Get-O365BrokerAccessToken' -Skip:($PSEdition -ne 'Core' -or $PSVersion
         }
     }
 
+    It 'uses the admin WAM client for non-Graph scope requests' {
+        InModuleScope O365Essentials {
+            Get-O365BrokerAccessToken -Scope 'https://substrate.office.com/.default offline_access' -Account 'user@contoso.com' | Out-Null
+
+            [O365Essentials.Auth.BrokerTokenClient]::LastCall | Should -Be 'Scope'
+            [O365Essentials.Auth.BrokerTokenClient]::LastClientId | Should -Be '1950a258-227b-4e31-a9cf-717495945fc2'
+        }
+    }
+
     It 'lets callers override the WAM client id' {
         InModuleScope O365Essentials {
             Get-O365BrokerAccessToken -Scope 'Policy.Read.All' -ClientId 'custom-client' -Account 'user@contoso.com' | Out-Null
