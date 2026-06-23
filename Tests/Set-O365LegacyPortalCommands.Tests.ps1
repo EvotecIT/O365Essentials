@@ -12,6 +12,14 @@ Describe 'Enterprise Apps admin consent policy commands' {
                     [pscustomobject]@{
                         query     = '/v1.0/users/user-id'
                         queryType = 'MicrosoftGraph'
+                    },
+                    [pscustomobject]@{
+                        query     = '/groups/group-id/transitiveMembers'
+                        queryType = 'MicrosoftGraph'
+                    },
+                    [pscustomobject]@{
+                        query     = '/directoryRoles/role-id/members'
+                        queryType = 'MicrosoftGraph'
                     }
                 )
             }
@@ -23,6 +31,8 @@ Describe 'Enterprise Apps admin consent policy commands' {
         $result.requestExpiresInDays | Should -Be 30
         $result.approvers | Should -Contain 'user-id'
         $result.approversV2.user | Should -Contain 'user-id'
+        $result.approversV2.group | Should -Contain 'group-id'
+        $result.approversV2.role | Should -Contain 'role-id'
         Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://graph.microsoft.com/v1.0/policies/adminConsentRequestPolicy' -and
             $RequiredGraphScope -contains 'Policy.Read.All|Policy.ReadWrite.ConsentRequest|Directory.Read.All|Directory.ReadWrite.All'
@@ -88,6 +98,52 @@ Describe 'Enterprise Apps admin consent policy commands' {
         Set-O365AzureEnterpriseAppsUserSettingsAdmin -Headers @{ HeadersGraph = @{ Authorization = 'Bearer graph' } } -GroupApproverId 'group-id'
 
         $script:adminConsentBody.reviewers[0].query | Should -Be '/groups/group-id/transitiveMembers'
+    }
+
+    It 'uses member reviewer queries for role approvers' {
+        $script:adminConsentBody = $null
+        Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith {
+            if ($Method -eq 'PUT') {
+                $script:adminConsentBody = $Body
+                return
+            }
+
+            [pscustomobject]@{
+                isEnabled             = $true
+                notifyReviewers       = $true
+                remindersEnabled      = $true
+                requestDurationInDays = 30
+                reviewers             = @()
+            }
+        }
+
+        Set-O365AzureEnterpriseAppsUserSettingsAdmin -Headers @{ HeadersGraph = @{ Authorization = 'Bearer graph' } } -RoleApproverId 'role-id'
+
+        $script:adminConsentBody.reviewers[0].query | Should -Be '/directoryRoles/role-id/members'
+    }
+
+    It 'requires reviewers when enabling the admin consent workflow' {
+        Mock -ModuleName O365Essentials Write-Warning
+        Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith {
+            if ($Method -eq 'PUT') {
+                throw 'PUT should not be called without reviewers'
+            }
+
+            [pscustomobject]@{
+                isEnabled             = $false
+                notifyReviewers       = $true
+                remindersEnabled      = $true
+                requestDurationInDays = 30
+                reviewers             = @()
+            }
+        }
+
+        Set-O365AzureEnterpriseAppsUserSettingsAdmin -Headers @{ HeadersGraph = @{ Authorization = 'Bearer graph' } } -IsEnabled $true
+
+        Assert-MockCalled Write-Warning -ModuleName O365Essentials -Exactly 1
+        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+            $Method -eq 'PUT'
+        } -Exactly 0
     }
 
     It 'accepts hashtable reviewer objects' {

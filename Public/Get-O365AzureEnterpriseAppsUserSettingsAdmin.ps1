@@ -39,9 +39,9 @@
                 $Query = $Reviewer.query -replace '^/v1\.0/', '/'
                 if ($Query -match '^/users/(?<id>[^/]+)$') {
                     $ApproversV2.user += $Matches.id
-                } elseif ($Query -match '^/groups/(?<id>[^/]+)$') {
+                } elseif ($Query -match '^/groups/(?<id>[^/]+)(?:/transitiveMembers|/members)?$') {
                     $ApproversV2.group += $Matches.id
-                } elseif ($Query -match '^/directoryRoles/(?<id>[^/]+)$') {
+                } elseif ($Query -match '^/directoryRoles/(?<id>[^/]+)(?:/members)?$') {
                     $ApproversV2.role += $Matches.id
                 }
             }

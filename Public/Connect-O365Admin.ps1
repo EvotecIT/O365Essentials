@@ -270,7 +270,7 @@ function Connect-O365Admin {
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Graph"
         if ($UseWam) {
-            if ($RequestedGraphScopes.Count -gt 0) {
+            if ($GraphScopesToRequest.Count -gt 0) {
                 $tokenGraph = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -Scope $ScopesGraph -Account $WamLoginHint -ForcePrompt:$ForceWamPrompt
             } else {
                 $tokenGraph = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://graph.microsoft.com/' -Account $WamLoginHint -ForcePrompt:$ForceWamPrompt

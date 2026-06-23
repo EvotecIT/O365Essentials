@@ -60,12 +60,18 @@
             }
             foreach ($ApproverId in @($RoleApproverId)) {
                 if (-not [string]::IsNullOrWhiteSpace($ApproverId)) {
-                    [ordered] @{ query = "/directoryRoles/$ApproverId"; queryType = 'MicrosoftGraph' }
+                    [ordered] @{ query = "/directoryRoles/$ApproverId/members"; queryType = 'MicrosoftGraph' }
                 }
             }
         )
     } else {
         @(ConvertTo-O365AdminConsentReviewer -Reviewer $CurrentSettings.reviewers)
+    }
+
+    $EnablingWorkflow = $PSBoundParameters.ContainsKey('IsEnabled') -and [bool] $IsEnabled
+    if ($EnablingWorkflow -and @($Reviewers).Count -eq 0) {
+        Write-Warning -Message 'Set-O365AzureEnterpriseAppsUserSettingsAdmin - At least one reviewer or approver is required before enabling the admin consent request workflow.'
+        return
     }
 
     $Body = [ordered] @{
