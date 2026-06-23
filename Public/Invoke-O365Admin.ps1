@@ -60,6 +60,7 @@
     if (-not $Headers -and $Script:AuthorizationO365Cache) {
         $Headers = $Script:AuthorizationO365Cache
     }
+    $CallerHeaders = if ($PSBoundParameters.ContainsKey('Headers') -and $Headers) { $Headers } else { $null }
 
     $PortalSessionRequest = $false
     if ($UsePortalSession -and $Uri -like '*admin.cloud.microsoft*' -and $Headers -and $Headers.Contains('PortalWebSession') -and $Headers.PortalWebSession) {
@@ -71,6 +72,10 @@
         $Headers = Connect-O365Admin -Headers $Headers
     } elseif (-not $PortalSessionRequest -and $Headers) {
         $Headers = Connect-O365Admin -Headers $Headers
+        Update-AuthorizationState -Target $CallerHeaders -Source $Headers
+        if ($CallerHeaders) {
+            $Headers = $CallerHeaders
+        }
     } elseif (-not $Headers) {
         Write-Warning "Invoke-O365Admin - Not connected. Please connect using Connect-O365Admin."
         return
@@ -85,6 +90,10 @@
         if ($CanRefreshGraphScope) {
             Write-Verbose -Message "Invoke-O365Admin - Refreshing Graph token with required scopes: $($RequiredGraphScope -join ', ')"
             $Headers = Connect-O365Admin -Headers $Headers -ForceRefresh -GraphScope $RequiredGraphScope
+            Update-AuthorizationState -Target $CallerHeaders -Source $Headers
+            if ($CallerHeaders) {
+                $Headers = $CallerHeaders
+            }
             if (-not $Headers) {
                 Write-Warning "Invoke-O365Admin - Authorization error after Graph scope refresh. Skipping."
                 return

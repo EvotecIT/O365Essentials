@@ -38,7 +38,7 @@
         [object[]] $Reviewer
     )
     $Uri = 'https://graph.microsoft.com/v1.0/policies/adminConsentRequestPolicy'
-    $CurrentSettings = Invoke-O365Admin -Uri $Uri -Headers $Headers -RequiredGraphScope 'Policy.Read.All'
+    $CurrentSettings = Invoke-O365Admin -Uri $Uri -Headers $Headers -RequiredGraphScope 'Policy.Read.All|Policy.ReadWrite.ConsentRequest|Directory.Read.All|Directory.ReadWrite.All'
     if (-not $CurrentSettings) {
         Write-Warning -Message 'Set-O365AzureEnterpriseAppsUserSettingsAdmin - Current admin consent request policy could not be read.'
         return

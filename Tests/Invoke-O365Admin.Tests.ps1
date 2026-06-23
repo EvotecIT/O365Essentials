@@ -141,6 +141,8 @@ Describe 'Invoke-O365Admin header selection' {
             $ForceRefresh -and $GraphScope -contains 'Policy.Read.All'
         } -Exactly 1
         Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer new-graph' } -Exactly 1
+        $headers.HeadersGraph.Authorization | Should -Be 'Bearer new-graph'
+        $headers.GraphScopes | Should -Contain 'Policy.Read.All'
     }
     It 'does not refresh Graph headers when required scopes are already granted' {
         $headers = [ordered]@{

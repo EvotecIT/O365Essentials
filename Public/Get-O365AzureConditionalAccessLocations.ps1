@@ -26,11 +26,10 @@
         '$top'     = 10
         '$skip'    = 0
         '$orderby' = 'displayName'
-        '$filter'  = ''
         '$count'   = 'true'
     }
 
-    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -QueryParameter $QueryParameters -RequiredGraphScope 'Policy.Read.All|Policy.ReadWrite.ConditionalAccess'
+    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -QueryParameter $QueryParameters -RequiredGraphScope 'Policy.Read.All'
     if ($Output) {
         $Output
     }

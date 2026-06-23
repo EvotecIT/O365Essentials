@@ -57,6 +57,11 @@ Describe 'Enterprise Apps admin consent policy commands' {
         @($script:adminConsentBody.reviewers).Count | Should -Be 1
         $script:adminConsentBody.reviewers[0].query | Should -Be '/users/user-id'
         Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+            $Uri -eq 'https://graph.microsoft.com/v1.0/policies/adminConsentRequestPolicy' -and
+            -not $Method -and
+            $RequiredGraphScope -contains 'Policy.Read.All|Policy.ReadWrite.ConsentRequest|Directory.Read.All|Directory.ReadWrite.All'
+        } -Exactly 1
+        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Method -eq 'PUT' -and
             $Uri -eq 'https://graph.microsoft.com/v1.0/policies/adminConsentRequestPolicy' -and
             $RequiredGraphScope -contains 'Policy.ReadWrite.ConsentRequest'
