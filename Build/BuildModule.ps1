@@ -82,7 +82,7 @@
 
     $newConfigurationBuildSplat = @{
         Enable                            = $true
-        SignModule                        = [bool] (Get-ChildItem -Path 'Cert:\CurrentUser\My', 'Cert:\LocalMachine\My' -ErrorAction SilentlyContinue | Where-Object { $_.Thumbprint -eq '483292C9E317AA13B07BB7A96AE9D1A5ED9E7703' } | Select-Object -First 1)
+        SignModule                        = $true
         CertificateThumbprint             = '483292C9E317AA13B07BB7A96AE9D1A5ED9E7703'
         DeleteTargetModuleBeforeBuild     = $true
         MergeModuleOnBuild                = $true
