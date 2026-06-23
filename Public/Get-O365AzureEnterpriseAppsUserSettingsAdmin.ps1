@@ -24,21 +24,35 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
         [switch] $NoTranslation
     )
-    # https://docs.microsoft.com/en-us/azure/active-directory/manage-apps/configure-user-consent?tabs=azure-portal
-    # https://portal.azure.com/#blade/Microsoft_AAD_IAM/ConsentPoliciesMenuBlade/UserSettings
-    # https://portal.azure.com/#blade/Microsoft_AAD_IAM/StartboardApplicationsMenuBlade/UserSettings/menuId/
-    $Uri = 'https://main.iam.ad.ext.azure.com/api/RequestApprovals/V2/PolicyTemplates?type=AdminConsentFlow'
-    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
+    $Uri = 'https://graph.microsoft.com/v1.0/policies/adminConsentRequestPolicy'
+    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -RequiredGraphScope 'Policy.Read.All|Policy.ReadWrite.ConsentRequest|Directory.Read.All|Directory.ReadWrite.All'
     if ($Output) {
         if ($NoTranslation) {
             $Output
         } else {
+            $ApproversV2 = [ordered] @{
+                user  = @()
+                group = @()
+                role  = @()
+            }
+            foreach ($Reviewer in @($Output.reviewers)) {
+                $Query = $Reviewer.query -replace '^/v1\.0/', '/'
+                if ($Query -match '^/users/(?<id>[^/]+)$') {
+                    $ApproversV2.user += $Matches.id
+                } elseif ($Query -match '^/groups/(?<id>[^/]+)(?:/transitiveMembers|/members)?$') {
+                    $ApproversV2.group += $Matches.id
+                } elseif ($Query -match '^/directoryRoles/(?<id>[^/]+)(?:/members)?$') {
+                    $ApproversV2.role += $Matches.id
+                }
+            }
             [PSCustomObject] @{
-                requestExpiresInDays = $Output.requestExpiresInDays
-                notificationsEnabled = $Output.notificationsEnabled
+                isEnabled            = $Output.isEnabled
+                requestExpiresInDays = $Output.requestDurationInDays
+                notificationsEnabled = $Output.notifyReviewers
                 remindersEnabled     = $Output.remindersEnabled
-                approvers            = $Output.approvers
-                approversV2          = $Output.approversV2
+                approvers            = @($ApproversV2.user + $ApproversV2.group + $ApproversV2.role)
+                approversV2          = [PSCustomObject] $ApproversV2
+                reviewers            = $Output.reviewers
             }
         }
     }

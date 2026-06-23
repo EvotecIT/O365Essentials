@@ -8,5 +8,6 @@ These examples favor read-only review commands and call out change paths careful
 
 ## Examples
 
+- [Connect with WAM and explicit Graph scopes](./connect-with-wam/)
 - [Review admin role membership](./review-admin-role-membership/)
 - [Preview group naming policy changes](./preview-group-naming-policy/)

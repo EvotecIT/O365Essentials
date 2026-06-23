@@ -22,6 +22,6 @@
         [alias('Authorization')][System.Collections.IDictionary] $Headers
     )
     $Uri = 'https://graph.microsoft.com/v1.0/policies/authenticationFlowsPolicy'
-    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
+    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -RequiredGraphScope 'Policy.Read.All|Policy.ReadWrite.AuthenticationFlows'
     $Output
 }

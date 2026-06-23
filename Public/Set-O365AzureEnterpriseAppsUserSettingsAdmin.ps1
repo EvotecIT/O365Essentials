@@ -1,36 +1,88 @@
 ﻿function Set-O365AzureEnterpriseAppsUserSettingsAdmin {
     <#
     .SYNOPSIS
-    Enables or Disables user consent to enterprise apps in Azure.
+    Configures the Microsoft Entra admin consent request policy.
 
     .DESCRIPTION
-    This function allows administrators to enable or disable user consent to enterprise apps in Azure. When enabled, users can consent to apps accessing their data. When disabled, only admins can consent to apps.
+    This function updates the documented Microsoft Graph adminConsentRequestPolicy
+    object used by the admin consent workflow.
 
     .PARAMETER Headers
     Specifies the headers for the API request. Typically includes authorization tokens.
 
-    .PARAMETER UserConsentToAppsEnabled
-    Indicates whether user consent to enterprise apps is enabled.
+    .PARAMETER IsEnabled
+    Indicates whether the admin consent request workflow is enabled. The
+    UserConsentToAppsEnabled alias is retained for older scripts, but the setting
+    controls admin consent requests, not general user consent.
 
     .EXAMPLE
     $headers = @{Authorization = "Bearer your_token"}
-    Set-O365AzureEnterpriseAppsUserSettingsAdmin -Headers $headers -UserConsentToAppsEnabled $true
+    Set-O365AzureEnterpriseAppsUserSettingsAdmin -Headers $headers -IsEnabled $true -RequestExpiresInDays 30
 
-    This example enables user consent to enterprise apps.
+    This example enables the admin consent request workflow and sets request
+    expiry to 30 days.
 
     .LINK
-    https://main.iam.ad.ext.azure.com/api/RequestApprovals/V2/PolicyTemplates
+    https://learn.microsoft.com/graph/api/adminconsentrequestpolicy-update
     #>
     [cmdletbinding(SupportsShouldProcess)]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
-        [parameter(Mandatory)][bool] $UserConsentToAppsEnabled
+        [alias('UserConsentToAppsEnabled')][nullable[bool]] $IsEnabled,
+        [nullable[bool]] $NotificationsEnabled,
+        [nullable[bool]] $RemindersEnabled,
+        [nullable[int]] $RequestExpiresInDays,
+        [string[]] $UserApproverId,
+        [string[]] $GroupApproverId,
+        [string[]] $RoleApproverId,
+        [object[]] $Reviewer
     )
-    $Uri = "https://main.iam.ad.ext.azure.com/api/RequestApprovals/V2/PolicyTemplates"
-    #-Body "{`"id`":null,`"requestExpiresInDays`":30,`"notificationsEnabled`":true,`
-    #"remindersEnabled`":true,`"approversV2`":{`"user`":[`"e6a8f1cf-0874-4323-a12f-2bf51bb6dfdd`"],`"group`":[],`"role`":[]}}"
-    #$Body = @{
-    #    Enabled = $UserConsentToAppsEnabled
-    #}
-    #$null = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method POST -Body $Body
+    $Uri = 'https://graph.microsoft.com/v1.0/policies/adminConsentRequestPolicy'
+    $CurrentSettings = Invoke-O365Admin -Uri $Uri -Headers $Headers -RequiredGraphScope 'Policy.Read.All|Policy.ReadWrite.ConsentRequest|Directory.Read.All|Directory.ReadWrite.All'
+    if (-not $CurrentSettings) {
+        Write-Warning -Message 'Set-O365AzureEnterpriseAppsUserSettingsAdmin - Current admin consent request policy could not be read.'
+        return
+    }
+
+    $Reviewers = if ($PSBoundParameters.ContainsKey('Reviewer')) {
+        @(ConvertTo-O365AdminConsentReviewer -Reviewer $Reviewer)
+    } elseif ($PSBoundParameters.ContainsKey('UserApproverId') -or $PSBoundParameters.ContainsKey('GroupApproverId') -or $PSBoundParameters.ContainsKey('RoleApproverId')) {
+        @(
+            foreach ($ApproverId in @($UserApproverId)) {
+                if (-not [string]::IsNullOrWhiteSpace($ApproverId)) {
+                    [ordered] @{ query = "/users/$ApproverId"; queryType = 'MicrosoftGraph' }
+                }
+            }
+            foreach ($ApproverId in @($GroupApproverId)) {
+                if (-not [string]::IsNullOrWhiteSpace($ApproverId)) {
+                    [ordered] @{ query = "/groups/$ApproverId/transitiveMembers"; queryType = 'MicrosoftGraph' }
+                }
+            }
+            foreach ($ApproverId in @($RoleApproverId)) {
+                if (-not [string]::IsNullOrWhiteSpace($ApproverId)) {
+                    [ordered] @{ query = "/directoryRoles/$ApproverId/members"; queryType = 'MicrosoftGraph' }
+                }
+            }
+        )
+    } else {
+        @(ConvertTo-O365AdminConsentReviewer -Reviewer $CurrentSettings.reviewers)
+    }
+
+    $EnablingWorkflow = $PSBoundParameters.ContainsKey('IsEnabled') -and [bool] $IsEnabled
+    if ($EnablingWorkflow -and @($Reviewers).Count -eq 0) {
+        Write-Warning -Message 'Set-O365AzureEnterpriseAppsUserSettingsAdmin - At least one reviewer or approver is required before enabling the admin consent request workflow.'
+        return
+    }
+
+    $Body = [ordered] @{
+        isEnabled             = if ($PSBoundParameters.ContainsKey('IsEnabled')) { [bool] $IsEnabled } else { [bool] $CurrentSettings.isEnabled }
+        notifyReviewers       = if ($PSBoundParameters.ContainsKey('NotificationsEnabled')) { [bool] $NotificationsEnabled } else { [bool] $CurrentSettings.notifyReviewers }
+        remindersEnabled      = if ($PSBoundParameters.ContainsKey('RemindersEnabled')) { [bool] $RemindersEnabled } else { [bool] $CurrentSettings.remindersEnabled }
+        requestDurationInDays = if ($PSBoundParameters.ContainsKey('RequestExpiresInDays')) { [int] $RequestExpiresInDays } else { [int] $CurrentSettings.requestDurationInDays }
+        reviewers             = @($Reviewers)
+    }
+
+    if ($PSCmdlet.ShouldProcess($Uri, 'Update admin consent request policy')) {
+        Invoke-O365Admin -Uri $Uri -Headers $Headers -Method PUT -Body $Body -RequiredGraphScope 'Policy.ReadWrite.ConsentRequest|Directory.ReadWrite.All'
+    }
 }

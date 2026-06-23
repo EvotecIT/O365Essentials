@@ -28,6 +28,17 @@
     .PARAMETER QueryParameter
     The query parameters for the request.
 
+    .PARAMETER RequiredGraphScope
+    Delegated Microsoft Graph scopes required by the target Graph endpoint. When the
+    cached Graph token does not include them and the current authentication state can
+    be refreshed, Invoke-O365Admin reconnects with those scopes before sending the
+    request.
+
+    .PARAMETER JsonDepth
+    Depth used when serializing request bodies. Leave the default for normal API
+    calls and raise it only for known full-settings payloads with deeper nested
+    objects.
+
     .PARAMETER UsePortalSession
     Forces the request through the cached admin.cloud.microsoft portal WebSession
     attached to the current authorization state.
@@ -45,6 +56,8 @@
         [object] $Body,
         [System.Collections.IDictionary] $QueryParameter,
         [System.Collections.IDictionary] $AdditionalHeaders,
+        [string[]] $RequiredGraphScope,
+        [ValidateRange(1, 100)][int] $JsonDepth = 5,
         [switch] $UsePortalSession,
         [switch] $QuietOnError,
         [Parameter(DontShow)][switch] $SkipPortalAttachRetry
@@ -53,6 +66,7 @@
     if (-not $Headers -and $Script:AuthorizationO365Cache) {
         $Headers = $Script:AuthorizationO365Cache
     }
+    $CallerHeaders = if ($PSBoundParameters.ContainsKey('Headers') -and $Headers) { $Headers } else { $null }
 
     $PortalSessionRequest = $false
     if ($UsePortalSession -and $Uri -like '*admin.cloud.microsoft*' -and $Headers -and $Headers.Contains('PortalWebSession') -and $Headers.PortalWebSession) {
@@ -63,7 +77,16 @@
         # This forces a reconnect of session in case it's about to time out. If it's not timeouting a cache value is used
         $Headers = Connect-O365Admin -Headers $Headers
     } elseif (-not $PortalSessionRequest -and $Headers) {
-        $Headers = Connect-O365Admin -Headers $Headers
+        $RefreshedHeaders = Connect-O365Admin -Headers $Headers
+        if ($RefreshedHeaders) {
+            $Headers = $RefreshedHeaders
+            Update-AuthorizationState -Target $CallerHeaders -Source $RefreshedHeaders
+            if ($CallerHeaders) {
+                $Headers = $CallerHeaders
+            }
+        } else {
+            $Headers = $null
+        }
     } elseif (-not $Headers) {
         Write-Warning "Invoke-O365Admin - Not connected. Please connect using Connect-O365Admin."
         return
@@ -72,6 +95,28 @@
         Write-Warning "Invoke-O365Admin - Authorization error. Skipping."
         return
     }
+
+    if ($Uri -like '*graph.microsoft.com*' -and $RequiredGraphScope -and -not (Test-O365GraphScope -GrantedScope $Headers.GraphScopes -RequiredScope $RequiredGraphScope)) {
+        $CanRefreshGraphScope = $Headers.AuthenticationMode -eq 'WAM' -or $Headers.RefreshToken -or $Headers.Credential
+        if ($CanRefreshGraphScope) {
+            Write-Verbose -Message "Invoke-O365Admin - Refreshing Graph token with required scopes: $($RequiredGraphScope -join ', ')"
+            $RefreshedHeaders = Connect-O365Admin -Headers $Headers -ForceRefresh -GraphScope $RequiredGraphScope -SuppressWamPrompt
+            if (-not $RefreshedHeaders) {
+                Write-Warning "Invoke-O365Admin - Authorization error after Graph scope refresh. Skipping."
+                return
+            }
+            $Headers = $RefreshedHeaders
+            $GraphRefreshKeys = 'AccessTokenGraph', 'HeadersGraph', 'GraphScopes', 'RefreshToken', 'Tenant', 'UserName', 'AuthenticationMode'
+            Update-AuthorizationState -Target $CallerHeaders -Source $RefreshedHeaders -Key $GraphRefreshKeys
+            if ($CallerHeaders) {
+                $Script:AuthorizationO365Cache = $CallerHeaders
+                $Headers = $CallerHeaders
+            }
+        } else {
+            Write-Verbose -Message "Invoke-O365Admin - Required Graph scopes were not present and the current authentication mode cannot be refreshed automatically: $($RequiredGraphScope -join ', ')"
+        }
+    }
+
     $RestSplat = @{
         Method      = $Method
         ContentType = $ContentType
@@ -131,7 +176,7 @@
     #$RestSplat.Headers."etag" = '1629993527.826253_3ce8143d'
 
     if ($Body) {
-        $RestSplat['Body'] = $Body | ConvertTo-Json -Depth 5
+        $RestSplat['Body'] = $Body | ConvertTo-Json -Depth $JsonDepth
     }
     $RestSplat.Uri = Join-UriQuery -BaseUri $Uri -QueryParameter $QueryParameter
     if ($RestSplat['Body']) {
@@ -238,9 +283,11 @@
                     Method               = $Method
                     ContentType          = $ContentType
                     QueryParameter       = $QueryParameter
-                    AdditionalHeaders    = $AdditionalHeaders
-                    UsePortalSession     = $true
-                    QuietOnError         = $QuietOnError
+                    AdditionalHeaders     = $AdditionalHeaders
+                    RequiredGraphScope    = $RequiredGraphScope
+                    JsonDepth             = $JsonDepth
+                    UsePortalSession      = $true
+                    QuietOnError          = $QuietOnError
                     SkipPortalAttachRetry = $true
                 }
                 if ($PSBoundParameters.ContainsKey('Body')) {

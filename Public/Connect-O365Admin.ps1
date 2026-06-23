@@ -16,6 +16,11 @@ function Connect-O365Admin {
     When portal attachment state is present, Connect-O365Admin folds that browser-backed
     session into the cached authorization object so portal-sensitive routes can later
     replay through Invoke-O365Admin without changing the user-facing workflow.
+
+    .PARAMETER GraphScope
+    Additional delegated Microsoft Graph scopes to request for Graph-backed commands
+    that need more than the default Graph token. This is especially useful with
+    -UseWam because MSAL can prompt for the required delegated consent interactively.
     #>
     [cmdletbinding(DefaultParameterSetName = 'Credential')]
     param(
@@ -32,6 +37,7 @@ function Connect-O365Admin {
         [parameter(ParameterSetName = 'Credential')][alias('WAM')][switch] $UseWam,
         # Tenant ID; defaults to 'organizations' and is replaced with the actual tenant after sign-in
         [alias('TenantID')][string] $Tenant,
+        [alias('GraphScopes')][string[]] $GraphScope,
         [string] $DomainName,
         [string] $Subscription,
         # Hidden portal attachment inputs are intended for host/app integrations only.
@@ -46,7 +52,8 @@ function Connect-O365Admin {
         [Parameter(DontShow)][string] $PortalAttachRouteKey,
         [Parameter(DontShow)][string] $PortalAttachUserName,
         [Parameter(DontShow)][System.Collections.IDictionary] $PortalAttachCookieMap,
-        [Parameter(DontShow)][switch] $SkipPortalBootstrap
+        [Parameter(DontShow)][switch] $SkipPortalBootstrap,
+        [Parameter(DontShow)][switch] $SuppressWamPrompt
     )
 
     $HasPortalAttachInput = $PSBoundParameters.ContainsKey('PortalAttachWebSession') -or
@@ -93,8 +100,12 @@ function Connect-O365Admin {
     $ExplicitCredential = if ($PSBoundParameters.ContainsKey('Credential')) { $Credential } else { $null }
     $CachedAuthenticationMode = $null
     $CachedUserName = $null
+    $RequestedGraphScopes = @($GraphScope | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | ForEach-Object { $_.Trim() })
+    $ExistingGraphScopes = @()
     if ($Headers) {
-        if ($Headers.ExpiresOnUTC -gt [datetime]::UtcNow -and -not $ForceRefresh -and -not $HasPortalAttachInput) {
+        $ExistingGraphScopes = @($Headers.GraphScopes | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | ForEach-Object { $_.Trim() })
+        $HasRequestedGraphScopes = $RequestedGraphScopes.Count -eq 0 -or (Test-O365GraphScope -GrantedScope $Headers.GraphScopes -RequiredScope $RequestedGraphScopes)
+        if ($Headers.ExpiresOnUTC -gt [datetime]::UtcNow -and -not $ForceRefresh -and -not $HasPortalAttachInput -and $HasRequestedGraphScopes) {
             Write-Verbose -Message "Connect-O365Admin - Using cache for connection $($Headers.UserName)"
             return $Headers
         } else {
@@ -119,7 +130,9 @@ function Connect-O365Admin {
             if ($Headers.Contains('HeadersPortal')) { $HeadersPortal = $Headers.HeadersPortal }
         }
     } elseif ($Script:AuthorizationO365Cache) {
-        if ($Script:AuthorizationO365Cache.ExpiresOnUTC -gt [datetime]::UtcNow -and -not $ForceRefresh -and -not $HasPortalAttachInput) {
+        $ExistingGraphScopes = @($Script:AuthorizationO365Cache.GraphScopes | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | ForEach-Object { $_.Trim() })
+        $HasRequestedGraphScopes = $RequestedGraphScopes.Count -eq 0 -or (Test-O365GraphScope -GrantedScope $Script:AuthorizationO365Cache.GraphScopes -RequiredScope $RequestedGraphScopes)
+        if ($Script:AuthorizationO365Cache.ExpiresOnUTC -gt [datetime]::UtcNow -and -not $ForceRefresh -and -not $HasPortalAttachInput -and $HasRequestedGraphScopes) {
             Write-Verbose -Message "Connect-O365Admin - Using cache for connection $($Script:AuthorizationO365Cache.UserName)"
             return $Script:AuthorizationO365Cache
         } else {
@@ -143,6 +156,23 @@ function Connect-O365Admin {
             if ($Script:AuthorizationO365Cache.Contains('PortalTenantId')) { $PortalTenantId = $Script:AuthorizationO365Cache.PortalTenantId }
             if ($Script:AuthorizationO365Cache.Contains('HeadersPortal')) { $HeadersPortal = $Script:AuthorizationO365Cache.HeadersPortal }
         }
+    }
+    $IsAppAuthentication = $PSCmdlet.ParameterSetName -eq 'App' -or ($ClientId -and ($ClientSecret -or $Certificate))
+    $GraphScopesToRequest = if ($IsAppAuthentication) {
+        @()
+    } else {
+        @(
+            foreach ($Scope in @($ExistingGraphScopes + $RequestedGraphScopes)) {
+                foreach ($Part in ($Scope -split '\s+')) {
+                    if (-not [string]::IsNullOrWhiteSpace($Part) -and $Part -notin 'offline_access', 'openid', 'profile', 'email') {
+                        $ConcreteScope = ($Part -split '\|' | Select-Object -First 1).Trim()
+                        if (-not [string]::IsNullOrWhiteSpace($ConcreteScope)) {
+                            $ConcreteScope
+                        }
+                    }
+                }
+            }
+        ) | Select-Object -Unique
     }
 
     if ($ExplicitCredential) {
@@ -206,12 +236,17 @@ function Connect-O365Admin {
 
     $Tenant = if ($Tenant) { $Tenant } else { 'organizations' }
     $WamAuthorityTenant = if ($UseWam) { $Tenant } else { $null }
+    $ForceWamPrompt = $ForceRefresh -and -not $SuppressWamPrompt
     $ScopesO365 = 'https://admin.microsoft.com/.default offline_access'
     # Admin and directory portal routes can require the Microsoft 365/Azure portal audience
     $ResourceAzure = '74658136-14ec-4630-ad9b-26e160ff0fc6'
     # Use the management.azure.com resource for ARM token acquisition
     $ScopesARM = 'https://management.azure.com/.default offline_access'
-    $ScopesGraph = 'https://graph.microsoft.com/.default offline_access'
+    $ScopesGraph = if ($GraphScopesToRequest.Count -gt 0) {
+        (@($GraphScopesToRequest) + 'offline_access' | Select-Object -Unique) -join ' '
+    } else {
+        'https://graph.microsoft.com/.default offline_access'
+    }
     # Teams admin APIs on teams.microsoft.com expect a token for api.spaces.skype.com
     $ScopesTeams = 'https://api.spaces.skype.com/.default offline_access'
     # Substrate Admin App Catalog (used by Teams admin UI to reflect app availability) — use v1 resource GUID
@@ -235,8 +270,12 @@ function Connect-O365Admin {
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Graph"
         if ($UseWam) {
-            $tokenGraph = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://graph.microsoft.com/' -Account $WamLoginHint -ForcePrompt:$ForceRefresh
-        } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
+            if ($GraphScopesToRequest.Count -gt 0) {
+                $tokenGraph = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -Scope $ScopesGraph -Account $WamLoginHint -ForcePrompt:$ForceWamPrompt
+            } else {
+                $tokenGraph = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://graph.microsoft.com/' -Account $WamLoginHint -ForcePrompt:$ForceWamPrompt
+            }
+        } elseif ($IsAppAuthentication) {
             $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } elseif ($RefreshToken -and -not $Credential -and -not $Device) {
             $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -RefreshToken $RefreshToken
@@ -244,7 +283,7 @@ function Connect-O365Admin {
             $tokenGraph = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesGraph -Credential $Credential -Device:$Device
         }
     } catch {
-        $CanRetryWithDevice = -not $Device -and $PSCmdlet.ParameterSetName -ne 'App' -and $_.Exception.Message -match 'Failed to listen on prefix|localhost:8400'
+        $CanRetryWithDevice = -not $Device -and -not $IsAppAuthentication -and $_.Exception.Message -match 'Failed to listen on prefix|localhost:8400'
         if ($CanRetryWithDevice) {
             Write-Verbose -Message "Connect-O365Admin - Interactive listener failed. Falling back to device code for Graph."
             try {
@@ -267,13 +306,22 @@ function Connect-O365Admin {
     }
     $refresh = if ($UseWam) { $null } else { $tokenGraph.refresh_token }
     $WamAccount = if ($UseWam) { $tokenGraph.account } else { $null }
+    $graphTokenInfo = ConvertFrom-JSONWebToken -Token $tokenGraph.access_token
+    $GrantedGraphScopes = @()
+    if ($graphTokenInfo.scp) {
+        $GrantedGraphScopes = @($graphTokenInfo.scp -split '\s+' | Where-Object { $_ })
+    } elseif ($graphTokenInfo.roles) {
+        $GrantedGraphScopes = @($graphTokenInfo.roles)
+    } elseif ($tokenGraph.scopes) {
+        $GrantedGraphScopes = @($tokenGraph.scopes)
+    }
     $tokenO365 = $null
     $tokenAzure = $null
     try {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for admin.microsoft.com"
         if ($UseWam) {
             $tokenO365 = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://admin.microsoft.com/' -Account $WamAccount
-        } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
+        } elseif ($IsAppAuthentication) {
             $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesO365 -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } else {
             $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesO365 -RefreshToken $refresh
@@ -283,7 +331,7 @@ function Connect-O365Admin {
         try {
             if ($UseWam) {
                 $tokenO365 = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl $ResourceAzure -Account $WamAccount
-            } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
+            } elseif ($IsAppAuthentication) {
                 $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
             } else {
                 $tokenO365 = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -RefreshToken $refresh
@@ -299,7 +347,7 @@ function Connect-O365Admin {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Teams (api.spaces.skype.com)"
         if ($UseWam) {
             $tokenTeams = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://api.spaces.skype.com/' -Account $WamAccount
-        } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
+        } elseif ($IsAppAuthentication) {
             $tokenTeams = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesTeams -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } else {
             $tokenTeams = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesTeams -RefreshToken $refresh
@@ -313,7 +361,7 @@ function Connect-O365Admin {
             Write-Verbose -Message "Connect-O365Admin - Acquiring token for Azure"
             if ($UseWam) {
                 $tokenAzure = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl $ResourceAzure -Account $WamAccount
-            } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
+            } elseif ($IsAppAuthentication) {
                 $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
             } else {
                 $tokenAzure = Get-O365OAuthToken -Tenant $Tenant -Resource $ResourceAzure -RefreshToken $refresh
@@ -327,7 +375,7 @@ function Connect-O365Admin {
         Write-Verbose -Message "Connect-O365Admin - Acquiring token for Azure management"
         if ($UseWam) {
             $tokenARM = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl 'https://management.azure.com/' -Account $WamAccount
-        } elseif ($PSCmdlet.ParameterSetName -eq 'App') {
+        } elseif ($IsAppAuthentication) {
             $tokenARM = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesARM -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
         } else {
             $tokenARM = Get-O365OAuthToken -Tenant $Tenant -Scope $ScopesARM -RefreshToken $refresh
@@ -367,13 +415,13 @@ function Connect-O365Admin {
                         $tokenSubstrate = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl $attempt.value -Account $WamAccount
                     }
                 } elseif ($attempt.type -eq 'resource') {
-                    if ($PSCmdlet.ParameterSetName -eq 'App') {
+                    if ($IsAppAuthentication) {
                         $tokenSubstrate = Get-O365OAuthToken -Tenant $Tenant -Resource $attempt.value -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
                     } else {
                         $tokenSubstrate = Get-O365OAuthToken -Tenant $Tenant -Resource $attempt.value -RefreshToken $refresh
                     }
                 } else {
-                    if ($PSCmdlet.ParameterSetName -eq 'App') {
+                    if ($IsAppAuthentication) {
                         $tokenSubstrate = Get-O365OAuthToken -Tenant $Tenant -Scope $attempt.value -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
                     } else {
                         $tokenSubstrate = Get-O365OAuthToken -Tenant $Tenant -Scope $attempt.value -RefreshToken $refresh
@@ -389,7 +437,7 @@ function Connect-O365Admin {
         }
     }
 
-    if ($PSCmdlet.ParameterSetName -eq 'App') {
+    if ($IsAppAuthentication) {
         $userName = $ClientId
     } elseif ($UseWam -and $tokenGraph.account) {
         $userName = $tokenGraph.account
@@ -453,6 +501,7 @@ function Connect-O365Admin {
             $null
         }
         'AccessTokenGraph'    = $tokenGraph.access_token
+        'GraphScopes'         = $GrantedGraphScopes
         'HeadersGraph'        = [ordered] @{
             'Content-Type'           = 'application/json; charset=UTF-8'
             'Authorization'          = "Bearer $($tokenGraph.access_token)"

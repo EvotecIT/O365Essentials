@@ -32,7 +32,7 @@
         '$Select'  = $Property -join ','
         '$filter'  = 'parentId eq null'
         '$orderby' = $OrderBy
-        'expand'   = 'subscribedsku'
+        '$expand'  = 'subscribedsku'
         'optional' = "cspsubscriptions,price,actions,transitiondetails,quickstarttag"
     }
     Remove-EmptyValue -Hashtable $QueryParameter
