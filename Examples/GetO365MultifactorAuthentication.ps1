@@ -1,14 +1,11 @@
-﻿Import-Module .\O365Essentials.psd1 -Force
+Import-Module .\O365Essentials.psd1 -Force
 
 if (-not $Credentials) {
-    $Credentials = Get-Credential
+    $Credentials = Get-Credential -Message 'Enter the account to use as the WAM login hint'
 }
-# This makes a connection to Office 365 tenant, using credentials
-# keep in mind that if there's an MFA you would be better left without Credentials and just let it prompt you
-$null = Connect-O365Admin -Verbose -Credential $Credentials
+
+# Use WAM for MFA-aware interactive sign-in. -ForceRefresh is helpful when Windows
+# has cached the wrong account and you need the account picker again.
+$null = Connect-O365Admin -Verbose -UseWam -Credential $Credentials -ForceRefresh
 
 Get-O365AzureMultiFactorAuthentication -Verbose
-
-# Those cmdlets don't seem to work, not sure why
-Set-O365AzureMultiFactorAuthentication -Verbose -AccountLockoutDurationMinutes 5 -AccountLockoutCounterResetMinutes 15 -AccountLockoutDenialsToTriggerLockout 10 -WhatIf
-Set-O365AzureMultiFactorAuthentication -Verbose -EnableFraudAlert $false -WhatIf

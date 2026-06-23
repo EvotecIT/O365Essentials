@@ -37,7 +37,7 @@
 | Get-O365AzureGroupSecurity                      | Set-O365AzureGroupSecurity                   |                                                             |
 | Get-O365AzureGroupSelfService                   | Set-O365AzureGroupSelfService                |                                                             |
 | Get-O365AzureLicenses                           |                                              |                                                             |
-| Get-O365AzureMultiFactorAuthentication          | Set-O365AzureMultiFactorAuthentication       | Set cmd not working                                         |
+| Get-O365AzureMultiFactorAuthentication          |                                              | Legacy MFA write endpoint removed by Microsoft              |
 | Get-O365AzureProperties                         | Set-O365AzureProperties                      |                                                             |
 | Get-O365AzurePropertiesSecurity                 | Set-O365AzurePropertiesSecurity              |                                                             |
 | Get-O365AzureTenantSKU                          |                                              |                                                             |
