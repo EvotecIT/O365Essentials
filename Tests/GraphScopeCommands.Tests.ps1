@@ -6,13 +6,13 @@ Describe 'Graph commands with required scopes' {
 
         Get-O365AzureConditionalAccessLocation -Headers @{ HeadersGraph = @{ Authorization = 'Bearer graph' } } | Out-Null
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://graph.microsoft.com/v1.0/identity/conditionalAccess/namedLocations' -and
             $RequiredGraphScope -contains 'Policy.Read.All' -and
             $QueryParameter['$top'] -eq 10 -and
             $QueryParameter['$orderby'] -eq 'displayName' -and
             -not $QueryParameter.Contains('$filter')
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'requests Policy.Read.All for authentication flows policy' {
@@ -20,10 +20,10 @@ Describe 'Graph commands with required scopes' {
 
         Get-O365AzureExternalCollaborationFlows -Headers @{ HeadersGraph = @{ Authorization = 'Bearer graph' } } | Out-Null
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://graph.microsoft.com/v1.0/policies/authenticationFlowsPolicy' -and
             $RequiredGraphScope -contains 'Policy.Read.All|Policy.ReadWrite.AuthenticationFlows'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'uses the current email authentication method endpoint and scope' {
@@ -31,9 +31,9 @@ Describe 'Graph commands with required scopes' {
 
         Get-O365AzureExternalIdentitiesEmail -Headers @{ HeadersGraph = @{ Authorization = 'Bearer graph' } } | Out-Null
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://graph.microsoft.com/v1.0/policies/authenticationMethodsPolicy/authenticationMethodConfigurations/email' -and
             $RequiredGraphScope -contains 'Policy.Read.AuthenticationMethod|Policy.ReadWrite.AuthenticationMethod'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 }

@@ -158,7 +158,7 @@ Describe 'Get-O365InternalApiValidationReport' {
 
         $Report = Get-O365InternalApiValidationReport -Area Viva -IncludeHealthyFindings
 
-        Assert-MockCalled Get-O365InternalApiFinding -ModuleName O365Essentials -ParameterFilter { $IncludeHealthy } -Exactly 1
+        Should -Invoke -CommandName Get-O365InternalApiFinding -ModuleName O365Essentials -ParameterFilter { $IncludeHealthy } -Times 1 -Exactly
         $Report.Summary.InfoCount | Should -Be 1
         $Report.RecommendedCommands | Should -Contain 'Get-O365OrgVivaSettings -Name Modules'
     }

@@ -26,10 +26,10 @@ Describe 'Get-O365OrgMicrosoftEdgeSiteLists' {
 
         $Result = Get-O365OrgMicrosoftEdgeSiteLists -Name Notifications
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/fd/edgeenterprisesitemanagement/api/v2/notifications' -and
             $QuietOnError
-        } -Exactly 1
+        } -Times 1 -Exactly
         $Result.Name | Should -Be 'Notifications'
         $Result.DataBacked | Should -BeFalse
         $Result.Description | Should -Match 'optional'
@@ -42,11 +42,11 @@ Describe 'Get-O365OrgMicrosoftEdgeSiteLists' {
 
         Get-O365OrgMicrosoftEdgeSiteLists -Headers @{ AjaxSessionKey = 'ajax-key'; PortalRouteKey = 'weu'; PortalWebSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new() } -Name SiteLists | Out-Null
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/fd/edgeenterprisesitemanagement/api/v2/emiesitelists' -and
             $UsePortalSession -and
             $AdditionalHeaders.AjaxSessionKey -eq 'ajax-key' -and
             $AdditionalHeaders['x-portal-routekey'] -eq 'weu'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 }

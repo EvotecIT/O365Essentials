@@ -14,9 +14,9 @@ Describe 'Get-O365OrgMicrosoftEdge' {
 
         $Result.Count | Should -Be 42
         @($Result.Sample).Count | Should -Be 1
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/fd/MSGraph/v1.0/devices?$count=true&$top=1' -and $AdditionalHeaders['ConsistencyLevel'] -eq 'eventual'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'uses the extension policies endpoint' {
@@ -52,10 +52,10 @@ Describe 'Get-O365OrgMicrosoftEdge' {
 
         $Result = Get-O365OrgMicrosoftEdge -Name ExtensionFeedback
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/fd/edgeenterpriseextensionsmanagement/api/extensions/extensionFeedback' -and
             $QuietOnError
-        } -Exactly 1
+        } -Times 1 -Exactly
         $Result.Name | Should -Be 'ExtensionFeedback'
         $Result.DataBacked | Should -BeFalse
         $Result.IsOptional | Should -BeTrue
@@ -94,11 +94,11 @@ Describe 'Get-O365OrgMicrosoftEdge' {
 
         Get-O365OrgMicrosoftEdge -Headers @{ AjaxSessionKey = 'ajax-key'; PortalRouteKey = 'weu'; PortalWebSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new() } -Name DeviceCount | Out-Null
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/fd/MSGraph/v1.0/devices?$count=true&$top=1' -and
             $UsePortalSession -and
             $AdditionalHeaders.AjaxSessionKey -eq 'ajax-key' -and
             $AdditionalHeaders['x-portal-routekey'] -eq 'weu'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 }

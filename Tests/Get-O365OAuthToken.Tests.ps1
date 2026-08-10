@@ -46,7 +46,7 @@ Describe 'Connect-O365Admin portal token' {
             [pscustomobject]@{access_token='tok'; refresh_token='ref'}
         }
         Connect-O365Admin -Credential $cred | Out-Null
-        Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -ParameterFilter { $Resource -eq '74658136-14ec-4630-ad9b-26e160ff0fc6' } -Exactly 1
+        Should -Invoke -CommandName Get-O365OAuthToken -ModuleName O365Essentials -ParameterFilter { $Resource -eq '74658136-14ec-4630-ad9b-26e160ff0fc6' } -Times 1 -Exactly
     }
 
     It 'falls back to portal resource token when admin.microsoft.com scope fails' {
@@ -91,8 +91,8 @@ Describe 'Connect-O365Admin portal token' {
 
         $result.AccessTokenO365 | Should -Be 'portal-token'
         $result.AccessTokenAzure | Should -Be 'portal-token'
-        Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -ParameterFilter { $Scope -eq 'https://admin.microsoft.com/.default offline_access' } -Exactly 1
-        Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -ParameterFilter { $Resource -eq '74658136-14ec-4630-ad9b-26e160ff0fc6' } -Exactly 1
+        Should -Invoke -CommandName Get-O365OAuthToken -ModuleName O365Essentials -ParameterFilter { $Scope -eq 'https://admin.microsoft.com/.default offline_access' } -Times 1 -Exactly
+        Should -Invoke -CommandName Get-O365OAuthToken -ModuleName O365Essentials -ParameterFilter { $Resource -eq '74658136-14ec-4630-ad9b-26e160ff0fc6' } -Times 1 -Exactly
     }
 
     It 'falls back to device auth when the localhost listener cannot bind' {
@@ -136,12 +136,12 @@ Describe 'Connect-O365Admin portal token' {
         $result = Connect-O365Admin -Credential $cred
 
         $result.AccessTokenGraph | Should -Be 'graph-token'
-        Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Get-O365OAuthToken -ModuleName O365Essentials -ParameterFilter {
             $Scope -eq 'https://graph.microsoft.com/.default offline_access' -and -not $Device
-        } -Exactly 1
-        Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -ParameterFilter {
+        } -Times 1 -Exactly
+        Should -Invoke -CommandName Get-O365OAuthToken -ModuleName O365Essentials -ParameterFilter {
             $Scope -eq 'https://graph.microsoft.com/.default offline_access' -and $Device
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'uses bundled MSAL WAM tokens without requiring a refresh token' {
@@ -170,10 +170,10 @@ Describe 'Connect-O365Admin portal token' {
         $result.AccessTokenGraph | Should -Be 'token:https://graph.microsoft.com/'
         $result.AccessTokenO365 | Should -Be 'token:https://admin.microsoft.com/'
         $result.HeadersO365.Authorization | Should -Be 'Bearer token:https://admin.microsoft.com/'
-        Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -Exactly 0
-        Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Get-O365OAuthToken -ModuleName O365Essentials -Times 0 -Exactly
+        Should -Invoke -CommandName Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
             $ResourceUrl -eq 'https://admin.microsoft.com/' -and $Account -eq 'user@contoso.com'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'requests explicit Graph scopes through WAM when GraphScope is supplied' {
@@ -200,9 +200,9 @@ Describe 'Connect-O365Admin portal token' {
 
         $result.AccessTokenGraph | Should -Be 'token:Policy.Read.All offline_access'
         $result.GraphScopes | Should -Contain 'Policy.Read.All'
-        Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
             $Scope -eq 'Policy.Read.All offline_access' -and -not $ResourceUrl
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'refreshes a warm WAM cache when requested Graph scopes are missing' {
@@ -236,9 +236,9 @@ Describe 'Connect-O365Admin portal token' {
 
         $result.AccessTokenGraph | Should -Be 'token:User.Read Policy.Read.All offline_access'
         $result.GraphScopes | Should -Contain 'User.Read'
-        Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
             $Scope -eq 'User.Read Policy.Read.All offline_access'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'can bypass a warm WAM cache without forcing the account picker' {
@@ -271,9 +271,9 @@ Describe 'Connect-O365Admin portal token' {
         $result = Connect-O365Admin -Headers $cachedHeaders -ForceRefresh -SuppressWamPrompt -GraphScope 'Policy.Read.All'
 
         $result.AccessTokenGraph | Should -Be 'token:User.Read Policy.Read.All offline_access'
-        Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
             $Scope -eq 'User.Read Policy.Read.All offline_access' -and -not $ForcePrompt
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'uses preserved Graph scopes when refreshing an expired WAM cache' {
@@ -307,9 +307,9 @@ Describe 'Connect-O365Admin portal token' {
 
         $result.AccessTokenGraph | Should -Be 'token:Directory.Read.All offline_access'
         $result.GraphScopes | Should -Contain 'Directory.Read.All'
-        Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
             $Scope -eq 'Directory.Read.All offline_access' -and -not $ResourceUrl
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'keeps app-authenticated reconnects on the Graph default scope' {
@@ -338,11 +338,11 @@ Describe 'Connect-O365Admin portal token' {
 
         Connect-O365Admin -Headers $cachedHeaders -ForceRefresh | Out-Null
 
-        Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Get-O365OAuthToken -ModuleName O365Essentials -ParameterFilter {
             $ClientId -eq 'app-id' -and
             $ClientSecret -eq 'secret' -and
             $Scope -eq 'https://graph.microsoft.com/.default offline_access'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'keeps the initial WAM authority tenant for resource token requests' {
@@ -376,7 +376,7 @@ Describe 'Connect-O365Admin portal token' {
         $result.Tenant | Should -Be 'resolved-tenant-id'
         $script:wamRequests.Count | Should -BeGreaterThan 1
         $script:wamRequests | ForEach-Object { $_.Tenant | Should -Be 'organizations' }
-        Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -Exactly 0
+        Should -Invoke -CommandName Get-O365OAuthToken -ModuleName O365Essentials -Times 0 -Exactly
     }
 
     It 'passes credential username to the first WAM token request' {
@@ -402,9 +402,9 @@ Describe 'Connect-O365Admin portal token' {
         $result = Connect-O365Admin -UseWam -Credential $cred -Tenant 'tenant-id'
 
         $result.UserName | Should -Be 'seed@contoso.com'
-        Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
             $ResourceUrl -eq 'https://graph.microsoft.com/' -and $Account -eq 'seed@contoso.com'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'honors explicit WAM refresh when an expired OAuth cache exists' {
@@ -445,10 +445,10 @@ Describe 'Connect-O365Admin portal token' {
 
         $result.AuthenticationMode | Should -Be 'WAM'
         $result.UserName | Should -Be 'user@contoso.com'
-        Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -Exactly 0
-        Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Get-O365OAuthToken -ModuleName O365Essentials -Times 0 -Exactly
+        Should -Invoke -CommandName Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
             $ResourceUrl -eq 'https://graph.microsoft.com/' -and $ForcePrompt -and [string]::IsNullOrWhiteSpace($Account)
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'uses the cached WAM username to refresh an existing WAM connection' {
@@ -489,9 +489,9 @@ Describe 'Connect-O365Admin portal token' {
 
         $result.AuthenticationMode | Should -Be 'WAM'
         $result.UserName | Should -Be 'cached@contoso.com'
-        Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
             $ResourceUrl -eq 'https://graph.microsoft.com/' -and $Account -eq 'cached@contoso.com'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'prefers an explicit WAM credential over an expired cached WAM username' {
@@ -533,9 +533,9 @@ Describe 'Connect-O365Admin portal token' {
 
         $result.AuthenticationMode | Should -Be 'WAM'
         $result.UserName | Should -Be 'new@contoso.com'
-        Assert-MockCalled Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Get-O365BrokerAccessToken -ModuleName O365Essentials -ParameterFilter {
             $ResourceUrl -eq 'https://graph.microsoft.com/' -and $Account -eq 'new@contoso.com'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'tries the substrate.office.com resource before legacy substrate audiences' {
@@ -661,12 +661,12 @@ Describe 'Connect-O365Admin portal token' {
 
         $result.PortalWebSession | Should -Be $portalWebSession
         $result.SkipBootstrap | Should -BeTrue
-        Assert-MockCalled Get-O365OAuthToken -ModuleName O365Essentials -Exactly 0
-        Assert-MockCalled Set-O365PortalSession -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Get-O365OAuthToken -ModuleName O365Essentials -Times 0 -Exactly
+        Should -Invoke -CommandName Set-O365PortalSession -ModuleName O365Essentials -ParameterFilter {
             $Headers -eq $cachedHeaders -and
             $WebSession -eq $portalWebSession -and
             $SkipBootstrap
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'attaches portal cookie state during a fresh connect through the same command' {
@@ -726,7 +726,7 @@ Describe 'Connect-O365Admin portal token' {
         $result.PortalTenantId | Should -Be 'tenant-1234'
         $result.PortalUserId | Should -Be 'user@contoso.com'
         $result.SkipBootstrap | Should -BeTrue
-        Assert-MockCalled Set-O365PortalSession -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Set-O365PortalSession -ModuleName O365Essentials -ParameterFilter {
             $Headers.AccessTokenGraph -eq 'graph-token' -and
             $RootAuthToken -eq 'root-cookie' -and
             $OIDCAuthCookie -eq 'oidc-cookie' -and
@@ -735,7 +735,7 @@ Describe 'Connect-O365Admin portal token' {
             $TenantId -eq 'tenant-1234' -and
             $Username -eq 'user@contoso.com' -and
             $SkipBootstrap
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'auto-attaches portal cookie state from process environment variables' {
@@ -808,7 +808,7 @@ Describe 'Connect-O365Admin portal token' {
         $result.SkipBootstrap | Should -BeTrue
         [Environment]::GetEnvironmentVariable('O365ESSENTIALS_PORTAL_ROOT_AUTH_TOKEN', 'Process') | Should -BeNullOrEmpty
         [Environment]::GetEnvironmentVariable('O365ESSENTIALS_PORTAL_OIDC_AUTH_COOKIE', 'Process') | Should -BeNullOrEmpty
-        Assert-MockCalled Set-O365PortalSession -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Set-O365PortalSession -ModuleName O365Essentials -ParameterFilter {
             $RootAuthToken -eq 'root-env' -and
             $OIDCAuthCookie -eq 'oidc-env' -and
             $AjaxSessionKey -eq 'ajax-env' -and
@@ -817,7 +817,7 @@ Describe 'Connect-O365Admin portal token' {
             $PortalRouteKey -eq 'route-env' -and
             $Username -eq 'user@contoso.com' -and
             $SkipBootstrap
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'passes expanded portal cookie map from cookie list environment input' {
@@ -878,12 +878,12 @@ Describe 'Connect-O365Admin portal token' {
         $result.AdditionalCookieDomainRefreshToken | Should -Be 'domain-refresh-token'
         $result.PortalRouteKey | Should -Be 'route-env'
         $result.SkipBootstrap | Should -BeTrue
-        Assert-MockCalled Set-O365PortalSession -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Set-O365PortalSession -ModuleName O365Essentials -ParameterFilter {
             $RootAuthToken -eq 'root-list-env' -and
             $OIDCAuthCookie -eq 'oidc-list-env' -and
             $AdditionalCookies['s.DmnRQT'] -eq 'domain-refresh-token' -and
             $PortalRouteKey -eq 'route-env' -and
             $SkipBootstrap
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 }

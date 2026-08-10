@@ -4,9 +4,9 @@ Describe 'Get-O365TenantRelationship' {
     It 'uses the tenants endpoint for Tenants view' {
         Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { }
         Get-O365TenantRelationship -Name Tenants
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/admin/api/tenantRelationships/multiTenantOrganization/tenants'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'returns grouped data for All' {

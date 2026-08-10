@@ -63,6 +63,6 @@ Describe 'Get-O365CopilotOverview' {
 
         Get-O365CopilotOverview -Headers @{ Tenant = 'tenant-1234' } -Name About
 
-        Assert-MockCalled Connect-O365Admin -ModuleName O365Essentials -Exactly 0
+        Should -Invoke -CommandName Connect-O365Admin -ModuleName O365Essentials -Times 0 -Exactly
     }
 }

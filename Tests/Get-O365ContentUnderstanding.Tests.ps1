@@ -7,9 +7,9 @@ Describe 'Get-O365ContentUnderstanding' {
 
         Get-O365ContentUnderstanding -Name Setting
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.microsoft.com/admin/api/contentunderstanding/setting'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'builds the All bundle' {

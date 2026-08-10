@@ -6,12 +6,12 @@ Describe 'Get-O365BillingProfile' {
 
         Get-O365BillingProfile -Headers @{ HeadersO365 = @{ Authorization = 'Bearer token' } } -AccountId 'billing-account-1' | Out-Null
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.microsoft.com/fd/commerceMgmt/moderncommerce/myroles/BillingGroup' -and
             $Method -eq 'GET' -and
             $QueryParameter['api-version'] -eq '3.0' -and
             $QueryParameter.accountId -eq 'billing-account-1'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'auto-discovers an account id from billing accounts' {
@@ -20,9 +20,9 @@ Describe 'Get-O365BillingProfile' {
 
         Get-O365BillingProfile -Headers @{ HeadersO365 = @{ Authorization = 'Bearer token' } } | Out-Null
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $QueryParameter.accountId -eq 'auto-account'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'does not call the billing profile endpoint when account id cannot be resolved' {
@@ -32,9 +32,9 @@ Describe 'Get-O365BillingProfile' {
 
         Get-O365BillingProfile -Headers @{ HeadersO365 = @{ Authorization = 'Bearer token' } } | Out-Null
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -Exactly 0
-        Assert-MockCalled Write-Warning -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Warning -ModuleName O365Essentials -ParameterFilter {
             $Message -like 'Get-O365BillingProfile - AccountId could not be resolved*'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 }
