@@ -13,10 +13,10 @@ Describe 'Set-O365OrgGraphDataConnect' {
 
         Set-O365OrgGraphDataConnect -Headers @{ HeadersO365 = @{ Authorization = 'Bearer token' } } -ServiceEnabled $true | Out-Null
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -Exactly 0
-        Assert-MockCalled Write-Warning -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Warning -ModuleName O365Essentials -ParameterFilter {
             $Message -eq 'Set-O365OrgGraphDataConnect - TenantLockBoxApproverGroup is required when Graph Data Connect is enabled.'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'submits enabled settings when an approver group is supplied' {
@@ -30,11 +30,11 @@ Describe 'Set-O365OrgGraphDataConnect' {
 
         Set-O365OrgGraphDataConnect -Headers @{ HeadersO365 = @{ Authorization = 'Bearer token' } } -ServiceEnabled $true -TenantLockBoxApproverGroup 'approvers@contoso.com' | Out-Null
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.microsoft.com/admin/api/settings/apps/o365dataplan' -and
             $Method -eq 'POST' -and
             $Body.ServiceEnabled -eq $true -and
             $Body.TenantLockBoxApproverGroup -eq 'approvers@contoso.com'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 }

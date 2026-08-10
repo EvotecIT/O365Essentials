@@ -11,7 +11,7 @@ Describe 'Invoke-O365Admin header selection' {
         Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { param($Headers) $Headers }
         Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith { }
         Invoke-O365Admin -Uri 'https://main.iam.ad.ext.azure.com/api/test' -Headers $headers
-        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer portal' } -Exactly 1
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer portal' } -Times 1 -Exactly
     }
     It 'falls back to ARM headers when portal token is missing' {
         $headers = [ordered]@{
@@ -23,7 +23,7 @@ Describe 'Invoke-O365Admin header selection' {
         Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { param($Headers) $Headers }
         Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith { }
         Invoke-O365Admin -Uri 'https://main.iam.ad.ext.azure.com/api/test' -Headers $headers
-        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer arm' } -Exactly 1
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer arm' } -Times 1 -Exactly
     }
     It 'uses ARM headers for management endpoints' {
         $headers = [ordered]@{
@@ -35,7 +35,7 @@ Describe 'Invoke-O365Admin header selection' {
         Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { param($Headers) $Headers }
         Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith { }
         Invoke-O365Admin -Uri 'https://management.azure.com/providers/test' -Headers $headers
-        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer arm' } -Exactly 1
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer arm' } -Times 1 -Exactly
     }
     It 'uses admin headers for admin.microsoft.com endpoints' {
         $headers = [ordered]@{
@@ -47,7 +47,7 @@ Describe 'Invoke-O365Admin header selection' {
         Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { param($Headers) $Headers }
         Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith { }
         Invoke-O365Admin -Uri 'https://admin.microsoft.com/admin/api/test' -Headers $headers
-        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer o365' } -Exactly 1
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer o365' } -Times 1 -Exactly
     }
     It 'uses admin headers for admin.cloud.microsoft endpoints' {
         $headers = [ordered]@{
@@ -59,7 +59,7 @@ Describe 'Invoke-O365Admin header selection' {
         Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { param($Headers) $Headers }
         Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith { }
         Invoke-O365Admin -Uri 'https://admin.cloud.microsoft/admin/api/test' -Headers $headers
-        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer o365' } -Exactly 1
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer o365' } -Times 1 -Exactly
     }
     It 'uses portal session headers for admin.cloud.microsoft endpoints when requested' {
         $portalWebSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new()
@@ -74,11 +74,11 @@ Describe 'Invoke-O365Admin header selection' {
         Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { param($Headers) $Headers }
         Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith { }
         Invoke-O365Admin -Uri 'https://admin.cloud.microsoft/admin/api/test' -Headers $headers -UsePortalSession
-        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter {
             $Headers.Accept -eq 'application/json' -and
             $Headers.AjaxSessionKey -eq 'ajax-key' -and
             $WebSession -eq $portalWebSession
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
     It 'does not refresh bearer auth when portal session replay is requested' {
         $portalWebSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new()
@@ -91,11 +91,11 @@ Describe 'Invoke-O365Admin header selection' {
 
         { Invoke-O365Admin -Uri 'https://admin.cloud.microsoft/admin/api/test' -Headers $headers -UsePortalSession } | Should -Not -Throw
 
-        Assert-MockCalled Connect-O365Admin -ModuleName O365Essentials -Exactly 0
-        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Connect-O365Admin -ModuleName O365Essentials -Times 0 -Exactly
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter {
             $Headers.AjaxSessionKey -eq 'ajax-key' -and
             $WebSession -eq $portalWebSession
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
     It 'uses Graph headers for graph endpoints' {
         $headers = [ordered]@{
@@ -107,7 +107,7 @@ Describe 'Invoke-O365Admin header selection' {
         Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { param($Headers) $Headers }
         Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith { }
         Invoke-O365Admin -Uri 'https://graph.microsoft.com/v1.0/test' -Headers $headers
-        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer graph' } -Exactly 1
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer graph' } -Times 1 -Exactly
     }
     It 'refreshes Graph headers when required scopes are missing' {
         $oldExpiry = ([datetime]::UtcNow).AddMinutes(5)
@@ -140,10 +140,10 @@ Describe 'Invoke-O365Admin header selection' {
 
         Invoke-O365Admin -Uri 'https://graph.microsoft.com/v1.0/policies/authenticationFlowsPolicy' -Headers $headers -RequiredGraphScope 'Policy.Read.All'
 
-        Assert-MockCalled Connect-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Connect-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $ForceRefresh -and $SuppressWamPrompt -and $GraphScope -contains 'Policy.Read.All'
-        } -Exactly 1
-        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer new-graph' } -Exactly 1
+        } -Times 1 -Exactly
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer new-graph' } -Times 1 -Exactly
         $headers.HeadersGraph.Authorization | Should -Be 'Bearer new-graph'
         $headers.GraphScopes | Should -Contain 'Policy.Read.All'
         $headers.ExpiresOnUTC | Should -Be $oldExpiry
@@ -160,10 +160,10 @@ Describe 'Invoke-O365Admin header selection' {
 
         Invoke-O365Admin -Uri 'https://graph.microsoft.com/v1.0/test' -Headers $headers
 
-        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -Exactly 0
-        Assert-MockCalled Write-Warning -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Warning -ModuleName O365Essentials -ParameterFilter {
             $Message -eq 'Invoke-O365Admin - Authorization error. Skipping.'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
     It 'does not refresh Graph headers when required scopes are already granted' {
         $headers = [ordered]@{
@@ -179,10 +179,10 @@ Describe 'Invoke-O365Admin header selection' {
 
         Invoke-O365Admin -Uri 'https://graph.microsoft.com/v1.0/policies/authenticationFlowsPolicy' -Headers $headers -RequiredGraphScope 'Policy.Read.All'
 
-        Assert-MockCalled Connect-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Connect-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $ForceRefresh
-        } -Exactly 0
-        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer graph' } -Exactly 1
+        } -Times 0 -Exactly
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter { $Headers.Authorization -eq 'Bearer graph' } -Times 1 -Exactly
     }
     It 'merges additional headers into the selected header set' {
         $headers = [ordered]@{
@@ -194,9 +194,9 @@ Describe 'Invoke-O365Admin header selection' {
         Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { param($Headers) $Headers }
         Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith { }
         Invoke-O365Admin -Uri 'https://admin.microsoft.com/admin/api/test' -Headers $headers -AdditionalHeaders @{ Referer = 'https://admin.microsoft.com/' }
-        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter {
             $Headers.Authorization -eq 'Bearer o365' -and $Headers.Referer -eq 'https://admin.microsoft.com/'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
     It 'suppresses warnings when quiet error handling is requested' {
         $headers = [ordered]@{
@@ -212,7 +212,7 @@ Describe 'Invoke-O365Admin header selection' {
         $Result = Invoke-O365Admin -Uri 'https://admin.microsoft.com/admin/api/test' -Headers $headers -QuietOnError
 
         $null -eq $Result | Should -BeTrue
-        Assert-MockCalled Write-Warning -ModuleName O365Essentials -Exactly 0
+        Should -Invoke -CommandName Write-Warning -ModuleName O365Essentials -Times 0 -Exactly
     }
     It 'serializes array bodies for POST requests' {
         $headers = [ordered]@{
@@ -226,13 +226,13 @@ Describe 'Invoke-O365Admin header selection' {
 
         Invoke-O365Admin -Uri 'https://admin.cloud.microsoft/admin/api/test' -Headers $headers -Method POST -Body @('alpha', 'beta') | Out-Null
 
-        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter {
             $ParsedBody = $Body | ConvertFrom-Json
             $Method -eq 'POST' -and
             $ParsedBody.Count -eq 2 -and
             $ParsedBody[0] -eq 'alpha' -and
             $ParsedBody[1] -eq 'beta'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
     It 'honors custom JSON depth for nested request bodies' {
         $headers = [ordered]@{
@@ -259,11 +259,11 @@ Describe 'Invoke-O365Admin header selection' {
 
         Invoke-O365Admin -Uri 'https://admin.microsoft.com/admin/api/test' -Headers $headers -Method POST -Body $body -JsonDepth 20 | Out-Null
 
-        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter {
             $ParsedBody = $Body | ConvertFrom-Json
             $Method -eq 'POST' -and
             $ParsedBody.level1.level2.level3.level4.level5.level6 -eq 'kept'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
     It 'preserves explicit empty array GET responses' {
         $headers = [ordered]@{
@@ -336,11 +336,11 @@ Describe 'Invoke-O365Admin header selection' {
         $result = Invoke-O365Admin -Uri 'https://admin.cloud.microsoft/admin/api/test' -Headers $headers
 
         $result.ok | Should -BeTrue
-        Assert-MockCalled Connect-O365Admin -ModuleName O365Essentials -Exactly 2
-        Assert-MockCalled Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Connect-O365Admin -ModuleName O365Essentials -Times 2 -Exactly
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -ParameterFilter {
             $WebSession -eq $portalWebSession -and
             $Headers.AjaxSessionKey -eq 'ajax-key'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'does not recurse indefinitely when a 440 cannot be upgraded to portal replay' {
@@ -357,8 +357,8 @@ Describe 'Invoke-O365Admin header selection' {
         $result = Invoke-O365Admin -Uri 'https://admin.cloud.microsoft/admin/api/test' -Headers $headers -QuietOnError
 
         $null -eq $result | Should -BeTrue
-        Assert-MockCalled Connect-O365Admin -ModuleName O365Essentials -Exactly 2
-        Assert-MockCalled Write-Warning -ModuleName O365Essentials -Exactly 0
+        Should -Invoke -CommandName Connect-O365Admin -ModuleName O365Essentials -Times 2 -Exactly
+        Should -Invoke -CommandName Write-Warning -ModuleName O365Essentials -Times 0 -Exactly
     }
 }
 

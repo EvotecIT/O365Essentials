@@ -8,9 +8,9 @@ Describe 'Get-O365CopilotBillingUsage' {
 
         Get-O365CopilotBillingUsage -Name BillingPolicyBudgets
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/_api/v2.1/billingPolicies?budgets=true'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'requests the live CopilotBilling portal context' {
@@ -20,9 +20,9 @@ Describe 'Get-O365CopilotBillingUsage' {
 
         Get-O365CopilotBillingUsage -Name BillingPolicyBudgets
 
-        Assert-MockCalled Get-O365PortalContextHeaders -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Get-O365PortalContextHeaders -ModuleName O365Essentials -ParameterFilter {
             $Context -eq 'CopilotBilling'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'uses SPO-flavored headers for billing policy routes' {
@@ -32,12 +32,12 @@ Describe 'Get-O365CopilotBillingUsage' {
 
         Get-O365CopilotBillingUsage -Name BillingPolicyBudgets
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/_api/v2.1/billingPolicies?budgets=true' -and
             $AdditionalHeaders['x-ms-mac-target-app'] -eq 'SPO' -and
             $AdditionalHeaders['odata-version'] -eq '4.0' -and
             $AdditionalHeaders['Accept'] -eq 'application/json'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'builds the billing policies bundle' {
@@ -90,10 +90,10 @@ Describe 'Get-O365CopilotBillingUsage' {
 
         Get-O365CopilotBillingUsage -Headers @{ Tenant = 'tenant-1234'; AjaxSessionKey = 'ajax-key'; PortalRouteKey = 'weu'; PortalWebSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new() } -Name AzureSubscriptions
 
-        Assert-MockCalled Connect-O365Admin -ModuleName O365Essentials -Exactly 0
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Connect-O365Admin -ModuleName O365Essentials -Times 0 -Exactly
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/admin/api/tenant/azureSubscriptions' -and
             $UsePortalSession
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 }
