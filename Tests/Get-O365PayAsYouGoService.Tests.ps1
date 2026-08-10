@@ -7,9 +7,9 @@ Describe 'Get-O365PayAsYouGoService' {
 
         Get-O365PayAsYouGoService -Name DataLocationAndCommitments
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/admin/api/tenant/datalocationandcommitments'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'returns captured write-only telemetry metadata' {

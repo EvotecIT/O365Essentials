@@ -7,9 +7,9 @@ Describe 'Get-O365OrgPeopleSettings' {
         Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.microsoft.com/' } }
         Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { }
         Get-O365OrgPeopleSettings -Headers $Headers -Name Pronouns
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.microsoft.com/fd/peopleadminservice/contoso.onmicrosoft.com/settings/pronouns'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'returns a placeholder when tenant information is missing' {

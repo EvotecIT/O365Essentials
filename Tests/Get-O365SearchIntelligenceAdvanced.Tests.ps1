@@ -5,23 +5,23 @@ Describe 'Get-O365SearchIntelligenceAdvanced' {
         Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.microsoft.com/?' } }
         Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { }
         Get-O365SearchIntelligenceAdvanced -Name ConfigurationSettings
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/admin/api/searchadminapi/ConfigurationSettings'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'uses POST with body for Qnas' {
         Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.microsoft.com/?' } }
         Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { }
         Get-O365SearchIntelligenceAdvanced -Name Qnas -QnasServiceType 'Bing' -QnasFilter 'Published'
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/admin/api/searchadminapi/Qnas' -and
             $Method -eq 'POST' -and
             $ContentType -eq 'application/json' -and
             $Body.ServiceType -eq 'Bing' -and
             $Body.Filter -eq 'Published' -and
             $QuietOnError
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'uses POST with array body for first run experience' {
@@ -30,13 +30,13 @@ Describe 'Get-O365SearchIntelligenceAdvanced' {
 
         Get-O365SearchIntelligenceAdvanced -Name FirstRunExperience
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/admin/api/searchadminapi/firstrunexperience/get' -and
             $Method -eq 'POST' -and
             $ContentType -eq 'application/json' -and
             $Body.Count -eq 5 -and
             $Body[0] -eq 'SearchHomepageBannerFirstTime'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'builds the News bundle' {
@@ -86,12 +86,12 @@ Describe 'Get-O365SearchIntelligenceAdvanced' {
 
         Get-O365SearchIntelligenceAdvanced -Headers @{ AjaxSessionKey = 'ajax-key'; PortalRouteKey = 'weu'; PortalWebSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new() } -Name ConfigurationSettings
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/admin/api/searchadminapi/ConfigurationSettings' -and
             $UsePortalSession -and
             $AdditionalHeaders.AjaxSessionKey -eq 'ajax-key' -and
             $AdditionalHeaders['x-portal-routekey'] -eq 'weu'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'falls back to configuration settings when configurations is unavailable' {
@@ -108,8 +108,8 @@ Describe 'Get-O365SearchIntelligenceAdvanced' {
         $Result.FallbackUsed | Should -BeTrue
         $Result.RequestedName | Should -Be 'Configurations'
         $Result.FallbackName | Should -Be 'ConfigurationSettings'
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/admin/api/searchadminapi/configurations'
-        } -Exactly 0
+        } -Times 0 -Exactly
     }
 }

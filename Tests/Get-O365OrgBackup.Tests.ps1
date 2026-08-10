@@ -7,9 +7,9 @@ Describe 'Get-O365OrgBackup' {
 
         Get-O365OrgBackup -Name BillingFeature
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq "https://admin.microsoft.com/_api/v2.1/billingFeatures('M365Backup')"
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'builds Azure subscription permissions from each subscription' {
@@ -50,9 +50,9 @@ Describe 'Get-O365OrgBackup' {
         $Result.DriveOffboardingCount | Should -Be 2
         $Result.MailboxOffboardingCount | Should -Be 1
         $Result.RawResponses.Count | Should -Be 3
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://graph.microsoft.com/beta/$batch' -and $Method -eq 'POST'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'returns a placeholder when billing feature data is unavailable' {

@@ -5,11 +5,11 @@ Describe 'Get-O365AgentOverview' {
         Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.cloud.microsoft/' } }
         Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { }
         Get-O365AgentOverview -Name RiskyAgents
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/admin/api/agentusers/metrics/agents/risky?maxCount=3' -and
             $AdditionalHeaders['x-adminapp-request'] -eq '/agents/overview' -and
             $QuietOnError
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'uses browser-aligned addins headers for agent inventory endpoints' {
@@ -20,24 +20,24 @@ Describe 'Get-O365AgentOverview' {
         Get-O365AgentOverview -Name ActionableApps
         Get-O365AgentOverview -Name AgentInsights
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/fd/addins/api/agents?workloads=SharedAgent&scopes=Shared&limit=200&creatorId=none' -and
             $AdditionalHeaders['x-adminapp-request'] -eq '/agents/overview' -and
             $AdditionalHeaders['x-admin-portal-flight'] -eq 'UDShowTeamsAppInAvailableList,UDAddInToMosUpdateEnabled,UDAIAdminEnabled' -and
             $AdditionalHeaders['x-usage-origin'] -eq 'AgentsOverview'
-        } -Exactly 1
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        } -Times 1 -Exactly
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/fd/addins/api/actionableApps?workloads=MetaOS%2CSharedAgent&limit=200' -and
             $AdditionalHeaders['x-adminapp-request'] -eq '/agents/overview' -and
             $AdditionalHeaders['x-admin-portal-flight'] -eq 'UDShowTeamsAppInAvailableList,UDAddInToMosUpdateEnabled,UDAIAdminEnabled' -and
             $AdditionalHeaders['x-usage-origin'] -eq 'CopilotSettings'
-        } -Exactly 1
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        } -Times 1 -Exactly
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/fd/addins/api/apps/insight?workload=SharedAgent&entraScopes=EntraAgentBlueprintSP,EntraAgentPVA,EntraAgentIdentity' -and
             $AdditionalHeaders['x-adminapp-request'] -eq '/agents/overview' -and
             $AdditionalHeaders['x-admin-portal-flight'] -eq 'UDShowTeamsAppInAvailableList,UDAddInToMosUpdateEnabled,UDAIAdminEnabled' -and
             $AdditionalHeaders['x-usage-origin'] -eq 'AgentsOverview'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'builds a summary view from agent insights and risky agents' {
@@ -137,12 +137,12 @@ Describe 'Get-O365AgentOverview' {
 
         Get-O365AgentOverview -Headers @{ AjaxSessionKey = 'ajax-key'; PortalRouteKey = 'weu'; PortalWebSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new() } -Name RiskyAgents
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/admin/api/agentusers/metrics/agents/risky?maxCount=3' -and
             $UsePortalSession -and
             $AdditionalHeaders['x-adminapp-request'] -eq '/agents/overview' -and
             $AdditionalHeaders.AjaxSessionKey -eq 'ajax-key' -and
             $AdditionalHeaders['x-portal-routekey'] -eq 'weu'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 }

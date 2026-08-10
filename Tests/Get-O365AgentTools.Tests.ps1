@@ -5,9 +5,9 @@ Describe 'Get-O365AgentTools' {
         Mock -ModuleName O365Essentials Get-O365PortalContextHeaders -MockWith { @{ Referer = 'https://admin.cloud.microsoft/' } }
         Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { }
         Get-O365AgentTools -Name McpServers
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/admin/api/agentssettings/mcpservers'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'returns a placeholder when MCP servers data is unavailable' {
@@ -26,11 +26,11 @@ Describe 'Get-O365AgentTools' {
 
         Get-O365AgentTools -Headers @{ AjaxSessionKey = 'ajax-key'; PortalRouteKey = 'weu'; PortalWebSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new() } -Name McpServers
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/admin/api/agentssettings/mcpservers' -and
             $UsePortalSession -and
             $AdditionalHeaders.AjaxSessionKey -eq 'ajax-key' -and
             $AdditionalHeaders['x-portal-routekey'] -eq 'weu'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 }

@@ -33,10 +33,10 @@ Describe 'Enterprise Apps admin consent policy commands' {
         $result.approversV2.user | Should -Contain 'user-id'
         $result.approversV2.group | Should -Contain 'group-id'
         $result.approversV2.role | Should -Contain 'role-id'
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://graph.microsoft.com/v1.0/policies/adminConsentRequestPolicy' -and
             $RequiredGraphScope -contains 'Policy.Read.All|Policy.ReadWrite.ConsentRequest|Directory.Read.All|Directory.ReadWrite.All'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'updates admin consent policy through Graph with normalized reviewers' {
@@ -66,16 +66,16 @@ Describe 'Enterprise Apps admin consent policy commands' {
         $script:adminConsentBody.requestDurationInDays | Should -Be 45
         @($script:adminConsentBody.reviewers).Count | Should -Be 1
         $script:adminConsentBody.reviewers[0].query | Should -Be '/users/user-id'
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://graph.microsoft.com/v1.0/policies/adminConsentRequestPolicy' -and
             -not $Method -and
             $RequiredGraphScope -contains 'Policy.Read.All|Policy.ReadWrite.ConsentRequest|Directory.Read.All|Directory.ReadWrite.All'
-        } -Exactly 1
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        } -Times 1 -Exactly
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Method -eq 'PUT' -and
             $Uri -eq 'https://graph.microsoft.com/v1.0/policies/adminConsentRequestPolicy' -and
             $RequiredGraphScope -contains 'Policy.ReadWrite.ConsentRequest|Directory.ReadWrite.All'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'uses transitive member reviewer queries for group approvers' {
@@ -140,10 +140,10 @@ Describe 'Enterprise Apps admin consent policy commands' {
 
         Set-O365AzureEnterpriseAppsUserSettingsAdmin -Headers @{ HeadersGraph = @{ Authorization = 'Bearer graph' } } -IsEnabled $true
 
-        Assert-MockCalled Write-Warning -ModuleName O365Essentials -Exactly 1
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Write-Warning -ModuleName O365Essentials -Times 1 -Exactly
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Method -eq 'PUT'
-        } -Exactly 0
+        } -Times 0 -Exactly
     }
 
     It 'accepts hashtable reviewer objects' {
@@ -211,11 +211,11 @@ Describe 'Microsoft Teams settings setter' {
 
         $script:teamsBody.Email.IsEmailIntoChannelsEnabled.Value | Should -BeFalse
         $script:teamsBody.CloudStorage.Box.Value | Should -BeFalse
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.microsoft.com/admin/api/settings/apps/skypeteams' -and
             $Method -eq 'POST' -and
             $JsonDepth -eq 20
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'does not post when only the unsupported calendar setting is supplied' {
@@ -223,10 +223,10 @@ Describe 'Microsoft Teams settings setter' {
 
         Set-O365OrgMicrosoftTeams -Headers @{ HeadersO365 = @{ Authorization = 'Bearer token' } } -AllowCalendarSharing $true
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -Exactly 0
-        Assert-MockCalled Write-Warning -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Warning -ModuleName O365Essentials -ParameterFilter {
             $Message -like 'Set-O365OrgMicrosoftTeams - AllowCalendarSharing is not exposed*'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'warns cleanly when a nested Teams setting wrapper is missing' {
@@ -241,10 +241,10 @@ Describe 'Microsoft Teams settings setter' {
 
         Set-O365OrgMicrosoftTeams -Headers @{ HeadersO365 = @{ Authorization = 'Bearer token' } } -CloudStorageGoogleDriveEnabled $false
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -Exactly 0
-        Assert-MockCalled Write-Warning -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Warning -ModuleName O365Essentials -ParameterFilter {
             $Message -eq "Set-O365EditableSettingValue - Setting 'CloudStorage.GoogleDrive' was not found."
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 }
 
@@ -262,10 +262,10 @@ Describe 'Privileged Access settings setter' {
 
         Set-O365OrgPrivilegedAccess -Headers @{ HeadersO365 = @{ Authorization = 'Bearer token' } } -TenantLockBoxEnabled $true
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -Exactly 0
-        Assert-MockCalled Write-Warning -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Warning -ModuleName O365Essentials -ParameterFilter {
             $Message -eq 'Set-O365OrgPrivilegedAccess - AdminGroup is required when Tenant Lockbox is enabled.'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'preserves current values for omitted privileged access settings' {
@@ -280,11 +280,11 @@ Describe 'Privileged Access settings setter' {
 
         Set-O365OrgPrivilegedAccess -Headers @{ HeadersO365 = @{ Authorization = 'Bearer token' } } -TenantLockBoxEnabled $false
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.microsoft.com/admin/api/Settings/security/tenantLockbox' -and
             $Method -eq 'POST' -and
             $Body.EnabledTenantLockbox -eq $false -and
             $Body.AdminGroup -eq ''
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 }

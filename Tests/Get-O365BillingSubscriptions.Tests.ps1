@@ -6,10 +6,10 @@ Describe 'Get-O365BillingSubscriptions' {
 
         Get-O365BillingSubscriptions -Headers @{ HeadersO365 = @{ Authorization = 'Bearer token' } } | Out-Null
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.microsoft.com/fd/commerceapi/my-org/subscriptions' -and
             $QueryParameter['$expand'] -eq 'subscribedsku' -and
             -not $QueryParameter.Contains('expand')
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 }

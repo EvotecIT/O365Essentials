@@ -18,9 +18,9 @@ Describe 'Get-O365AgentSettings' {
         $Result = Get-O365AgentSettings -Name AllowedAgentTypes
         $Result.AllowMicrosoftBuiltAgents | Should -BeTrue
         $Result.AllowExternalPublisherAgents | Should -BeFalse
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/fd/addins/api/v2/settings?keys=MetaOSCopilotExtensibilitySettings,AreFirstPartyAppsAllowed,AreThirdPartyAppsAllowed,AreLOBAppsAllowed,AdminRoles,AllowOrgWideSharing'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'builds the templates bundle' {
@@ -58,11 +58,11 @@ Describe 'Get-O365AgentSettings' {
 
         Get-O365AgentSettings -Headers @{ AjaxSessionKey = 'ajax-key'; PortalRouteKey = 'weu'; PortalWebSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new() } -Name AllowedAgentTypes
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/fd/addins/api/v2/settings?keys=MetaOSCopilotExtensibilitySettings,AreFirstPartyAppsAllowed,AreThirdPartyAppsAllowed,AreLOBAppsAllowed,AdminRoles,AllowOrgWideSharing' -and
             $UsePortalSession -and
             $AdditionalHeaders.AjaxSessionKey -eq 'ajax-key' -and
             $AdditionalHeaders['x-portal-routekey'] -eq 'weu'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 }

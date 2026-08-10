@@ -11,9 +11,9 @@ Describe 'Get-O365CopilotSettings' {
 
         Get-O365CopilotSettings -Name Recommendations
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/admin/api/recommendations/m365/ccs'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'requests the live CopilotSettings portal context' {
@@ -22,9 +22,9 @@ Describe 'Get-O365CopilotSettings' {
 
         Get-O365CopilotSettings -Name Recommendations
 
-        Assert-MockCalled Get-O365PortalContextHeaders -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Get-O365PortalContextHeaders -ModuleName O365Essentials -ParameterFilter {
             $Context -eq 'CopilotSettings'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'uses SPO-flavored headers for the billing policy route' {
@@ -33,12 +33,12 @@ Describe 'Get-O365CopilotSettings' {
 
         Get-O365CopilotSettings -Name CopilotChatBillingPolicy
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/_api/v2.1/billingPolicies?feature=M365CopilotChat' -and
             $AdditionalHeaders['x-ms-mac-target-app'] -eq 'SPO' -and
             $AdditionalHeaders['odata-version'] -eq '4.0' -and
             $AdditionalHeaders['Accept'] -eq 'application/json'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'builds the Optimize bundle' {
@@ -58,9 +58,9 @@ Describe 'Get-O365CopilotSettings' {
 
         Get-O365CopilotSettings -Name PurviewForAISetting
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/fd/purview/apiproxy/di/find/PurviewForAISetting?tenantId=tenant-1234'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'returns an unavailable placeholder when a Purview route returns no data' {
@@ -80,6 +80,6 @@ Describe 'Get-O365CopilotSettings' {
 
         Get-O365CopilotSettings -Headers @{ Tenant = 'tenant-1234' } -Name Recommendations
 
-        Assert-MockCalled Connect-O365Admin -ModuleName O365Essentials -Exactly 0
+        Should -Invoke -CommandName Connect-O365Admin -ModuleName O365Essentials -Times 0 -Exactly
     }
 }

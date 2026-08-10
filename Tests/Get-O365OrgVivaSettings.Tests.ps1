@@ -41,10 +41,10 @@ Describe 'Get-O365OrgVivaSettings' {
         $Result.Reason | Should -Be 'ServiceError'
         $Result.IsOptional | Should -BeTrue
         $Result.Description | Should -Match 'HTTP 500'
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/admin/api/vivaglint/clientDiscovery/transformed' -and
             $QuietOnError
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 
     It 'prefers portal session replay when Viva portal metadata is available' {
@@ -53,11 +53,11 @@ Describe 'Get-O365OrgVivaSettings' {
 
         Get-O365OrgVivaSettings -Headers @{ AjaxSessionKey = 'ajax-key'; PortalRouteKey = 'frc-uas'; PortalWebSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new() } -Name AccountSkus
 
-        Assert-MockCalled Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.cloud.microsoft/admin/api/tenant/accountSkus' -and
             $UsePortalSession -and
             $AdditionalHeaders.AjaxSessionKey -eq 'ajax-key' -and
             $AdditionalHeaders['x-portal-routekey'] -eq 'frc-uas'
-        } -Exactly 1
+        } -Times 1 -Exactly
     }
 }

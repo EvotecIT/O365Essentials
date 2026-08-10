@@ -49,10 +49,10 @@ Describe 'Get-O365InternalApiHealth' {
 
         $null = Get-O365InternalApiHealth -Area Copilot -Mode Deep
 
-        Assert-MockCalled Get-O365CopilotOverview -ModuleName O365Essentials -ParameterFilter { $Name -eq 'All' } -Exactly 1
-        Assert-MockCalled Get-O365CopilotSettings -ModuleName O365Essentials -ParameterFilter { $Name -eq 'All' } -Exactly 1
-        Assert-MockCalled Get-O365CopilotConnectors -ModuleName O365Essentials -ParameterFilter { $Name -eq 'All' } -Exactly 1
-        Assert-MockCalled Get-O365CopilotBillingUsage -ModuleName O365Essentials -ParameterFilter { $Name -eq 'All' } -Exactly 1
+        Should -Invoke -CommandName Get-O365CopilotOverview -ModuleName O365Essentials -ParameterFilter { $Name -eq 'All' } -Times 1 -Exactly
+        Should -Invoke -CommandName Get-O365CopilotSettings -ModuleName O365Essentials -ParameterFilter { $Name -eq 'All' } -Times 1 -Exactly
+        Should -Invoke -CommandName Get-O365CopilotConnectors -ModuleName O365Essentials -ParameterFilter { $Name -eq 'All' } -Times 1 -Exactly
+        Should -Invoke -CommandName Get-O365CopilotBillingUsage -ModuleName O365Essentials -ParameterFilter { $Name -eq 'All' } -Times 1 -Exactly
     }
 
     It 'can include the raw result payload when requested' {
@@ -107,10 +107,10 @@ Describe 'Get-O365InternalApiHealth' {
         $Result.Components.Name | Should -Contain 'AvailableApps'
         $Result.Components.Name | Should -Contain 'ActionableApps'
         $Result.Components.Name | Should -Not -Contain 'AppCatalog'
-        Assert-MockCalled Get-O365OrgIntegratedApps -ModuleName O365Essentials -ParameterFilter { $Name -eq 'Settings' } -Exactly 1
-        Assert-MockCalled Get-O365OrgIntegratedApps -ModuleName O365Essentials -ParameterFilter { $Name -eq 'AvailableApps' } -Exactly 1
-        Assert-MockCalled Get-O365OrgIntegratedApps -ModuleName O365Essentials -ParameterFilter { $Name -eq 'ActionableApps' } -Exactly 1
-        Assert-MockCalled Get-O365OrgIntegratedApps -ModuleName O365Essentials -ParameterFilter { $Name -eq 'AppCatalog' } -Exactly 0
+        Should -Invoke -CommandName Get-O365OrgIntegratedApps -ModuleName O365Essentials -ParameterFilter { $Name -eq 'Settings' } -Times 1 -Exactly
+        Should -Invoke -CommandName Get-O365OrgIntegratedApps -ModuleName O365Essentials -ParameterFilter { $Name -eq 'AvailableApps' } -Times 1 -Exactly
+        Should -Invoke -CommandName Get-O365OrgIntegratedApps -ModuleName O365Essentials -ParameterFilter { $Name -eq 'ActionableApps' } -Times 1 -Exactly
+        Should -Invoke -CommandName Get-O365OrgIntegratedApps -ModuleName O365Essentials -ParameterFilter { $Name -eq 'AppCatalog' } -Times 0 -Exactly
     }
 
     It 'includes placeholder details inside component findings' {
