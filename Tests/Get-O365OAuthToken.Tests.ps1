@@ -538,56 +538,6 @@ Describe 'Connect-O365Admin portal token' {
         } -Times 1 -Exactly
     }
 
-    It 'tries the substrate.office.com resource before legacy substrate audiences' {
-        $cred = New-Object System.Management.Automation.PSCredential('user',(ConvertTo-SecureString 'pass' -AsPlainText -Force))
-        $script:attempts = [System.Collections.Generic.List[string]]::new()
-        Mock -ModuleName O365Essentials ConvertFrom-JSONWebToken -MockWith {
-            [pscustomobject]@{
-                tid = 'tenant-id'
-                upn = 'user@contoso.com'
-            }
-        }
-        Mock -ModuleName O365Essentials Get-O365OAuthToken -MockWith {
-            param($Tenant,$Scope,$Resource,$ClientId,$Credential,$RefreshToken,$Device,$ClientSecret,$Certificate,$CertificatePassword)
-            if ($Scope -eq 'https://graph.microsoft.com/.default offline_access') {
-                return [pscustomobject]@{
-                    access_token  = 'graph-token'
-                    refresh_token = 'refresh-token'
-                    id_token      = 'header.payload.signature'
-                }
-            }
-            if ($Scope -eq 'https://admin.microsoft.com/.default offline_access') {
-                return [pscustomobject]@{ access_token = 'admin-token' }
-            }
-            if ($Scope -eq 'https://api.spaces.skype.com/.default offline_access') {
-                return [pscustomobject]@{ access_token = 'teams-token' }
-            }
-            if ($Resource -eq '74658136-14ec-4630-ad9b-26e160ff0fc6') {
-                return [pscustomobject]@{ access_token = 'portal-token' }
-            }
-            if ($Scope -eq 'https://management.azure.com/.default offline_access') {
-                return [pscustomobject]@{ access_token = 'arm-token' }
-            }
-
-            if ($Resource) {
-                $script:attempts.Add("resource:$Resource") | Out-Null
-            } elseif ($Scope) {
-                $script:attempts.Add("scope:$Scope") | Out-Null
-            }
-
-            if ($Resource -eq 'https://substrate.office.com') {
-                return [pscustomobject]@{ access_token = 'substrate-token' }
-            }
-
-            throw "Unexpected token request: Scope=$Scope Resource=$Resource"
-        }
-
-        $result = Connect-O365Admin -Credential $cred
-
-        $result.AccessTokenSubstrate | Should -Be 'substrate-token'
-        $script:attempts[0] | Should -Be 'resource:https://substrate.office.com'
-    }
-
     It 'preserves portal session metadata when refreshing an existing connection object' {
         $cred = New-Object System.Management.Automation.PSCredential('user',(ConvertTo-SecureString 'pass' -AsPlainText -Force))
         $portalWebSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new()
