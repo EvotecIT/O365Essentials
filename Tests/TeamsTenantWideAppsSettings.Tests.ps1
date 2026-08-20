@@ -131,6 +131,48 @@ Describe 'Teams tenant-wide app settings' {
         Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -Times 0 -Exactly
     }
 
+    It 'rejects explicitly bound null boolean settings before reading or writing' {
+        Mock -ModuleName O365Essentials Invoke-O365Admin
+        $BooleanParameters = @(
+            'IsAppsEnabled'
+            'IsAppsPurchaseEnabled'
+            'IsTenantWideAutoInstallEnabled'
+            'IsExternalAppsEnabledByDefault'
+            'IsSideloadedAppsInteractionEnabled'
+            'IsLicenseBasedPinnedAppsEnabled'
+        )
+
+        foreach ($ParameterName in $BooleanParameters) {
+            $Parameters = @{ Region = 'emea'; Confirm = $false }
+            $Parameters[$ParameterName] = $null
+
+            { Set-O365TeamsTenantWideAppsSettings @Parameters } | Should -Throw
+        }
+
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -Times 0 -Exactly
+    }
+
+    It 'requires an explicit tenant region for write operations' {
+        $Region = (Get-Command Set-O365TeamsTenantWideAppsSettings).Parameters['Region']
+
+        $Region.Attributes.Mandatory | Should -Contain $true
+    }
+
+    It 'requests terminating error behavior for the PUT operation' {
+        Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith {
+            param($Method)
+            if ($Method -eq 'GET') {
+                return $script:CurrentSettings
+            }
+        }
+
+        Set-O365TeamsTenantWideAppsSettings -Region emea -IsAppsEnabled $false -Confirm:$false
+
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
+            $Method -eq 'PUT' -and $ErrorAction -eq 'Stop'
+        } -Times 1 -Exactly
+    }
+
     It 'reads current state but does not write when WhatIf is used' {
         Mock -ModuleName O365Essentials Invoke-O365Admin -MockWith { $script:CurrentSettings }
 

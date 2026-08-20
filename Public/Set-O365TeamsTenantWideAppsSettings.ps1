@@ -18,7 +18,8 @@ function Set-O365TeamsTenantWideAppsSettings {
     cached connection is used.
 
     .PARAMETER Region
-    Regional Teams API route. Supported values are emea, amer, and apac.
+    Required regional Teams API route for the tenant. Supported values are emea,
+    amer, and apac. The command does not assume a region for write operations.
 
     .PARAMETER IsAppsEnabled
     Enables or disables Teams apps globally.
@@ -58,13 +59,13 @@ function Set-O365TeamsTenantWideAppsSettings {
     [cmdletbinding(SupportsShouldProcess, ConfirmImpact = 'High')]
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers,
-        [ValidateSet('emea', 'amer', 'apac')][string] $Region = 'emea',
-        [nullable[bool]] $IsAppsEnabled,
-        [nullable[bool]] $IsAppsPurchaseEnabled,
-        [nullable[bool]] $IsTenantWideAutoInstallEnabled,
-        [nullable[bool]] $IsExternalAppsEnabledByDefault,
-        [nullable[bool]] $IsSideloadedAppsInteractionEnabled,
-        [nullable[bool]] $IsLicenseBasedPinnedAppsEnabled,
+        [Parameter(Mandatory)][ValidateSet('emea', 'amer', 'apac')][string] $Region,
+        [ValidateNotNull()][nullable[bool]] $IsAppsEnabled,
+        [ValidateNotNull()][nullable[bool]] $IsAppsPurchaseEnabled,
+        [ValidateNotNull()][nullable[bool]] $IsTenantWideAutoInstallEnabled,
+        [ValidateNotNull()][nullable[bool]] $IsExternalAppsEnabledByDefault,
+        [ValidateNotNull()][nullable[bool]] $IsSideloadedAppsInteractionEnabled,
+        [ValidateNotNull()][nullable[bool]] $IsLicenseBasedPinnedAppsEnabled,
         [ValidateNotNull()][AllowEmptyCollection()][object[]] $AppSettingsList
     )
 
@@ -125,6 +126,6 @@ function Set-O365TeamsTenantWideAppsSettings {
         "Update tenant-wide Teams app settings while preserving $CurrentAppCount app settings"
     }
     if ($PSCmdlet.ShouldProcess($Uri, $Action)) {
-        Invoke-O365Admin -Uri $Uri -Headers $Headers -Method PUT -Body $Body -JsonDepth 20 -Confirm:$false
+        Invoke-O365Admin -Uri $Uri -Headers $Headers -Method PUT -Body $Body -JsonDepth 20 -Confirm:$false -ErrorAction Stop
     }
 }
