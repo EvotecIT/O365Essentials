@@ -228,8 +228,13 @@
                 }
             }
             if ($OutputQuery -isnot [array]) {
-                if ($OutputQuery.'@odata.nextLink') {
-                    $RestSplat.Uri = $OutputQuery.'@odata.nextLink'
+                $NextLink = if ($OutputQuery.'@odata.nextLink') {
+                    $OutputQuery.'@odata.nextLink'
+                } elseif ($OutputQuery.nextLink) {
+                    $OutputQuery.nextLink
+                }
+                if ($NextLink) {
+                    $RestSplat.Uri = $NextLink
                     if ($RestSplat.Uri) {
                         # We must remove websession parameter because Invoke-o365admin doesn't have it and i don't want to add it to the code
                         # it will set it self anyways
@@ -238,7 +243,7 @@
                         $RestSplat.Headers = $Headers
                         # Not sure if this is best/fastest way to do it, but it works
                         # It's a bit better than saving it to variable and releasing everything later on as it can be used in pipeline
-                        Invoke-O365Admin @RestSplat | ForEach-Object { if ($null -ne $_) { $_ } }
+                        Invoke-O365Admin @RestSplat -ErrorAction $ErrorActionPreference | ForEach-Object { if ($null -ne $_) { $_ } }
                         #if ($null -ne $MoreData) {
                         #    $MoreData
                         #}
@@ -292,7 +297,7 @@
                     $RetrySplat['Body'] = $Body
                 }
 
-                return Invoke-O365Admin @RetrySplat
+                return Invoke-O365Admin @RetrySplat -ErrorAction $ErrorActionPreference
             }
         }
 

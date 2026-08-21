@@ -4,7 +4,9 @@
     Retrieves billing accounts information from Office 365.
 
     .DESCRIPTION
-    This function retrieves billing accounts information from Office 365 using the provided headers.
+    Lists the billing accounts the signed-in user can access through the documented
+    Microsoft.Billing Azure Resource Manager API. The connection must include the
+    ARM authorization context returned by Connect-O365Admin.
 
     .PARAMETER Headers
     A dictionary containing the necessary headers for the API request, typically including authorization information.
@@ -16,8 +18,10 @@
     param(
         [alias('Authorization')][System.Collections.IDictionary] $Headers
     )
-    #$Uri = "https://admin.microsoft.com/fd/jarvisCM/my-org/profiles?type=organization"
-    $Uri = "https://admin.microsoft.com/fd/commerceMgmt/billingaccount"
-    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers
+    $Uri = 'https://management.azure.com/providers/Microsoft.Billing/billingAccounts'
+    $QueryParameter = @{
+        'api-version' = '2024-04-01'
+    }
+    $Output = Invoke-O365Admin -Uri $Uri -Headers $Headers -Method GET -QueryParameter $QueryParameter -ErrorAction Stop
     $Output
 }

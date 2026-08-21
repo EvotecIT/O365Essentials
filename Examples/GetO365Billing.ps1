@@ -1,9 +1,12 @@
 ﻿Import-Module .\O365Essentials.psd1 -Force
 
-# This makes a connection to Office 365 tenant
-# since we don't want to save the data we null it out
-# keep in mind that if there's an MFA you would be better left without Credentials and just let it prompt you
-$null = Connect-O365Admin -Verbose -Credential $Credentials
+# Connect-O365Admin uses an interactive OAuth flow supported by Windows PowerShell 5.1
+# and PowerShell 7. Use -UseWam on PowerShell 7.4 or newer when broker sign-in is preferred.
+$null = Connect-O365Admin -Verbose
 
-$Billing = Get-O365BillingSubscriptions
-$Billing | Format-Table
+$BillingAccounts = Get-O365BillingAccounts
+$BillingAccounts | Format-Table name, @{ Name = 'AgreementType'; Expression = { $_.properties.agreementType } }
+
+# When AccountId is omitted, supported billing accounts are discovered automatically.
+$BillingProfiles = Get-O365BillingProfile
+$BillingProfiles | Format-Table name, @{ Name = 'DisplayName'; Expression = { $_.properties.displayName } }
