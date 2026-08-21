@@ -8,4 +8,4 @@ Get-O365OrgPrivilegedAccess
 
 # AdminGroup is the primary SMTP address of a mail-enabled security group.
 # Review the proposed change before removing -WhatIf.
-Set-O365OrgPrivilegedAccess -Enabled $true -AdminGroup 'pamapprovers@contoso.com' -WhatIf
+Set-O365OrgPrivilegedAccess -TenantLockBoxEnabled $true -AdminGroup 'pamapprovers@contoso.com' -WhatIf

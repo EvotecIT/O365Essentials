@@ -298,6 +298,52 @@ Describe 'Invoke-O365Admin header selection' {
         $result.Count | Should -Be 0
     }
 
+    It 'follows ARM nextLink pages and returns all values' {
+        $headers = [ordered]@{
+            HeadersARM = @{ Authorization = 'Bearer arm' }
+        }
+        Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { param($Headers) $Headers }
+        Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith {
+            if ($Uri -like '*page=2') {
+                return [pscustomobject]@{
+                    value = @([pscustomobject]@{ name = 'second' })
+                }
+            }
+            [pscustomobject]@{
+                value    = @([pscustomobject]@{ name = 'first' })
+                nextLink = 'https://management.azure.com/providers/test?page=2'
+            }
+        }
+
+        $result = @(Invoke-O365Admin -Uri 'https://management.azure.com/providers/test' -Headers $headers)
+
+        $result.name | Should -Be @('first', 'second')
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -Times 2 -Exactly
+    }
+
+    It 'continues to follow OData nextLink pages' {
+        $headers = [ordered]@{
+            HeadersGraph = @{ Authorization = 'Bearer graph' }
+        }
+        Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { param($Headers) $Headers }
+        Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith {
+            if ($Uri -like '*page=2') {
+                return [pscustomobject]@{
+                    value = @([pscustomobject]@{ id = 'second' })
+                }
+            }
+            [pscustomobject]@{
+                value             = @([pscustomobject]@{ id = 'first' })
+                '@odata.nextLink' = 'https://graph.microsoft.com/v1.0/test?page=2'
+            }
+        }
+
+        $result = @(Invoke-O365Admin -Uri 'https://graph.microsoft.com/v1.0/test' -Headers $headers)
+
+        $result.id | Should -Be @('first', 'second')
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -Times 2 -Exactly
+    }
+
     It 'retries admin.cloud.microsoft requests with portal replay after a 440 when portal state becomes available' {
         $portalWebSession = [Microsoft.PowerShell.Commands.WebRequestSession]::new()
         $headers = [ordered]@{

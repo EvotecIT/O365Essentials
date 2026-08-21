@@ -228,8 +228,13 @@
                 }
             }
             if ($OutputQuery -isnot [array]) {
-                if ($OutputQuery.'@odata.nextLink') {
-                    $RestSplat.Uri = $OutputQuery.'@odata.nextLink'
+                $NextLink = if ($OutputQuery.'@odata.nextLink') {
+                    $OutputQuery.'@odata.nextLink'
+                } elseif ($OutputQuery.nextLink) {
+                    $OutputQuery.nextLink
+                }
+                if ($NextLink) {
+                    $RestSplat.Uri = $NextLink
                     if ($RestSplat.Uri) {
                         # We must remove websession parameter because Invoke-o365admin doesn't have it and i don't want to add it to the code
                         # it will set it self anyways
