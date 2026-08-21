@@ -83,7 +83,7 @@
     $newConfigurationBuildSplat = @{
         Enable                            = $true
         SignModule                        = $true
-        CertificateThumbprint             = '483292C9E317AA13B07BB7A96AE9D1A5ED9E7703'
+        CertificateThumbprint             = '92e95fb58effa6a4a75e77a33cdd6bfe6dd30f1a'
         DeleteTargetModuleBeforeBuild     = $true
         MergeModuleOnBuild                = $true
         DoNotAttemptToFixRelativePaths    = $true
