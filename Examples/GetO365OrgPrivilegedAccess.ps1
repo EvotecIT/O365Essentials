@@ -1,8 +1,8 @@
 Import-Module .\O365Essentials.psd1 -Force
 
-# Use WAM for an MFA-aware interactive sign-in.
-$Credential = Get-Credential -UserName 'admin@contoso.com' -Message 'Enter the account to use as the WAM login hint'
-$null = Connect-O365Admin -UseWam -Credential $Credential -ForceRefresh -Verbose
+# Connect-O365Admin uses an interactive OAuth flow supported by Windows PowerShell 5.1
+# and PowerShell 7. Use -UseWam on PowerShell 7.4 or newer when broker sign-in is preferred.
+$null = Connect-O365Admin -Verbose
 
 Get-O365OrgPrivilegedAccess
 

@@ -243,7 +243,7 @@
                         $RestSplat.Headers = $Headers
                         # Not sure if this is best/fastest way to do it, but it works
                         # It's a bit better than saving it to variable and releasing everything later on as it can be used in pipeline
-                        Invoke-O365Admin @RestSplat | ForEach-Object { if ($null -ne $_) { $_ } }
+                        Invoke-O365Admin @RestSplat -ErrorAction $ErrorActionPreference | ForEach-Object { if ($null -ne $_) { $_ } }
                         #if ($null -ne $MoreData) {
                         #    $MoreData
                         #}
@@ -297,7 +297,7 @@
                     $RetrySplat['Body'] = $Body
                 }
 
-                return Invoke-O365Admin @RetrySplat
+                return Invoke-O365Admin @RetrySplat -ErrorAction $ErrorActionPreference
             }
         }
 

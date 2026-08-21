@@ -321,6 +321,28 @@ Describe 'Invoke-O365Admin header selection' {
         Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -Times 2 -Exactly
     }
 
+    It 'preserves terminating error behavior across ARM continuation requests' {
+        $headers = [ordered]@{
+            HeadersARM = @{ Authorization = 'Bearer arm' }
+        }
+        Mock -ModuleName O365Essentials Connect-O365Admin -MockWith { param($Headers) $Headers }
+        Mock -ModuleName O365Essentials Invoke-RestMethod -MockWith {
+            if ($Uri -like '*page=2') {
+                throw 'continuation failed'
+            }
+            [pscustomobject]@{
+                value    = @([pscustomobject]@{ name = 'first' })
+                nextLink = 'https://management.azure.com/providers/test?page=2'
+            }
+        }
+
+        {
+            Invoke-O365Admin -Uri 'https://management.azure.com/providers/test' -Headers $headers -ErrorAction Stop
+        } | Should -Throw '*continuation failed*'
+
+        Should -Invoke -CommandName Invoke-RestMethod -ModuleName O365Essentials -Times 2 -Exactly
+    }
+
     It 'continues to follow OData nextLink pages' {
         $headers = [ordered]@{
             HeadersGraph = @{ Authorization = 'Bearer graph' }
