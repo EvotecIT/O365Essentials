@@ -91,6 +91,7 @@
 | Get-O365OrgM365Groups                           | Set-O365OrgM365Groups                        |                                                             |
 | Get-O365OrgMicrosoftEdge                        |                                              | Internal Microsoft Edge policy, extension, device, and site list payloads |
 | Get-O365OrgMicrosoftTeams                       | Set-O365OrgMicrosoftTeams                    | Set command not working - 100-500 nested properties         |
+| Get-O365TeamsTenantWideAppsSettings             | Set-O365TeamsTenantWideAppsSettings          | Preserves the current app list; uses an undocumented Teams beta API |
 | Get-O365OrgPeopleSettings                       |                                              | Internal People settings such as pronouns and profile cards |
 | Get-O365OrgMicrosoftEdgeSiteLists               |                                              | Internal Microsoft Edge site list and notification payloads |
 | Get-O365OrgModernAuthentication                 | Set-O365OrgModernAuthentication              |                                                             |

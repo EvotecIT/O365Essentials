@@ -5,7 +5,7 @@ function Connect-O365Admin {
 
     .DESCRIPTION
     Creates or refreshes the shared O365Essentials authorization cache used by the
-    module's Graph, ARM, Teams, Substrate, and admin center readers.
+    module's Graph, ARM, Teams, and admin center readers.
 
     For normal users this remains the only public connection command. Host apps can
     transparently attach an existing admin.cloud.microsoft portal session by supplying
@@ -249,8 +249,6 @@ function Connect-O365Admin {
     }
     # Teams admin APIs on teams.microsoft.com expect a token for api.spaces.skype.com
     $ScopesTeams = 'https://api.spaces.skype.com/.default offline_access'
-    # Substrate Admin App Catalog (used by Teams admin UI to reflect app availability) — use v1 resource GUID
-    $ResourceSubstrate = '08ff1ce2-4973-4b08-86a3-ebed13badc7f'
 
     if ($UseWam -and $Device) {
         Write-Warning -Message 'Connect-O365Admin - The -Device switch is ignored with -UseWam. Use -Device without -UseWam for device-code OAuth.'
@@ -385,58 +383,6 @@ function Connect-O365Admin {
         $tokenARM = $null
     }
 
-    # Prefer a persisted Substrate refresh token/client if present
-    $tokenSubstrate = $null
-    try {
-        $cfg = Get-O365EssentialsConfig
-        if (-not $UseWam -and $cfg.Substrate -and $cfg.Substrate.ClientId -and $cfg.Substrate.RefreshToken) {
-            $rt = Unprotect-O365Secret -Protected $cfg.Substrate.RefreshToken
-            Write-Verbose -Message "Connect-O365Admin - Using persisted Substrate client to acquire token"
-            $tokenSubstrate = Get-O365OAuthToken -Tenant $Tenant -Scope 'https://substrate.office.com/.default offline_access' -ClientId $cfg.Substrate.ClientId -RefreshToken $rt
-        }
-    } catch { $tokenSubstrate = $null }
-
-    if (-not $tokenSubstrate) {
-        # Fallback: try multiple known audiences with the current client (may fail for first-party APIs)
-        $substrateAttempts = @(
-            @{ type = 'resource'; value = 'https://substrate.office.com' },
-            @{ type = 'scope';    value = 'https://substrate.office.com/.default offline_access' },
-            @{ type = 'resource'; value = $ResourceSubstrate },
-            @{ type = 'scope';    value = "api://$ResourceSubstrate/.default offline_access" }
-        )
-        foreach ($attempt in $substrateAttempts) {
-            if ($tokenSubstrate) { break }
-            try {
-                Write-Verbose -Message "Connect-O365Admin - Acquiring token for Substrate using $($attempt.type): $($attempt.value)"
-                if ($UseWam) {
-                    if ($attempt.type -eq 'scope') {
-                        $tokenSubstrate = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -Scope $attempt.value -Account $WamAccount
-                    } else {
-                        $tokenSubstrate = Get-O365BrokerAccessToken -Tenant $WamAuthorityTenant -ResourceUrl $attempt.value -Account $WamAccount
-                    }
-                } elseif ($attempt.type -eq 'resource') {
-                    if ($IsAppAuthentication) {
-                        $tokenSubstrate = Get-O365OAuthToken -Tenant $Tenant -Resource $attempt.value -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
-                    } else {
-                        $tokenSubstrate = Get-O365OAuthToken -Tenant $Tenant -Resource $attempt.value -RefreshToken $refresh
-                    }
-                } else {
-                    if ($IsAppAuthentication) {
-                        $tokenSubstrate = Get-O365OAuthToken -Tenant $Tenant -Scope $attempt.value -ClientId $ClientId -ClientSecret $ClientSecret -Certificate $Certificate -CertificatePassword $CertificatePassword
-                    } else {
-                        $tokenSubstrate = Get-O365OAuthToken -Tenant $Tenant -Scope $attempt.value -RefreshToken $refresh
-                    }
-                }
-            } catch {
-                Write-Verbose -Message ("Connect-O365Admin - Substrate token attempt failed with: {0}" -f $_.Exception.Message)
-                $tokenSubstrate = $null
-            }
-        }
-        if (-not $tokenSubstrate) {
-            Write-Verbose -Message "Connect-O365Admin - Substrate token not available. You can run Set-O365SubstrateAuth -SubstrateClientId <GUID> once to capture a reusable refresh token for the UI client."
-        }
-    }
-
     if ($IsAppAuthentication) {
         $userName = $ClientId
     } elseif ($UseWam -and $tokenGraph.account) {
@@ -522,23 +468,6 @@ function Connect-O365Admin {
                 'x-serverrequestid'      = [guid]::NewGuid()
                 'x-ms-client-request-id' = [guid]::NewGuid()
                 'x-ms-correlation-id'    = [guid]::NewGuid()
-            }
-        } else {
-            $null
-        }
-        'AccessTokenSubstrate' = if ($tokenSubstrate) { $tokenSubstrate.access_token } else { $null }
-        'HeadersSubstrate'     = if ($tokenSubstrate) {
-            [ordered] @{
-                'Accept'                 = 'application/json'
-                'Content-Type'           = 'application/json; charset=UTF-8'
-                'Authorization'          = "Bearer $($tokenSubstrate.access_token)"
-                'X-Requested-With'       = 'XMLHttpRequest'
-                'x-ms-client-request-id' = [guid]::NewGuid()
-                'x-ms-correlation-id'    = [guid]::NewGuid()
-                'Origin'                 = 'https://admin.teams.microsoft.com'
-                'Referer'                = 'https://admin.teams.microsoft.com/'
-                'x-anchormailbox'        = "APP:AppAssignment_${Tenant}@${Tenant}"
-                'x-ms-forest'            = '1e'
             }
         } else {
             $null

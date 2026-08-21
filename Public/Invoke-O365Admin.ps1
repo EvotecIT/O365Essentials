@@ -132,8 +132,6 @@
         $RestSplat['Headers'] = if ($Headers.HeadersARM) { $Headers.HeadersARM } else { $Headers.HeadersAzure }
     } elseif ($Uri -like '*teams.microsoft.com*') {
         $RestSplat['Headers'] = if ($Headers.HeadersTeams) { $Headers.HeadersTeams } else { $Headers.HeadersO365 }
-    } elseif ($Uri -like '*substrate.office.com*') {
-        $RestSplat['Headers'] = if ($Headers.HeadersSubstrate) { $Headers.HeadersSubstrate } else { $Headers.HeadersO365 }
     } else {
         $RestSplat['Headers'] = if ($Headers.HeadersAzure) { $Headers.HeadersAzure } else { $Headers.HeadersARM }
     }
