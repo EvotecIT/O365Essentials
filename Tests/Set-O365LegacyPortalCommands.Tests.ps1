@@ -249,6 +249,30 @@ Describe 'Microsoft Teams settings setter' {
 }
 
 Describe 'Privileged Access settings setter' {
+    It 'does not call the API when no setting is supplied' {
+        Mock -ModuleName O365Essentials Get-O365OrgPrivilegedAccess
+        Mock -ModuleName O365Essentials Invoke-O365Admin
+        Mock -ModuleName O365Essentials Write-Warning
+
+        Set-O365OrgPrivilegedAccess
+
+        Should -Invoke -CommandName Get-O365OrgPrivilegedAccess -ModuleName O365Essentials -Times 0 -Exactly
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -Times 0 -Exactly
+        Should -Invoke -CommandName Write-Warning -ModuleName O365Essentials -ParameterFilter {
+            $Message -eq 'Set-O365OrgPrivilegedAccess - No settings were provided; nothing to update.'
+        } -Times 1 -Exactly
+    }
+
+    It 'rejects an explicitly bound null enabled setting before reading or writing' {
+        Mock -ModuleName O365Essentials Get-O365OrgPrivilegedAccess
+        Mock -ModuleName O365Essentials Invoke-O365Admin
+
+        { Set-O365OrgPrivilegedAccess -TenantLockBoxEnabled $null } | Should -Throw
+
+        Should -Invoke -CommandName Get-O365OrgPrivilegedAccess -ModuleName O365Essentials -Times 0 -Exactly
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -Times 0 -Exactly
+    }
+
     It 'requires an admin group when enabling Tenant Lockbox' {
         Mock -ModuleName O365Essentials Get-O365OrgPrivilegedAccess -MockWith {
             [pscustomobject]@{
@@ -278,13 +302,38 @@ Describe 'Privileged Access settings setter' {
         }
         Mock -ModuleName O365Essentials Invoke-O365Admin
 
-        Set-O365OrgPrivilegedAccess -Headers @{ HeadersO365 = @{ Authorization = 'Bearer token' } } -TenantLockBoxEnabled $false
+        Set-O365OrgPrivilegedAccess -Headers @{ HeadersO365 = @{ Authorization = 'Bearer token' } } -TenantLockBoxEnabled $false -Confirm:$false
 
         Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -ParameterFilter {
             $Uri -eq 'https://admin.microsoft.com/admin/api/Settings/security/tenantLockbox' -and
             $Method -eq 'POST' -and
             $Body.EnabledTenantLockbox -eq $false -and
-            $Body.AdminGroup -eq ''
+            $Body.AdminGroup -eq '' -and
+            $ErrorAction -eq 'Stop'
         } -Times 1 -Exactly
+    }
+
+    It 'reads current state but does not write when WhatIf is used' {
+        Mock -ModuleName O365Essentials Get-O365OrgPrivilegedAccess -MockWith {
+            [pscustomobject]@{
+                EnabledTenantLockbox = $false
+                AdminGroup           = ''
+                Identity             = $null
+            }
+        }
+        Mock -ModuleName O365Essentials Invoke-O365Admin
+
+        Set-O365OrgPrivilegedAccess -TenantLockBoxEnabled $false -WhatIf
+
+        Should -Invoke -CommandName Get-O365OrgPrivilegedAccess -ModuleName O365Essentials -Times 1 -Exactly
+        Should -Invoke -CommandName Invoke-O365Admin -ModuleName O365Essentials -Times 0 -Exactly
+    }
+
+    It 'classifies tenant-wide privileged access writes as high impact' {
+        $Metadata = [System.Management.Automation.CommandMetadata]::new(
+            (Get-Command Set-O365OrgPrivilegedAccess)
+        )
+
+        $Metadata.ConfirmImpact | Should -Be 'High'
     }
 }

@@ -42,14 +42,14 @@
 | Get-O365AzurePropertiesSecurity                 | Set-O365AzurePropertiesSecurity              |                                                             |
 | Get-O365AzureTenantSKU                          |                                              |                                                             |
 | Get-O365AzureUserSettings                       | Set-O365AzureUserSettings                    |                                                             |
-| Get-O365BillingAccounts                         |                                              | Doesn't work, probably missing parameters such as accountid |
+| Get-O365BillingAccounts                         |                                              | Uses the documented Microsoft.Billing ARM API               |
 | Get-O365BillingInvoices                         |                                              |                                                             |
 | Get-O365BillingLicenseAutoClaim                 | Set-O365BillingLicenseAutoClaim              |                                                             |
 | Get-O365BillingLicenseRequests                  |                                              |                                                             |
 | Get-O365BillingNotifications                    | Set-O365BillingNotifications                 |                                                             |
 | Get-O365BillingNotificationsList                |                                              |                                                             |
 | Get-O365BillingPaymentMethods                   |                                              |                                                             |
-| Get-O365BillingProfile                          |                                              | Doesn't work, wrong URL, no data to test                    |
+| Get-O365BillingProfile                          |                                              | Lists profiles for supported Azure billing accounts         |
 | Get-O365BillingSubscriptions                    |                                              |                                                             |
 | Get-O365ConsiergeAll                            |                                              |                                                             |
 | Get-O365ContentUnderstanding                    |                                              | Content Understanding billing and processing settings       |
@@ -104,7 +104,7 @@
 | Get-O365OrgBackup                               |                                              | Microsoft 365 Backup subscriptions, feature state, and enhanced restore status |
 | Get-O365OrgPlanner                              | Set-O365OrgPlanner                           |                                                             |
 | Get-O365OrgPrivacyProfile                       | Set-O365OrgPrivacyProfile                    |                                                             |
-| Get-O365OrgPrivilegedAccess                     | Set-O365OrgPrivilegedAccess                  | Requires more testing on SET cmd                            |
+| Get-O365OrgPrivilegedAccess                     | Set-O365OrgPrivilegedAccess                  | AdminGroup is a mail-enabled security group                 |
 | Get-O365OrgProject                              | Set-O365OrgProject                           |                                                             |
 | Get-O365OrgReleasePreferences                   | Set-O365OrgReleasePreferences                |                                                             |
 | Get-O365OrgReports                              | Set-O365OrgReports                           |                                                             |
