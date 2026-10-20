@@ -9,6 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Identity.Client.Broker" Version="4.90.1" />
+    <PackageReference Include="Microsoft.Identity.Client.Broker" Version="4.91.0" />
   </ItemGroup>
 </Project>
