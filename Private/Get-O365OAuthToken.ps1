@@ -5,7 +5,7 @@ function Get-O365OAuthToken {
         [string] $Scope,
         [string] $Resource,
         # Azure PowerShell public client ID - used for interactive sign in
-        [string] $ClientId = '04b07795-8ddb-461a-bbee-02f9e1bf7b46',
+        [string] $ClientId = '1950a258-227b-4e31-a9cf-717495945fc2',
         [PSCredential] $Credential,
         [string] $RefreshToken,
         [switch] $Device,
@@ -133,11 +133,15 @@ function Get-O365OAuthToken {
     $redirectUri = "http://localhost:8400/"
     $authorizeUrl = "https://login.microsoftonline.com/$Tenant/oauth2/v2.0/authorize?client_id=$ClientId&response_type=code&redirect_uri=$([System.Uri]::EscapeDataString($redirectUri))&response_mode=query&scope=$([System.Uri]::EscapeDataString($Scope))&code_challenge=$codeChallenge&code_challenge_method=S256"
 
+    if ($PSVersionTable.PSEdition -eq 'Desktop') {
+        Add-Type -AssemblyName System.Web
+    }
+
     $listener = [System.Net.HttpListener]::new()
     $listener.Prefixes.Add($redirectUri)
     $listener.Start()
     try {
-        if ($IsWindows) {
+        if ($PSVersionTable.PSEdition -eq 'Desktop' -or $IsWindows) {
             Start-Process $authorizeUrl
         } else {
             return
