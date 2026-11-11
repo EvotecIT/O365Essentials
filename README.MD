@@ -70,7 +70,9 @@ if (-not $Credentials) {
 $null = Connect-O365Admin -Verbose -Credential $Credentials
 ```
 
-If we have MFA we simply let it query you for MFA code.
+For interactive sign-in with MFA, omit `-Credential` and complete the Microsoft
+sign-in in your browser. This default flow works in Windows PowerShell 5.1 and
+PowerShell 7; it does not require WAM.
 
 ```powershell
 $null = Connect-O365Admin -Verbose
