@@ -1,4 +1,9 @@
 # O365Essentials Release History
+## 1.0.4 - 2026.11.11
+- Fix default browser authentication for Microsoft 365 admin APIs by using the Azure PowerShell client identity. WAM remains optional.
+- Fix browser launch and OAuth callback parsing in Windows PowerShell 5.1.
+- Keep Windows PowerShell 5.1 imports working when the package includes the optional PowerShell 7 WAM helper.
+
 ## 0.0.17 - 2025.07.03
 - Added elevated access functions: Set-O365AzureElevatedAccess, Get-O365AzureElevatedRoleAssignments, Get-O365AzureElevatedDenyAssignments, Remove-O365AzureElevatedAccess
 - Added -UserPrincipalName support for elevated access commands and new example script
